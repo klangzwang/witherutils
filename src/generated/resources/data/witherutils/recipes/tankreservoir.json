@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "witherutils:case_big"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "I": {
+      "item": "witherutils:iron_plate"
+    },
+    "W": {
+      "tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+    "IWI",
+    "GCG",
+    "IWI"
+  ],
+  "result": {
+    "item": "witherutils:tankreservoir"
+  },
+  "show_notification": true
+}

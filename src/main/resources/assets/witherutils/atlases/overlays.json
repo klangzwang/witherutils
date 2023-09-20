@@ -1,0 +1,9 @@
+{
+    "sources": [
+        {
+            "type": "directory",
+            "source": "witherutils:block/overlay",
+            "prefix": "witherutils:block/overlay/"
+        }
+    ]
+}

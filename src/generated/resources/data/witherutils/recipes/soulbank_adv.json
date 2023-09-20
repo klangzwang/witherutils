@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "witherutils:soulbank_basic"
+    },
+    "C": {
+      "item": "minecraft:coal"
+    },
+    "S": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    " S ",
+    "BCB",
+    " S "
+  ],
+  "result": {
+    "item": "witherutils:soulbank_adv"
+  },
+  "show_notification": true
+}

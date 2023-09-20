@@ -1,0 +1,139 @@
+package geni.witherutils.core.common.menu;
+
+import geni.witherutils.core.common.blockentity.WitherBlockEntity;
+import geni.witherutils.core.common.network.CoreNetwork;
+import geni.witherutils.core.common.network.PacketSyncClientToServerMenu;
+import geni.witherutils.core.common.sync.EnderDataSlot;
+import geni.witherutils.core.common.sync.SyncMode;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+public abstract class SyncedMenu<T extends WitherBlockEntity> extends AbstractContainerMenu {
+
+    @Nullable
+    private final T blockEntity;
+    private final Inventory inventory;
+
+    private final List<EnderDataSlot<?>> clientToServerSlots = new ArrayList<>();
+    private final List<Slot> playerInventorySlots = new ArrayList<>();
+    private boolean playerInvVisible = true;
+    
+    protected SyncedMenu(@Nullable T blockEntity, Inventory inventory, @Nullable MenuType<?> pMenuType, int pContainerId)
+    {
+        super(pMenuType, pContainerId);
+        this.blockEntity = blockEntity;
+        this.inventory = inventory;
+        if (blockEntity != null)
+        {
+            clientToServerSlots.addAll(blockEntity.getClientDecidingDataSlots());
+        }
+    }
+
+    protected void addClientDecidingDataSlot(EnderDataSlot<?> dataSlot)
+    {
+        clientToServerSlots.add(dataSlot);
+    }
+
+    @Override
+    public void broadcastChanges()
+    {
+        super.broadcastChanges();
+        sync(false);
+    }
+
+    @Override
+    public void broadcastFullState()
+    {
+        super.broadcastFullState();
+        sync(true);
+    }
+
+    private void sync(boolean fullSync)
+    {
+        if (inventory.player instanceof ServerPlayer player && blockEntity != null)
+        {
+            blockEntity.sendPacket(player, blockEntity.createUpdatePacket(fullSync, SyncMode.GUI));
+        }
+    }
+
+    public void clientTick()
+    {
+        ListTag listNBT = new ListTag();
+        for (int i = 0; i < clientToServerSlots.size(); i++)
+        {
+            Optional<CompoundTag> optionalNBT = clientToServerSlots.get(i).toOptionalNBT();
+
+            if (optionalNBT.isPresent())
+            {
+                CompoundTag elementNBT = optionalNBT.get();
+                elementNBT.putInt("dataSlotIndex", i);
+                listNBT.add(elementNBT);
+            }
+        }
+        if (!listNBT.isEmpty())
+        {
+            CoreNetwork.sendToServer(new PacketSyncClientToServerMenu(containerId, listNBT));
+        }
+    }
+
+    @Nullable
+    public T getBlockEntity()
+    {
+        return blockEntity;
+    }
+    public List<EnderDataSlot<?>> getClientToServerSlots()
+    {
+        return clientToServerSlots;
+    }
+    public void addInventorySlots(int xPos, int yPos, boolean onlyHotbar)
+    {
+        // Hotbar
+        for (int x = 0; x < 9; x++)
+        {
+            Slot ref = new Slot(inventory, x, xPos + x * 18, yPos + (onlyHotbar ? 0 : 58));
+            playerInventorySlots.add(ref);
+            this.addSlot(ref);
+        }
+
+        if(onlyHotbar)
+            return;
+        
+        // Inventory
+        for (int y = 0; y < 3; y++)
+        {
+            for (int x = 0; x < 9; x++)
+            {
+                Slot ref = new Slot(inventory, x + y * 9 + 9, xPos + x * 18, yPos + y * 18);
+                playerInventorySlots.add(ref);
+                this.addSlot(ref);
+            }
+        }
+    }
+    public boolean getPlayerInvVisible()
+    {
+        return playerInvVisible;
+    }
+    public boolean setPlayerInvVisible(boolean visible)
+    {
+        if (playerInvVisible != visible)
+        {
+            playerInvVisible = visible;
+            int offset = playerInvVisible ? 1000 : -1000;
+            for (int i = 0; i < 9; i++)
+            {
+                playerInventorySlots.get(i).y += offset;
+            }
+        }
+        return visible;
+    }
+}

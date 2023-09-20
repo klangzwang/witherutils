@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:piston"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "W": {
+      "item": "witherutils:upcase"
+    }
+  },
+  "pattern": [
+    "###",
+    "EWE",
+    "G G"
+  ],
+  "result": {
+    "item": "witherutils:upgrade_jump"
+  },
+  "show_notification": true
+}

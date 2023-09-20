@@ -1,0 +1,7 @@
+{
+  "type": "witherutils:cutter",
+  "ingredient": {
+    "item": "minecraft:gray_concrete"
+  },
+  "result": "witherutils:ctm_concrete_b"
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "P": {
+      "item": "minecraft:oak_planks"
+    },
+    "W": {
+      "item": "witherutils:withersteel_ingot"
+    }
+  },
+  "pattern": [
+    "WPW",
+    "WWW",
+    " W "
+  ],
+  "result": {
+    "item": "witherutils:shield_basic"
+  },
+  "show_notification": true
+}

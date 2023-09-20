@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "witherutils:iron_plate"
+    },
+    {
+      "item": "witherutils:iron_plate"
+    },
+    {
+      "item": "witherutils:iron_plate"
+    },
+    {
+      "item": "witherutils:iron_plate"
+    }
+  ],
+  "result": {
+    "item": "witherutils:case_small"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "witherutils:soulbank_adv"
+    },
+    "C": {
+      "item": "witherutils:case_small"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "K": {
+      "item": "witherutils:withersteel_block"
+    },
+    "S": {
+      "item": "witherutils:withersteel_ingot"
+    }
+  },
+  "pattern": [
+    "SKS",
+    "SCS",
+    "EBE"
+  ],
+  "result": {
+    "item": "witherutils:spawner"
+  },
+  "show_notification": true
+}

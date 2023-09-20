@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "G": {
+      "item": "minecraft:golden_boots"
+    },
+    "I": {
+      "item": "witherutils:iron_plate"
+    }
+  },
+  "pattern": [
+    "IDI",
+    "IDI",
+    "GG "
+  ],
+  "result": {
+    "item": "witherutils:upcase"
+  },
+  "show_notification": true
+}

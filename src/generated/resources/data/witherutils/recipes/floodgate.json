@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "witherutils:iron_plate"
+    },
+    "D": {
+      "item": "minecraft:dispenser"
+    },
+    "W": {
+      "item": "minecraft:water_bucket"
+    }
+  },
+  "pattern": [
+    "#W#",
+    "WDW",
+    "#W#"
+  ],
+  "result": {
+    "item": "witherutils:floodgate"
+  },
+  "show_notification": true
+}

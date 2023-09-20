@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "P": {
+      "item": "witherutils:iron_plate"
+    },
+    "R": {
+      "tag": "forge:rods"
+    }
+  },
+  "pattern": [
+    " G ",
+    "CPC",
+    "R R"
+  ],
+  "result": {
+    "item": "witherutils:soulbank_case"
+  },
+  "show_notification": true
+}

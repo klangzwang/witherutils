@@ -1,0 +1,9 @@
+{
+	"variants":
+	{
+		"facing=east": { "model": "witherutils:block/tank/drum/drum", "y": 90 },
+		"facing=north": { "model": "witherutils:block/tank/drum/drum" },
+		"facing=south": { "model": "witherutils:block/tank/drum/drum", "y": 180 },
+		"facing=west": { "model": "witherutils:block/tank/drum/drum", "y": 270 }
+	}
+}

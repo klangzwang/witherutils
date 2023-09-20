@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "witherutils:block/creative_generator"
+    },
+    "lit=true": {
+      "model": "witherutils:block/creative_generator"
+    }
+  }
+}

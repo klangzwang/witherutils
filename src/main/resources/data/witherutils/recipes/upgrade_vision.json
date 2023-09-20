@@ -1,0 +1,44 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "count": 1,
+      "nbt": "{Potion:\"minecraft:night_vision\"}"
+    },
+	{
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "count": 1,
+      "nbt": "{Potion:\"minecraft:night_vision\"}"
+    },
+	{
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "count": 1,
+      "nbt": "{Potion:\"minecraft:night_vision\"}"
+    },
+	{
+      "item": "minecraft:gold_nugget"
+    },
+	{
+      "item": "witherutils:upcase"
+    },
+	{
+      "item": "minecraft:gold_nugget"
+    },
+	{
+      "item": "minecraft:glass"
+    },
+	{
+      "item": "minecraft:glass"
+    },
+	{
+      "item": "minecraft:glass"
+    }
+  ],
+  "result": {
+    "item": "witherutils:upgrade_vision"
+  }
+}

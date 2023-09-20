@@ -1,0 +1,6 @@
+// 1.20.1	2023-09-18T12:14:59.7410492	WitherUtils BlockTags
+30a73586532c0d79db11afe180e0722ddd8ae6ff data/minecraft/tags/blocks/leaves.json
+a12094ba50bcb35a80e46393a5700e8e247742e1 data/minecraft/tags/blocks/mineable/axe.json
+f583b5223ebd8f2530975d549501f565851f53d8 data/minecraft/tags/blocks/mineable/pickaxe.json
+ee72a149e8602a08452e76923632c5ea618cd576 data/minecraft/tags/blocks/saplings.json
+0ecfaa0c7469e8c24876db944f045ca8b0d2842c data/witherutils/tags/blocks/blacklists/breaker.json

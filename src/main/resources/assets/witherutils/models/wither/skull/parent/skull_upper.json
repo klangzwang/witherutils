@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube",
+  "loader": "forge:obj",
+  "model": "witherutils:models/wither/skull/parent/skull_upper.obj",
+  "flip-v": true
+}

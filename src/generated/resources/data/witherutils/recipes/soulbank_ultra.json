@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "witherutils:soulbank_adv"
+    },
+    "C": {
+      "item": "minecraft:shroomlight"
+    },
+    "S": {
+      "item": "witherutils:soulished_ingot"
+    }
+  },
+  "pattern": [
+    " S ",
+    "ACA",
+    " S "
+  ],
+  "result": {
+    "item": "witherutils:soulbank_ultra"
+  },
+  "show_notification": true
+}

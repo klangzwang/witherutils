@@ -1,0 +1,165 @@
+{
+    "multipart":
+    [
+        {
+            "when": { "AND": [
+                { "east": "false" },
+                { "north": "false" },
+                { "south": "false" },
+                { "west": "false" }
+            ]},
+			"apply": { "model": "witherutils:block/tank/reservoir/reservoir_bordered" }
+        },
+        {
+            "when": { "AND": [
+                { "east": "false" },
+                { "north": "true" },
+                { "south": "false" },
+                { "west": "false" }
+            ]},
+            "apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north", "y": 0 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "true" },
+                { "north": "false" },
+                { "south": "false" },
+                { "west": "false" }
+            ]},
+            "apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north", "y": 90 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "false" },
+                { "north": "false" },
+                { "south": "true" },
+                { "west": "false" }
+            ]},
+            "apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north", "y": 180 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "false" },
+                { "north": "false" },
+                { "south": "false" },
+                { "west": "true" }
+            ]},
+            "apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north", "y": 270 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "true" },
+                { "north": "true" },
+                { "south": "false" },
+                { "west": "false" }
+            ]},
+			"apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north_east", "y": 0 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "true" },
+                { "north": "false" },
+                { "south": "true" },
+                { "west": "false" }
+            ]},
+			"apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north_east", "y": 90 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "false" },
+                { "north": "false" },
+                { "south": "true" },
+                { "west": "true" }
+            ]},
+			"apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north_east", "y": 180 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "false" },
+                { "north": "true" },
+                { "south": "false" },
+                { "west": "true" }
+            ]},
+			"apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north_east", "y": 270 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "false" },
+                { "north": "true" },
+                { "south": "true" },
+                { "west": "false" }
+            ]},
+            "apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north_south", "y": 0 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "true" },
+                { "north": "false" },
+                { "south": "false" },
+                { "west": "true" }
+            ]},
+            "apply": [{ "model": "witherutils:block/tank/reservoir/reservoir_north_south", "y": 90 }]
+        },
+        {
+            "when": { "AND": [
+                { "east": "true" },
+                { "north": "true" },
+                { "south": "true" },
+                { "west": "false" }
+            ]},
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_east_south", "y": 0 }
+        },
+        {
+            "when": { "AND": [
+                { "east": "true" },
+                { "north": "false" },
+                { "south": "true" },
+                { "west": "true" }
+            ]},
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_east_south", "y": 90 }
+        },
+        {
+            "when": { "AND": [
+                { "east": "false" },
+                { "north": "true" },
+                { "south": "true" },
+                { "west": "true" }
+            ]},
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_east_south", "y": 180 }
+        },
+        {
+            "when": { "AND": [
+                { "east": "true" },
+                { "north": "true" },
+                { "south": "false" },
+                { "west": "true" }
+            ]},
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_east_south", "y": 270 }
+        },
+        {
+            "when": { "AND": [
+                { "east": "true" },
+                { "north": "true" },
+                { "south": "true" },
+                { "west": "true" }
+            ]},
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_east_south_west" }
+        },
+        {
+            "when": { "corner_north_west": "true" },
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_corner", "y": 0 }
+        },
+        {
+            "when": { "corner_north_east": "true" },
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_corner", "y": 90 }
+        },
+        {
+            "when": { "corner_south_east": "true" },
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_corner", "y": 180 }
+        },
+        {
+            "when": { "corner_south_west": "true" },
+            "apply": { "model": "witherutils:block/tank/reservoir/reservoir_north_corner", "y": 270 }
+        }
+    ]
+}

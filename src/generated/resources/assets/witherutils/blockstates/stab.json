@@ -1,0 +1,50 @@
+{
+  "variants": {
+    "facing=down,lit=false": {
+      "model": "witherutils:block/stab",
+      "x": 90
+    },
+    "facing=down,lit=true": {
+      "model": "witherutils:block/stab_on",
+      "x": 90
+    },
+    "facing=east,lit=false": {
+      "model": "witherutils:block/stab",
+      "y": 90
+    },
+    "facing=east,lit=true": {
+      "model": "witherutils:block/stab_on",
+      "y": 90
+    },
+    "facing=north,lit=false": {
+      "model": "witherutils:block/stab"
+    },
+    "facing=north,lit=true": {
+      "model": "witherutils:block/stab_on"
+    },
+    "facing=south,lit=false": {
+      "model": "witherutils:block/stab",
+      "y": 180
+    },
+    "facing=south,lit=true": {
+      "model": "witherutils:block/stab_on",
+      "y": 180
+    },
+    "facing=up,lit=false": {
+      "model": "witherutils:block/stab",
+      "x": 270
+    },
+    "facing=up,lit=true": {
+      "model": "witherutils:block/stab_on",
+      "x": 270
+    },
+    "facing=west,lit=false": {
+      "model": "witherutils:block/stab",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "witherutils:block/stab_on",
+      "y": 270
+    }
+  }
+}

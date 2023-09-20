@@ -1,0 +1,170 @@
+package geni.witherutils.base.common.base;
+
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+
+import org.jetbrains.annotations.Nullable;
+
+import geni.witherutils.core.common.menu.SyncedMenu;
+
+public abstract class WitherMachineMenu<T extends WitherMachineBlockEntity> extends SyncedMenu<T> {
+
+    protected WitherMachineMenu(@Nullable T blockEntity, Inventory inventory, @Nullable MenuType<?> pMenuType, int pContainerId)
+    {
+        super(blockEntity, inventory, pMenuType, pContainerId);
+    }
+
+    @Override
+    public boolean stillValid(Player pPlayer)
+    {
+        return getBlockEntity() != null && getBlockEntity().stillValid(pPlayer);
+    }
+
+    @Override
+    public boolean canTakeItemForPickAll(ItemStack stack, Slot slot)
+    {
+        if (slot instanceof GhostMachineSlot)
+            return false;
+        return super.canTakeItemForPickAll(stack, slot);
+    }
+
+    @Override
+    public boolean canDragTo(Slot slot)
+    {
+        if (slot instanceof GhostMachineSlot)
+            return false;
+        return super.canDragTo(slot);
+    }
+
+    @Override
+    public ItemStack quickMoveStack(Player pPlayer, int pIndex)
+    {
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(pIndex);
+
+        if (slot instanceof GhostMachineSlot)
+        {
+            slot.set(ItemStack.EMPTY);
+            return itemstack;
+        }
+
+        if (slot.hasItem())
+        {
+            ItemStack itemstack1 = slot.getItem();
+            itemstack = itemstack1.copy();
+            if (pIndex < this.slots.size() - 36)
+            {
+                if (!this.moveItemStackTo(itemstack1, this.slots.size() - 36, this.slots.size(), true))
+                {
+                    return ItemStack.EMPTY;
+                }
+            }
+            else if (!this.moveItemStackTo(itemstack1, 0, this.slots.size() - 36, false))
+            {
+                return ItemStack.EMPTY;
+            }
+
+            if (itemstack1.isEmpty())
+            {
+                slot.set(ItemStack.EMPTY);
+            }
+            else
+            {
+                slot.setChanged();
+            }
+        }
+        return itemstack;
+    }
+
+    @Override
+    protected boolean moveItemStackTo(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
+        boolean flag = false;
+        int i = startIndex;
+        if (reverseDirection) {
+            i = endIndex - 1;
+        }
+
+        if (stack.isStackable()) {
+            while(!stack.isEmpty()) {
+                if (reverseDirection) {
+                    if (i < startIndex) {
+                        break;
+                    }
+                } else if (i >= endIndex) {
+                    break;
+                }
+
+                Slot slot = this.slots.get(i);
+                if (!(slot instanceof GhostMachineSlot)) {
+                    ItemStack itemstack = slot.getItem();
+                    if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(stack, itemstack)) {
+                        int j = itemstack.getCount() + stack.getCount();
+                        int maxSize = Math.min(slot.getMaxStackSize(), stack.getMaxStackSize());
+                        if (j <= maxSize) {
+                            stack.setCount(0);
+                            itemstack.setCount(j);
+                            slot.setChanged();
+                            flag = true;
+                        } else if (itemstack.getCount() < maxSize) {
+                            stack.shrink(maxSize - itemstack.getCount());
+                            itemstack.setCount(maxSize);
+                            slot.setChanged();
+                            flag = true;
+                        }
+                    }
+                }
+
+                if (reverseDirection) {
+                    --i;
+                } else {
+                    ++i;
+                }
+            }
+        }
+
+        if (!stack.isEmpty()) {
+            if (reverseDirection) {
+                i = endIndex - 1;
+            } else {
+                i = startIndex;
+            }
+
+            while(true) {
+                if (reverseDirection) {
+                    if (i < startIndex) {
+                        break;
+                    }
+                } else if (i >= endIndex) {
+                    break;
+                }
+
+                Slot slot1 = this.slots.get(i);
+                if (!(slot1 instanceof GhostMachineSlot)) {
+                    ItemStack itemstack1 = slot1.getItem();
+                    if (itemstack1.isEmpty() && slot1.mayPlace(stack)) {
+                        if (stack.getCount() > slot1.getMaxStackSize()) {
+                            slot1.set(stack.split(slot1.getMaxStackSize()));
+                        } else {
+                            slot1.set(stack.split(stack.getCount()));
+                        }
+
+                        slot1.setChanged();
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (reverseDirection) {
+                    --i;
+                } else {
+                    ++i;
+                }
+            }
+        }
+
+        return flag;
+    }
+}

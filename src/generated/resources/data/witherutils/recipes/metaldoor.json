@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "witherutils:steel_door"
+    },
+    "W": {
+      "item": "witherutils:withersteel_ingot"
+    }
+  },
+  "pattern": [
+    "   ",
+    "WWW",
+    "SSS"
+  ],
+  "result": {
+    "item": "witherutils:metaldoor"
+  },
+  "show_notification": true
+}

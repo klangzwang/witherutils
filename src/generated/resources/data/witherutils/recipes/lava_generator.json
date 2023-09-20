@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "witherutils:blink_plate"
+    },
+    "C": {
+      "item": "witherutils:case_big"
+    },
+    "G": {
+      "item": "witherutils:iron_gear"
+    },
+    "W": {
+      "item": "minecraft:lava_bucket"
+    }
+  },
+  "pattern": [
+    "WBW",
+    "BCB",
+    "GBG"
+  ],
+  "result": {
+    "item": "witherutils:lava_generator"
+  },
+  "show_notification": true
+}

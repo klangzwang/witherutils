@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "witherutils:bricks_dark"
+    },
+    "L": {
+      "item": "minecraft:lava_bucket"
+    }
+  },
+  "pattern": [
+    "BLB",
+    "LBL",
+    "BLB"
+  ],
+  "result": {
+    "count": 8,
+    "item": "witherutils:bricks_lava"
+  },
+  "show_notification": true
+}

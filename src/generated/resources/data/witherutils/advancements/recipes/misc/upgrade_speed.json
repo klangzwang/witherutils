@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "witherutils:upgrade_speed"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_upcase": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "witherutils:upcase"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_upcase",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "witherutils:upgrade_speed"
+    ]
+  },
+  "sends_telemetry_event": false
+}

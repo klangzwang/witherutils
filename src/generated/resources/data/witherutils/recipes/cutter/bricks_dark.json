@@ -1,0 +1,7 @@
+{
+  "type": "witherutils:cutter",
+  "ingredient": {
+    "item": "minecraft:stone_bricks"
+  },
+  "result": "witherutils:bricks_dark"
+}

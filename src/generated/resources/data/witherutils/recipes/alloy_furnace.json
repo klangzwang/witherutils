@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "C": {
+      "item": "witherutils:case_big"
+    },
+    "F": {
+      "item": "minecraft:furnace"
+    },
+    "G": {
+      "item": "witherutils:iron_gear"
+    },
+    "S": {
+      "item": "witherutils:soulbank_adv"
+    }
+  },
+  "pattern": [
+    "BFB",
+    "FCF",
+    "GSG"
+  ],
+  "result": {
+    "item": "witherutils:alloy_furnace"
+  },
+  "show_notification": true
+}

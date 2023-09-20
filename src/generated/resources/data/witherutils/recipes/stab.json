@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "S": {
+      "item": "witherutils:soulbank_basic"
+    },
+    "W": {
+      "item": "witherutils:withersteel_ingot"
+    }
+  },
+  "pattern": [
+    "W W",
+    "RSR",
+    "W W"
+  ],
+  "result": {
+    "item": "witherutils:stab"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,16 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"4": "witherutils:block/emissive/blue"
+	},
+	"elements": [
+		{
+			"from": [1.64114, -3.2, -0.15],
+			"to": [2.95314, 19.175, -0.15],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8.11314, 32, -0.11314]},
+			"faces": {
+				"north": {"uv": [0, 14.25, 16, 15.75], "texture": "#4"}
+			}
+		}
+	]
+}

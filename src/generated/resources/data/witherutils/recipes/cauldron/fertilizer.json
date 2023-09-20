@@ -1,0 +1,12 @@
+{
+  "type": "witherutils:cauldron",
+  "experience": 3,
+  "ingredient": {
+    "item": "minecraft:bone_block"
+  },
+  "result": {
+    "amount": 1000,
+    "fluid": "witherutils:fertilizer"
+  },
+  "timer": 640
+}

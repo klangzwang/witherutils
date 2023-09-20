@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "witherutils:iron_gear"
+    },
+    "P": {
+      "item": "witherutils:iron_plate"
+    }
+  },
+  "pattern": [
+    "P P",
+    " I ",
+    "P P"
+  ],
+  "result": {
+    "item": "witherutils:fan"
+  },
+  "show_notification": true
+}

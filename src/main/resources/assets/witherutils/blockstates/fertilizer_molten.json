@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "witherutils:block/fluid/fertilizer_molten" }
+    }
+}

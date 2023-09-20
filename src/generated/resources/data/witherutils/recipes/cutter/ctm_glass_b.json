@@ -1,0 +1,7 @@
+{
+  "type": "witherutils:cutter",
+  "ingredient": {
+    "item": "minecraft:yellow_stained_glass"
+  },
+  "result": "witherutils:ctm_glass_b"
+}

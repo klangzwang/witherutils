@@ -1,0 +1,17 @@
+// 1.20.1	2023-08-19T20:33:59.9662303	Wither Utils Data (witherutils)
+e02055bd79bed5d7f78ad1ce8e378a9808e623a3 data/witherutils/recipes/alloyfurnace/soulished_ingot.json
+dbd84cae345d456834c94e700b31454f02a24c19 data/witherutils/recipes/alloyfurnace/withersteel_ingot.json
+cdad0f27a3175c836805d5918a962d83e7610a33 data/witherutils/recipes/anvil/bone_meal.json
+7e31687aa5386b41ba9aca42b656a2af19c9442a data/witherutils/recipes/anvil/iron_plate.json
+5ab1983759e65a4d00799027ca3712ec7b92697d data/witherutils/recipes/anvil/iron_rod.json
+fbce50879e3dc4ebf304543bab39a70cfb87aaf9 data/witherutils/recipes/anvil/withersteel_plate.json
+ad315618f612067eb96dcb254740b026fcf6e4f1 data/witherutils/recipes/cauldron/fertilizer.json
+baa971f0dba439c11012f7068998fb8cc022822c data/witherutils/recipes/cutter/bricks_dark.json
+f0c0e9482d115356fdf4fee090a7179e82e89044 data/witherutils/recipes/cutter/ctm_concrete_a.json
+b70767c5773f36255a636d2020eb7f4302e8ee84 data/witherutils/recipes/cutter/ctm_concrete_b.json
+a2e31428036c95160458fbff104e8cca05c93659 data/witherutils/recipes/cutter/ctm_concrete_c.json
+496cc9bac7e07bd817e8a5b49f638129a463b018 data/witherutils/recipes/cutter/ctm_glass_a.json
+35adcecb5239cffa9dd74c4bd84fffed6ce8e402 data/witherutils/recipes/cutter/ctm_glass_b.json
+4a715944910470bcbb8d30e8b07fe81c02b79c8e data/witherutils/recipes/cutter/ctm_glass_c.json
+06eb2cc6ccbed97b1fdf0b72186d0ff641f2385b data/witherutils/recipes/cutter/ctm_metal_a.json
+1b8cf4e1567dc8bda523638064fcdf6766a97d01 data/witherutils/recipes/cutter/ctm_stone_a.json

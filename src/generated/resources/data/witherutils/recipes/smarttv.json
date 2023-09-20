@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "witherutils:soulbank_adv"
+    },
+    "C": {
+      "item": "witherutils:case_big"
+    },
+    "P": {
+      "item": "minecraft:glass_pane"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "PPP",
+    "BCB"
+  ],
+  "result": {
+    "item": "witherutils:smarttv"
+  },
+  "show_notification": true
+}

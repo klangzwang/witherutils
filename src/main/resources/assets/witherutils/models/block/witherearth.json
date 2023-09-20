@@ -1,0 +1,23 @@
+{
+	"parent": "minecraft:block/cube",
+	"textures": {
+		"1": "witherutils:block/witherearthside",
+		"2": "block/dirt",
+		"particle": "witherutils:block/witherearth",
+		"down": "witherutils:block/witherearth"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#down"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#2"}
+			}
+		}
+	]
+}

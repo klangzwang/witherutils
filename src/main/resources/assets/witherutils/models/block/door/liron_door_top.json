@@ -1,0 +1,8 @@
+{
+    "parent": "witherutils:block/door_top",
+    "textures": {
+        "bottom": "witherutils:block/door/liron_door_lower",
+		"particle": "witherutils:block/door/liron_door_lower",
+        "top": "witherutils:block/door/liron_door_upper"
+    }
+}

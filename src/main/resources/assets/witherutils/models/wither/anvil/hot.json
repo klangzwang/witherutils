@@ -1,0 +1,19 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"5": "witherutils:block/anvilhot"
+	},
+	"elements": [
+		{
+			"name": "anvil4",
+			"from": [3, 0, 16.01],
+			"to": [13, 16, 16.01],
+			"rotation": {"angle": 0, "axis": "x", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [3, 0, 13, 16], "texture": "#5"},
+				"south": {"uv": [3, 0, 13, 16], "texture": "#5"}
+			}
+		}
+	]
+}

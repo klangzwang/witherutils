@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "witherutils:case_big"
+    },
+    "P": {
+      "item": "witherutils:iron_plate"
+    },
+    "X": {
+      "item": "minecraft:piston"
+    }
+  },
+  "pattern": [
+    "PXP",
+    "XCX",
+    "PXP"
+  ],
+  "result": {
+    "item": "witherutils:placer"
+  },
+  "show_notification": true
+}

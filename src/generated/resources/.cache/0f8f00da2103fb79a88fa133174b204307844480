@@ -1,0 +1,10 @@
+// 1.20.1	2023-08-11T06:15:41.3511047	WitherUtils ItemTags
+3c14928ee4a5428a0856e205485230539f706d8f data/forge/tags/items/fishing_rods.json
+43e9c4b1c7b46f67d39028d49e1caffea2b5b03f data/forge/tags/items/gears.json
+d7700988fefdb98cb677359d89f50506f28d41b6 data/forge/tags/items/ingots.json
+e64d8aea81b4099120e6e0465eb6dd83c0c04ef0 data/forge/tags/items/nuggets.json
+3c4c644603d76ececb1f7b35f4215a6709730917 data/forge/tags/items/plates.json
+0ec192928b95f2010904c294ac5a943c3b147063 data/forge/tags/items/rods.json
+9f4ed1ff4c2ab044600844af5de47a221ad72ce9 data/forge/tags/items/tools/wrench.json
+9f4ed1ff4c2ab044600844af5de47a221ad72ce9 data/forge/tags/items/wrenches.json
+e80f13bcc525e5ff041d4fe103f1f7cd8a1fe566 data/witherutils/tags/items/blacklists/collector.json

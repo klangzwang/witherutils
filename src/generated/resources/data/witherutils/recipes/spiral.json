@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "witherutils:case_big"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "D D",
+    " C ",
+    "D D"
+  ],
+  "result": {
+    "item": "witherutils:spiral"
+  },
+  "show_notification": true
+}

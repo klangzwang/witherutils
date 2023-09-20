@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:sugar"
+    },
+    "C": {
+      "item": "minecraft:clock"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "W": {
+      "item": "witherutils:upcase"
+    }
+  },
+  "pattern": [
+    "###",
+    "CWC",
+    "G G"
+  ],
+  "result": {
+    "item": "witherutils:upgrade_speed"
+  },
+  "show_notification": true
+}
