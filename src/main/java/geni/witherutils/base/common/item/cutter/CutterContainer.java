@@ -2,11 +2,14 @@ package geni.witherutils.base.common.item.cutter;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Lists;
 
 import geni.witherutils.base.common.init.WUTMenus;
 import geni.witherutils.base.common.init.WUTRecipes;
-import geni.witherutils.base.common.recipes.CutterRecipe;
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -14,257 +17,306 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 
 public class CutterContainer extends AbstractContainerMenu {
 
-	public static final int PLAYERSIZE = 4 * 9;
-	protected Player playerEntity;
-	protected Inventory playerInventory;
-	protected int startInv = 0;
-	protected int endInv = 17;
-	
-	public static final int INPUT_SLOT = 0;
-	public static final int RESULT_SLOT = 1;
+    public static final int INPUT_SLOT = 0;
+    public static final int RESULT_SLOT = 1;
 
-	private final ContainerLevelAccess access;
-	private final DataSlot selectedRecipeIndex = DataSlot.standalone();
-	private final Level level;
+    private final ContainerLevelAccess access;
+    private final DataSlot selectedRecipeIndex = DataSlot.standalone();
+    private final Level level;
+    
+    private List<RecipeHolder<CutterRecipe>> recipes = Lists.newArrayList();
+    
+    @Nullable
+    private RecipeHolder<CutterRecipe> currentRecipe;
+    
+    private ItemStack input = ItemStack.EMPTY;
 
-	public List<CutterRecipe> recipeList = Lists.newArrayList();
-	public CutterRecipe recipe;
+    long lastSoundTime;
+    final Slot inputSlot;
+    final Slot resultSlot;
+    Runnable slotUpdateListener = () -> {
+    };
+    public final Container container = new SimpleContainer(1) {
+        @Override
+        public void setChanged() {
+            super.setChanged();
+            CutterContainer.this.slotsChanged(this);
+            CutterContainer.this.slotUpdateListener.run();
+        }
+    };
 
-	private ItemStack input = ItemStack.EMPTY;
-
-	long lastSoundTime;
-
-	final Slot inputSlot;
-	final Slot resultSlot;
-
-	Runnable slotUpdateListener = () -> {};
-
-	public final Container container = new SimpleContainer(1)
-	{
-		public void setChanged()
-		{
-			super.setChanged();
-			CutterContainer.this.slotsChanged(this);
-			CutterContainer.this.slotUpdateListener.run();
-		}
-	};
-	final ResultContainer resultContainer = new ResultContainer();
-
-	public CutterContainer(int id, Inventory playerInventory, Player player)
-	{
-		this(id, playerInventory, player, ContainerLevelAccess.NULL);
-	}
-	public CutterContainer(int id, Inventory playerInventory, Player player, final ContainerLevelAccess access)
-	{
-		super(WUTMenus.CUTTER.get(), id);
-
-		this.playerEntity = player;
-		this.playerInventory = playerInventory;
-
-		this.access = access;
-		this.level = playerInventory.player.level();
-
-		this.inputSlot = this.addSlot(new Slot(this.container, 0, 17, 113));
-		this.resultSlot = this.addSlot(new Slot(this.resultContainer, 1, 143, 113)
-		{
-			@Override
-			public boolean mayPlace(ItemStack stack)
-			{
-				return false;
-			}
-			@Override
-			public void onTake(Player player, ItemStack stack)
-			{
-				stack.onCraftedBy(player.level(), player, stack.getCount());
-//				CutterContainer.this.resultContainer.awardUsedRecipes(player, this.container.getItems());
-				ItemStack itemstack = CutterContainer.this.inputSlot.remove(1);
-				if(!itemstack.isEmpty())
-				{
-					CutterContainer.this.setupResultSlot();
-				}
-				access.execute((level, pos) -> {
-					long l = level.getGameTime();
-					if(CutterContainer.this.lastSoundTime != l)
-					{
-						level.playSound((Player) null, pos, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundSource.BLOCKS, 1.0F, 1.0F);
-						CutterContainer.this.lastSoundTime = l;
-					}
-				});
-				super.onTake(player, stack);
-			}
-		});
-
-		layoutPlayerInventorySlots(8, 155);
-		this.addDataSlot(this.selectedRecipeIndex);
-	}
-
-	void setupResultSlot()
-	{
-		if(!this.recipeList.isEmpty() && this.isValidRecipeIndex(this.selectedRecipeIndex.get()))
-		{
-			CutterRecipe cutterrecipe = this.recipeList.get(this.selectedRecipeIndex.get());
-			this.resultContainer.setRecipeUsed(cutterrecipe);
-			this.resultSlot.set(cutterrecipe.assemble(this.container, this.level.registryAccess()));
-		}
-		else
-		{
-			this.resultSlot.set(ItemStack.EMPTY);
-		}
-		this.broadcastChanges();
-	}
-
-	public int getSelectedRecipe()
-	{
-		return this.selectedRecipeIndex.get();
-	}
-	public boolean hasInputItem()
-	{
-		return this.inputSlot.hasItem() && !this.recipeList.isEmpty();
-	}
-	public int getSelectedRecipeIndex()
-	{
-		return this.selectedRecipeIndex.get();
-	}
-
-	@Override
-	public boolean stillValid(Player playerIn)
-	{
-		return true;
-	}
-	@Override
-	public boolean clickMenuButton(Player p_40309_, int p_40310_)
-	{
-		if(this.isValidRecipeIndex(p_40310_))
-		{
-			this.selectedRecipeIndex.set(p_40310_);
-			this.setupResultSlot();
-		}
-		return true;
-	}
-	private boolean isValidRecipeIndex(int p_40335_)
-	{
-		return p_40335_ >= 0 && p_40335_ < this.recipeList.size();
-	}
-
-	@Override
-	public void slotsChanged(Container container)
-	{
-		ItemStack itemstack = this.inputSlot.getItem();
-		if(!itemstack.is(this.input.getItem()))
-		{
-			this.input = itemstack.copy();
-			this.setupRecipeList(container, itemstack);
-		};
-	}
-	private void setupRecipeList(Container p_40304_, ItemStack p_40305_)
-	{
-		this.recipeList.clear();
-		this.selectedRecipeIndex.set(-1);
-		this.resultSlot.set(ItemStack.EMPTY);
-		if(!p_40305_.isEmpty())
-		{
-			this.recipeList = this.level.getRecipeManager().getRecipesFor(WUTRecipes.CUTTER.get(), p_40304_, this.level);
-		}
-	}
-
-	@Override
-	public MenuType<?> getType()
-	{
-		return WUTMenus.CUTTER.get();
-	}
-	public void registerUpdateListener(Runnable p_40324_)
-	{
-		this.slotUpdateListener = p_40324_;
-	}
-	@Override
-	public boolean canTakeItemForPickAll(ItemStack p_40321_, Slot p_40322_)
-	{
-		return p_40322_.container != this.resultContainer && super.canTakeItemForPickAll(p_40321_, p_40322_);
-	}
-	public void findMatchingCutterRecipe(Container container)
-	{
-		if(recipe != null && recipe.matches(container, level))
-			return;
-
-		recipe = null;
-
-		List<CutterRecipe> recipes = level.getRecipeManager().getAllRecipesFor(WUTRecipes.CUTTER.get());
-		for(CutterRecipe rec : recipes)
-		{
-			if(rec.matches(container, level))
-			{
-				recipe = rec;
-				break;
-			}
-		}
-	}
-
-    @Override
-    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player)
+    final ResultContainer resultContainer = new ResultContainer();
+    
+    public CutterContainer(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf extraData)
     {
-//        if(clickTypeIn != ClickType.QUICK_CRAFT && slotId >= 0)
-//        {
-//            int clickedSlot = slotId - this.container.getContainerSize();
-//            if(clickedSlot == 0 && getSlot(1).hasItem())
-//            {
-//        		player.playSound(WUTSounds.CUTTER.get(), 1.0f, 1.0f);
-//            }
-//        }
-        super.clicked(slotId, dragType, clickTypeIn, player);
+        this(pContainerId, pPlayerInventory, new FriendlyByteBuf(Unpooled.buffer()), ContainerLevelAccess.NULL);
     }
 
-	@SuppressWarnings("unused")
-	@Override
-	public void removed(Player player)
-	{
-		super.removed(player);
-		ItemStack inputstack = this.inputSlot.getItem().copy();
-		ItemStack outputstack = this.resultSlot.getItem().copy();
+    public CutterContainer(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf extraData, final ContainerLevelAccess pAccess)
+    {
+        super(WUTMenus.CUTTER.get(), pContainerId);
+        this.access = pAccess;
+        this.level = pPlayerInventory.player.level();
+        
+        this.inputSlot = this.addSlot(new Slot(this.container, 0, 20, 33));
+        this.resultSlot = this.addSlot(new Slot(this.resultContainer, 1, 143, 33)
+        {
+            @Override
+            public boolean mayPlace(ItemStack p_40362_)
+            {
+                return false;
+            }
 
-		if(!inputstack.isEmpty())
-			player.getInventory().add(inputstack);
-		this.access.execute((p_40313_, p_40314_) -> {
-			this.clearContainer(player, container);
-		});
-	}
-	
-	private int addSlotRange(Inventory handler, int index, int x, int y, int amount, int dx) {
-		for (int i = 0; i < amount; i++) {
-			addSlot(new Slot(handler, index, x, y));
-			x += dx;
-			index++;
-		}
-		return index;
-	}
+            @Override
+            public void onTake(Player p_150672_, ItemStack p_150673_)
+            {
+                p_150673_.onCraftedBy(p_150672_.level(), p_150672_, p_150673_.getCount());
+                CutterContainer.this.resultContainer.awardUsedRecipes(p_150672_, this.getRelevantItems());
+                ItemStack itemstack = CutterContainer.this.inputSlot.remove(1);
+                
+                if (!itemstack.isEmpty())
+                {
+                	CutterContainer.this.setupResultSlot();
+                }
 
-	protected void layoutPlayerInventorySlots(int leftCol, int topRow)
-	{
-		topRow += 0;
-		addSlotRange(playerInventory, 0, leftCol, topRow, 9, 18);
-	}
+                pAccess.execute((p_40364_, p_40365_) -> {
+                    long l = p_40364_.getGameTime();
+                    if (CutterContainer.this.lastSoundTime != l) {
+                        p_40364_.playSound(null, p_40365_, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        CutterContainer.this.lastSoundTime = l;
+                    }
+                });
+                super.onTake(p_150672_, p_150673_);
+            }
+
+            private List<ItemStack> getRelevantItems()
+            {
+                return List.of(CutterContainer.this.inputSlot.getItem());
+            }
+        });
+
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                this.addSlot(new Slot(pPlayerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            }
+        }
+
+        for (int k = 0; k < 9; k++)
+        {
+            this.addSlot(new Slot(pPlayerInventory, k, 8 + k * 18, 142));
+        }
+
+        this.addDataSlot(this.selectedRecipeIndex);
+    }
+    
+    public int getSelectedRecipeIndex()
+    {
+        return this.selectedRecipeIndex.get();
+    }
+
+    public List<RecipeHolder<CutterRecipe>> getRecipes()
+    {
+        return this.recipes;
+    }
+
+    public int getNumRecipes()
+    {
+        return this.recipes.size();
+    }
+
+    public boolean hasInputItem()
+    {
+        return this.inputSlot.hasItem() && !this.recipes.isEmpty();
+    }
+
+    @Override
+    public boolean stillValid(Player pPlayer)
+    {
+        return stillValid(this.access, pPlayer, Blocks.STONECUTTER);
+    }
+
+    @Override
+    public boolean clickMenuButton(Player pPlayer, int pId)
+    {
+        if (this.isValidRecipeIndex(pId))
+        {
+            this.selectedRecipeIndex.set(pId);
+            this.setupResultSlot();
+        }
+        return true;
+    }
+
+    private boolean isValidRecipeIndex(int pRecipeIndex)
+    {
+        return pRecipeIndex >= 0 && pRecipeIndex < this.recipes.size();
+    }
+
+    @Override
+    public void slotsChanged(Container pInventory)
+    {
+        ItemStack itemstack = this.inputSlot.getItem();
+        if (!itemstack.is(this.input.getItem()))
+        {
+            this.input = itemstack.copy();
+            this.setupRecipeList(pInventory, itemstack);
+        }
+    }
+
+    private static SingleRecipeInput createRecipeInput(Container pContainer)
+    {
+        return new SingleRecipeInput(pContainer.getItem(0));
+    }
+
+    private void setupRecipeList(Container pContainer, ItemStack pStack)
+    {
+        this.recipes.clear();
+        this.selectedRecipeIndex.set(-1);
+        this.resultSlot.set(ItemStack.EMPTY);
+        if (!pStack.isEmpty())
+        {
+            this.recipes = this.level.getRecipeManager().getRecipesFor(WUTRecipes.CUTTER.type().get(), createRecipeInput(pContainer), this.level);
+        }
+    }
 	
-	public List<CutterRecipe> getRecipes()
+    void setupResultSlot()
+    {
+        if (!this.recipes.isEmpty() && this.isValidRecipeIndex(this.selectedRecipeIndex.get()))
+        {
+            RecipeHolder<CutterRecipe> recipeholder = this.recipes.get(this.selectedRecipeIndex.get());
+            ItemStack itemstack = recipeholder.value().assemble(createRecipeInput(this.container), this.level.registryAccess());
+            if (itemstack.isItemEnabled(this.level.enabledFeatures()))
+            {
+                this.resultContainer.setRecipeUsed(recipeholder);
+                this.resultSlot.set(itemstack);
+            }
+            else
+            {
+                this.resultSlot.set(ItemStack.EMPTY);
+            }
+        }
+        else
+        {
+            this.resultSlot.set(ItemStack.EMPTY);
+        }
+        this.broadcastChanges();
+    }
+
+    @Override
+    public MenuType<?> getType()
+    {
+        return WUTMenus.CUTTER.get();
+    }
+
+    public void registerUpdateListener(Runnable pListener)
+    {
+        this.slotUpdateListener = pListener;
+    }
+
+    @Override
+    public boolean canTakeItemForPickAll(ItemStack pStack, Slot pSlot)
+    {
+        return pSlot.container != this.resultContainer && super.canTakeItemForPickAll(pStack, pSlot);
+    }
+
+    @Override
+    public ItemStack quickMoveStack(Player pPlayer, int pIndex)
+    {
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(pIndex);
+        if (slot != null && slot.hasItem())
+        {
+            ItemStack itemstack1 = slot.getItem();
+            Item item = itemstack1.getItem();
+            itemstack = itemstack1.copy();
+            if (pIndex == 1)
+            {
+                item.onCraftedBy(itemstack1, pPlayer.level(), pPlayer);
+                if (!this.moveItemStackTo(itemstack1, 2, 38, true))
+                {
+                    return ItemStack.EMPTY;
+                }
+
+                slot.onQuickCraft(itemstack1, itemstack);
+            } else if (pIndex == 0) {
+                if (!this.moveItemStackTo(itemstack1, 2, 38, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (this.level.getRecipeManager().getRecipeFor(WUTRecipes.CUTTER.type().get(), new SingleRecipeInput(itemstack1), this.level).isPresent()) {
+                if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (pIndex >= 2 && pIndex < 29) {
+                if (!this.moveItemStackTo(itemstack1, 29, 38, false)) {
+                    return ItemStack.EMPTY;
+                }
+            } else if (pIndex >= 29 && pIndex < 38 && !this.moveItemStackTo(itemstack1, 2, 29, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (itemstack1.isEmpty()) {
+                slot.setByPlayer(ItemStack.EMPTY);
+            }
+
+            slot.setChanged();
+            if (itemstack1.getCount() == itemstack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(pPlayer, itemstack1);
+            this.broadcastChanges();
+        }
+
+        return itemstack;
+    }
+
+    @Override
+    public void removed(Player pPlayer)
+    {
+        super.removed(pPlayer);
+        this.resultContainer.removeItemNoUpdate(1);
+        this.access.execute((p_40313_, p_40314_) -> this.clearContainer(pPlayer, this.container));
+    }
+    
+	public void findMatchingCutterRecipe(Container container)
 	{
-		return this.recipeList;
-	}
-	public int getNumRecipes()
-	{
-		return this.recipeList.size();
-	}
-	@Override
-	public ItemStack quickMoveStack(Player p_38941_, int p_38942_)
-	{
-		return ItemStack.EMPTY;
+    	ItemStack stackIn = this.slots.get(0).getItem();
+    	if(stackIn.isEmpty())
+    	{
+    		currentRecipe = null;
+    	}
+    	else
+    	{
+    		List<RecipeHolder<CutterRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(WUTRecipes.CUTTER.type().get());
+    		for(RecipeHolder<CutterRecipe> rec : recipes)
+    		{
+    			if(rec != null)
+    			{
+    				ItemStack[] ingredient = rec.value().input().getItems();
+        			for (ItemStack stack : ingredient)
+        			{
+        				if(ItemStack.isSameItem(stack, stackIn))
+        				{
+        					currentRecipe = rec;
+        				}
+    				}
+    			}
+    		}
+    	}
 	}
 }

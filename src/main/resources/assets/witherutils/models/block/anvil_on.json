@@ -2,12 +2,10 @@
 	"credit": "Made with Blockbench",
 	"parent": "block/block",
 	"textures": {
-		"0": "witherutils:block/skull/witherskull_on",
-		"1": "witherutils:block/skull/witherskull_ov",
 		"2": "witherutils:block/witheriron_block",
 		"body": "block/anvil",
 		"top": "witherutils:block/anviltop",
-		"particle": "witherutils:block/skull/witherskull_on"
+		"particle": "witherutils:block/anviltop"
 	},
 	"elements": [
 		{
@@ -244,79 +242,6 @@
 				"up": {"uv": [2, 2, 14, 14], "texture": "#body"},
 				"down": {"uv": [2, 2, 14, 14], "texture": "#body", "cullface": "down"}
 			}
-		},
-		{
-			"from": [4, 7, -2],
-			"to": [12, 15, 6],
-			"faces": {
-				"north": {"uv": [8, 8, 16, 16], "texture": "#0"},
-				"east": {"uv": [0, 8, 8, 16], "texture": "#0"},
-				"south": {"uv": [0, 0, 8, 8], "texture": "#0"},
-				"west": {"uv": [8, 8, 0, 16], "texture": "#0"},
-				"up": {"uv": [8, 0, 16, 8], "texture": "#0"}
-			}
-		},
-		{
-			"from": [4.5, 6, -2],
-			"to": [11.5, 13, 5],
-			"rotation": {"angle": -22.5, "axis": "x", "origin": [0, 8, 5]},
-			"faces": {
-				"north": {"uv": [8, 8, 16, 16], "texture": "#1"},
-				"east": {"uv": [0, 8, 8, 16], "texture": "#1"},
-				"south": {"uv": [0, 0, 8, 8], "texture": "#1"},
-				"west": {"uv": [8, 8, 0, 16], "texture": "#1"},
-				"down": {"uv": [8, 0, 16, 8], "texture": "#1"}
-			}
-		},
-		{
-			"name": "cube inverted",
-			"from": [11.5, 13, 5],
-			"to": [4.5, 6, -2],
-			"rotation": {"angle": -22.5, "axis": "x", "origin": [0, 8, 5]},
-			"faces": {
-				"north": {"uv": [0, 8, 8, 0], "texture": "#1"},
-				"east": {"uv": [8, 16, 0, 8], "texture": "#1"},
-				"south": {"uv": [8, 16, 16, 8], "texture": "#1"},
-				"west": {"uv": [0, 16, 8, 8], "texture": "#1"},
-				"up": {"uv": [16, 0, 8, 8], "texture": "#1"}
-			}
-		},
-		{
-			"from": [4, 7, 10],
-			"to": [12, 15, 18],
-			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 16]},
-			"faces": {
-				"north": {"uv": [8, 0, 0, 8], "texture": "#0"},
-				"east": {"uv": [8, 8, 0, 16], "texture": "#0"},
-				"south": {"uv": [16, 8, 8, 16], "texture": "#0"},
-				"west": {"uv": [0, 8, 8, 16], "texture": "#0"},
-				"up": {"uv": [8, 8, 16, 0], "texture": "#0"}
-			}
-		},
-		{
-			"from": [4.5, 6, 11],
-			"to": [11.5, 13, 18],
-			"rotation": {"angle": 22.5, "axis": "x", "origin": [0, 8, 11]},
-			"faces": {
-				"north": {"uv": [8, 0, 0, 8], "texture": "#1"},
-				"east": {"uv": [8, 8, 0, 16], "texture": "#1"},
-				"south": {"uv": [16, 8, 8, 16], "texture": "#1"},
-				"west": {"uv": [0, 8, 8, 16], "texture": "#1"},
-				"down": {"uv": [8, 8, 16, 0], "texture": "#1"}
-			}
-		},
-		{
-			"name": "cube inverted",
-			"from": [11.5, 13, 18],
-			"to": [4.5, 6, 11],
-			"rotation": {"angle": 22.5, "axis": "x", "origin": [0, 8, 11]},
-			"faces": {
-				"north": {"uv": [16, 16, 8, 8], "texture": "#1"},
-				"east": {"uv": [0, 16, 8, 8], "texture": "#1"},
-				"south": {"uv": [8, 8, 0, 0], "texture": "#1"},
-				"west": {"uv": [8, 16, 0, 8], "texture": "#1"},
-				"up": {"uv": [16, 8, 8, 0], "texture": "#1"}
-			}
 		}
 	],
 	"groups": [
@@ -342,15 +267,13 @@
 			"name": "witherskull",
 			"origin": [8, 8, 8],
 			"color": 0,
-			"nbt": "{}",
-			"children": [18, 19, 20]
+			"children": []
 		},
 		{
 			"name": "witherskull",
 			"origin": [8, 8, 8],
 			"color": 0,
-			"nbt": "{}",
-			"children": [21, 22, 23]
+			"children": []
 		}
 	]
 }

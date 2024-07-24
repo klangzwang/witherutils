@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-
 import geni.witherutils.base.common.base.WitherItem;
 import geni.witherutils.base.common.init.WUTSounds;
 import net.minecraft.core.BlockPos;
@@ -16,17 +13,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -64,20 +58,20 @@ public class HammerItem extends WitherItem {
 		return false;
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot)
-	{
-		if (equipmentSlot == EquipmentSlot.MAINHAND)
-		{
-			ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-			builder.putAll(super.getDefaultAttributeModifiers(equipmentSlot));
-			builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Item modifier", 1d, AttributeModifier.Operation.ADDITION));
-			builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Item modifier", -2.4, AttributeModifier.Operation.ADDITION));
-			return builder.build();
-		}
-		return super.getDefaultAttributeModifiers(equipmentSlot);
-	}
+//	@SuppressWarnings("deprecation")
+//	@Override
+//	public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot)
+//	{
+//		if (equipmentSlot == EquipmentSlot.MAINHAND)
+//		{
+//			ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
+//			builder.putAll(super.getDefaultAttributeModifiers(equipmentSlot));
+//			builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Item modifier", 1d, AttributeModifier.Operation.ADDITION));
+//			builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Item modifier", -2.4, AttributeModifier.Operation.ADDITION));
+//			return builder.build();
+//		}
+//		return super.getDefaultAttributeModifiers(equipmentSlot);
+//	}
 
 	@Override
 	public float getDestroySpeed(ItemStack stack, BlockState state)
@@ -108,14 +102,14 @@ public class HammerItem extends WitherItem {
 
 	public Recipe<?> findMatchingRecipe(Level world, ItemStack dropMe)
 	{
-		Collection<Recipe<?>> list = world.getServer().getRecipeManager().getRecipes();
-		for(Recipe<?> recipe : list)
+		Collection<RecipeHolder<?>> list = world.getServer().getRecipeManager().getRecipes();
+		for(RecipeHolder<?> recipe : list)
 		{
-			if(recipe.getType() == RecipeType.CRAFTING)
+			if(recipe.value().getType() == RecipeType.CRAFTING)
 			{
-				if(recipeMatches(world, dropMe, recipe))
+				if(recipeMatches(world, dropMe, recipe.value()))
 				{
-					return recipe;
+					return recipe.value();
 				}
 			}
 		}
@@ -148,7 +142,7 @@ public class HammerItem extends WitherItem {
 	        ItemEntity entityitem = new ItemEntity(level, pos.getX() + d0, pos.getY() + d1, pos.getZ() + d2, itemstack);
 	        entityitem.setDefaultPickUpDelay();
 	        entityitem.hurt(level.damageSources().inFire(), -100);
-	        entityitem.setSecondsOnFire(10);
+	        entityitem.setRemainingFireTicks(10);
 	        level.destroyBlock(pos, false);
 	        level.addFreshEntity(entityitem);
 	        player.getCooldowns().addCooldown(this, 12);

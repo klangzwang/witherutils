@@ -15,28 +15,21 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import geni.witherutils.core.common.math.Vec3D;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -47,17 +40,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 public class Utils {
 
@@ -65,8 +52,8 @@ public class Utils {
 
     }
     
-    private static final TagKey<Item> WRENCH_TAG_0 = TagKey.create(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge:tools/wrench"));
-    private static final TagKey<Item> WRENCH_TAG_1 = TagKey.create(ForgeRegistries.Keys.ITEMS, new ResourceLocation("forge:wrenches"));
+    private static final TagKey<Item> WRENCH_TAG_0 = TagKey.create(Registries.ITEM, ResourceLocation.withDefaultNamespace("forge:tools/wrench"));
+    private static final TagKey<Item> WRENCH_TAG_1 = TagKey.create(Registries.ITEM, ResourceLocation.withDefaultNamespace("forge:wrenches"));
     
     @SuppressWarnings("deprecation")
 	public static boolean isWrench(Item item)
@@ -89,8 +76,8 @@ public class Utils {
         return !world.isClientSide;
     }
 
-    public static boolean isFakePlayer(Entity entity) {
-
+    public static boolean isFakePlayer(Entity entity)
+    {
         return entity instanceof FakePlayer;
     }
 
@@ -122,11 +109,11 @@ public class Utils {
         return gson.toJson(json);
     }
 
-    public static void loadConfig(ForgeConfigSpec spec, Path path) {
+    public static void loadConfig(ModConfigSpec spec, Path path) {
 
         final CommentedFileConfig configData = CommentedFileConfig.builder(path).sync().autosave().writingMode(WritingMode.REPLACE).build();
         configData.load();
-        spec.setConfig(configData);
+        spec.correct(configData);
     }
 
     public static boolean spawnLightningBolt(Level world, BlockPos pos) {
@@ -184,29 +171,29 @@ public class Utils {
         return GLFW.glfwGetKeyName(-1, code);
     }
 
-    public static void openEntityScreen(ServerPlayer player, MenuProvider containerSupplier, Entity entity) {
+//    public static void openEntityScreen(ServerPlayer player, MenuProvider containerSupplier, Entity entity) {
+//
+//        NetworkHooks.openScreen(player, containerSupplier, buf -> buf.writeVarInt(entity.getId()));
+//    }
 
-        NetworkHooks.openScreen(player, containerSupplier, buf -> buf.writeVarInt(entity.getId()));
-    }
-
-    @SuppressWarnings({ "resource", "unchecked" })
-    public static <E extends Entity> E getEntityFromBuf(FriendlyByteBuf buf, Class<E> type) {
-
-        if (buf == null) {
-            throw new IllegalArgumentException("Null packet buffer.");
-        }
-        return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
-            if (Minecraft.getInstance().level == null) {
-                throw new IllegalStateException("Client world is null.");
-            }
-            int entityId = buf.readVarInt();
-            Entity e = Minecraft.getInstance().level.getEntity(entityId);
-            if (type.isInstance(e)) {
-                return (E) e;
-            }
-            throw new IllegalStateException("Client could not locate entity (id: " + entityId + ")  for entity container or the entity was of an invalid type. This is likely caused by a mod breaking client side entity lookup.");
-        });
-    }
+//    @SuppressWarnings({ "resource", "unchecked" })
+//    public static <E extends Entity> E getEntityFromBuf(FriendlyByteBuf buf, Class<E> type) {
+//
+//        if (buf == null) {
+//            throw new IllegalArgumentException("Null packet buffer.");
+//        }
+//        return DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> {
+//            if (Minecraft.getInstance().level == null) {
+//                throw new IllegalStateException("Client world is null.");
+//            }
+//            int entityId = buf.readVarInt();
+//            Entity e = Minecraft.getInstance().level.getEntity(entityId);
+//            if (type.isInstance(e)) {
+//                return (E) e;
+//            }
+//            throw new IllegalStateException("Client could not locate entity (id: " + entityId + ")  for entity container or the entity was of an invalid type. This is likely caused by a mod breaking client side entity lookup.");
+//        });
+//    }
 
     public static final int TIME_CONSTANT = 40;
     public static final int TIME_CONSTANT_HALF = TIME_CONSTANT / 2;
@@ -308,14 +295,14 @@ public class Utils {
         return false;
     }
 
-    public static boolean isPotionApplicableNoEvent(LivingEntity entity, MobEffectInstance potioneffectIn) {
-
-        if (entity.getMobType() == MobType.UNDEAD) {
-            MobEffect effect = potioneffectIn.getEffect();
-            return effect != MobEffects.REGENERATION && effect != MobEffects.POISON;
-        }
-        return true;
-    }
+//    public static boolean isPotionApplicableNoEvent(LivingEntity entity, MobEffectInstance potioneffectIn) {
+//
+//        if (entity.getMobType() == MobType.UNDEAD) {
+//            MobEffect effect = potioneffectIn.getEffect();
+//            return effect != MobEffects.REGENERATION && effect != MobEffects.POISON;
+//        }
+//        return true;
+//    }
 
     public static boolean dropItemStackIntoWorld(ItemStack stack, Level world, Vec3 pos) {
 
@@ -372,77 +359,77 @@ public class Utils {
 
         return true;
     }
-    public static ResourceLocation getRegistryName(Block block)
-    {
-        return ForgeRegistries.BLOCKS.getKey(block);
-    }
-    public static ResourceLocation getRegistryName(Item item)
-    {
-        return ForgeRegistries.ITEMS.getKey(item);
-    }
-    public static ResourceLocation getRegistryName(Fluid fluid)
-    {
-        return ForgeRegistries.FLUIDS.getKey(fluid);
-    }
-    @SuppressWarnings("rawtypes")
-    public static ResourceLocation getRegistryName(EntityType entity)
-    {
-        return ForgeRegistries.ENTITY_TYPES.getKey(entity);
-    }
-    public static ResourceLocation getRegistryName(MobEffect effect)
-    {
-        return ForgeRegistries.MOB_EFFECTS.getKey(effect);
-    }
-    public static String getModId(Block block)
-    {
-        ResourceLocation loc = getRegistryName(block);
-        return loc == null ? "" : loc.getNamespace();
-    }
-    public static String getName(Block block)
-    {
-        ResourceLocation loc = getRegistryName(block);
-        return loc == null ? "" : loc.getPath();
-    }
-    public static String getModId(Item item)
-    {
-        ResourceLocation loc = getRegistryName(item);
-        return loc == null ? "" : loc.getNamespace();
-    }
-    public static String getModId(ItemStack stack)
-    {
-        ResourceLocation loc = getRegistryName(stack.getItem());
-        return loc == null ? "" : loc.getNamespace();
-    }
-    public static String getName(Item item)
-    {
-        ResourceLocation loc = getRegistryName(item);
-        return loc == null ? "" : loc.getPath();
-    }
-    public static String getName(ItemStack stack)
-    {
-        ResourceLocation loc = getRegistryName(stack.getItem());
-        return loc == null ? "" : loc.getPath();
-    }
-    public static String getModId(Fluid fluid)
-    {
-        ResourceLocation loc = getRegistryName(fluid);
-        return loc == null ? "" : loc.getNamespace();
-    }
-    public static String getModId(FluidStack stack)
-    {
-        ResourceLocation loc = getRegistryName(stack.getFluid());
-        return loc == null ? "" : loc.getNamespace();
-    }
-    public static String getName(Fluid fluid)
-    {
-        ResourceLocation loc = getRegistryName(fluid);
-        return loc == null ? "" : loc.getPath();
-    }
-    public static String getName(FluidStack stack)
-    {
-        ResourceLocation loc = getRegistryName(stack.getFluid());
-        return loc == null ? "" : loc.getPath();
-    }
+//    public static ResourceLocation getRegistryName(Block block)
+//    {
+//        return ForgeRegistries.BLOCKS.getKey(block);
+//    }
+//    public static ResourceLocation getRegistryName(Item item)
+//    {
+//        return ForgeRegistries.ITEMS.getKey(item);
+//    }
+//    public static ResourceLocation getRegistryName(Fluid fluid)
+//    {
+//        return ForgeRegistries.FLUIDS.getKey(fluid);
+//    }
+//    @SuppressWarnings("rawtypes")
+//    public static ResourceLocation getRegistryName(EntityType entity)
+//    {
+//        return ForgeRegistries.ENTITY_TYPES.getKey(entity);
+//    }
+//    public static ResourceLocation getRegistryName(MobEffect effect)
+//    {
+//        return ForgeRegistries.MOB_EFFECTS.getKey(effect);
+//    }
+//    public static String getModId(Block block)
+//    {
+//        ResourceLocation loc = getRegistryName(block);
+//        return loc == null ? "" : loc.getNamespace();
+//    }
+//    public static String getName(Block block)
+//    {
+//        ResourceLocation loc = getRegistryName(block);
+//        return loc == null ? "" : loc.getPath();
+//    }
+//    public static String getModId(Item item)
+//    {
+//        ResourceLocation loc = getRegistryName(item);
+//        return loc == null ? "" : loc.getNamespace();
+//    }
+//    public static String getModId(ItemStack stack)
+//    {
+//        ResourceLocation loc = getRegistryName(stack.getItem());
+//        return loc == null ? "" : loc.getNamespace();
+//    }
+//    public static String getName(Item item)
+//    {
+//        ResourceLocation loc = getRegistryName(item);
+//        return loc == null ? "" : loc.getPath();
+//    }
+//    public static String getName(ItemStack stack)
+//    {
+//        ResourceLocation loc = getRegistryName(stack.getItem());
+//        return loc == null ? "" : loc.getPath();
+//    }
+//    public static String getModId(Fluid fluid)
+//    {
+//        ResourceLocation loc = getRegistryName(fluid);
+//        return loc == null ? "" : loc.getNamespace();
+//    }
+//    public static String getModId(FluidStack stack)
+//    {
+//        ResourceLocation loc = getRegistryName(stack.getFluid());
+//        return loc == null ? "" : loc.getNamespace();
+//    }
+//    public static String getName(Fluid fluid)
+//    {
+//        ResourceLocation loc = getRegistryName(fluid);
+//        return loc == null ? "" : loc.getPath();
+//    }
+//    public static String getName(FluidStack stack)
+//    {
+//        ResourceLocation loc = getRegistryName(stack.getFluid());
+//        return loc == null ? "" : loc.getPath();
+//    }
     /**
      * Calculates the exact distance between two points in 3D space
      *
@@ -540,7 +527,6 @@ public class Utils {
 		else
 		{
 			res.y += player.getEyeHeight();
-			// TODO watch and remember for freak out messages
 			if (player instanceof AbstractClientPlayer && player.isCrouching())
 			{
 				res.y -= 0.08;

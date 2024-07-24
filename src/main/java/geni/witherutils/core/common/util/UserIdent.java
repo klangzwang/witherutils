@@ -12,7 +12,7 @@ import com.mojang.authlib.GameProfile;
 
 import geni.witherutils.core.common.helper.NullHelper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.UsernameCache;
+import net.neoforged.neoforge.common.UsernameCache;
 
 public class UserIdent {
 

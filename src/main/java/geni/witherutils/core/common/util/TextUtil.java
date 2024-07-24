@@ -14,7 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class TextUtil {
 
@@ -26,7 +26,8 @@ public class TextUtil {
               .withColor(TextColor.fromRgb(color)));
     }
 
-    public static MutableComponent build(Object... components) {
+    @SuppressWarnings("removal")
+	public static MutableComponent build(Object... components) {
 
         MutableComponent result = null;
         Style cachedStyle = Style.EMPTY;
@@ -81,7 +82,8 @@ public class TextUtil {
     public static MutableComponent translate(String key, Object... args) {
         return Component.translatable(key, args);
     }
-    public static MutableComponent smartTranslate(String key, Object... components) {
+    @SuppressWarnings("removal")
+	public static MutableComponent smartTranslate(String key, Object... components) {
         if (components.length == 0) {
             return translate(key);
         }

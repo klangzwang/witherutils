@@ -1,5 +1,7 @@
 package geni.witherutils.base.common.block.anvil;
 
+import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL14;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -10,12 +12,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 
+import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.base.client.model.special.SpecialModels;
 import geni.witherutils.base.common.base.AbstractBlockEntityRenderer;
 import geni.witherutils.core.common.math.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderStateShard.TransparencyStateShard;
@@ -25,7 +29,6 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -41,44 +44,43 @@ public class AnvilRenderer extends AbstractBlockEntityRenderer<AnvilBlockEntity>
     }
 
 	@Override
-    public void render(AnvilBlockEntity tile, float partialTick, PoseStack matrix, MultiBufferSource multibuffer, Minecraft mc, ClientLevel level, LocalPlayer player, int light, int overlayLight)
+    public void render(AnvilBlockEntity tile, float partialTick, PoseStack matrix, MultiBufferSource buffer, Minecraft mc, ClientLevel level, LocalPlayer player, int light, int overlayLight)
     {
     	if (tile.getLevel() == null)
             return;
 
         matrix.pushPose();
+       	renderHotGlow(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
+        matrix.popPose();
+    	
+        matrix.pushPose();
+        renderSkullSolid(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
+        matrix.popPose();
         
-	        matrix.translate(0.5, 0.5, 0.5);
-	        matrix.mulPose(Axis.XP.rotationDegrees(-90));
-	        Direction facing = tile.getCurrentFacing();
-	        if(facing == Direction.EAST || facing == Direction.WEST)
-	            matrix.mulPose(Axis.ZP.rotationDegrees(-90));
-	        matrix.translate(-0.5, -0.5, -0.5);
-
+        matrix.pushPose();
+        renderSkullEmissive(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
         matrix.popPose();
-
-	    matrix.pushPose();
-	    
-	        if(tile.getRecipe() != null)
-	        {
-	            renderSpecialFacingModel(SpecialModels.SKULLEM.getModel(), ItemDisplayContext.NONE, false, matrix, multibuffer,
-	            		-1, light, OverlayTexture.NO_OVERLAY, RenderType.entityTranslucentEmissive(
-	    				new ResourceLocation("witherutils:textures/block/emissive/red.png")), tile.getCurrentFacing());
-	        }
-	        
+        
+        matrix.pushPose();
+        renderRecipeItem(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
         matrix.popPose();
+    }
 
+    public void renderRecipeItem(AnvilBlockEntity tile, float partialTicks, PoseStack matrix, MultiBufferSource buffer, Minecraft mc, ClientLevel level, LocalPlayer player, int light, int overlay)
+    {
         matrix.pushPose();
         
-	        ItemStack stack = AnvilBlockEntity.INPUT.getItemStack(tile.getInventory());
-	
+        ItemStack stack = AnvilBlockEntity.INPUT.getItemStack(tile.getInventory());
+        
+        if(!stack.isEmpty())
+        {
 	    	double x = Vector3.CENTER.x - 0.0F;
 	    	double y = Vector3.CENTER.y - 0.0F;
 	    	double z = Vector3.CENTER.z - 0.0F;
 	    	
 	    	matrix.translate(x, y, z);
 	        matrix.translate(0, 0.5, 0);
-
+	
 	        rotateMatrixForDirection(matrix, tile.getCurrentFacing());
 	        if (stack.getItem() instanceof BlockItem)
 	        {
@@ -91,22 +93,85 @@ public class AnvilRenderer extends AbstractBlockEntityRenderer<AnvilBlockEntity>
 	        }
 	        matrix.scale(0.5f, 0.5f, 0.5f);
 	
-	        if (!stack.isEmpty())
-	        {
-	            ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-	            BakedModel bakedModel = itemRenderer.getModel(stack, mc.level, null, 0);
-	            itemRenderer.render(stack, ItemDisplayContext.FIXED, true, matrix, multibuffer, light, overlayLight, bakedModel);
-	        }
-	        
+            ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+            BakedModel bakedModel = itemRenderer.getModel(stack, mc.level, null, 0);
+            itemRenderer.render(stack, ItemDisplayContext.FIXED, true, matrix, buffer, light, overlay, bakedModel);
+        }
+        
+        matrix.popPose();
+	}
+    
+    @SuppressWarnings("resource")
+	public void renderSkullSolid(AnvilBlockEntity tile, float partialTicks, PoseStack matrix, MultiBufferSource buffer, Minecraft mc, ClientLevel level, LocalPlayer player, int light, int overlay)
+    {
+		float time = Minecraft.getInstance().level.getLevelData().getGameTime() + partialTicks;
+		float offset = (float)Math.sin(time * 0.1f) / 30.f;
+
+		offset = !AnvilBlockEntity.INPUT.getItemStack(tile.getInventory()).isEmpty() ? offset * 360 : 0;
+
+        double x = Vector3.CENTER.x;
+        double y = Vector3.CENTER.y;
+        double z = Vector3.CENTER.z;
+
+    	matrix.translate(x, y, z);
+    	
+    	Direction facing = tile.getCurrentFacing();
+    	if(facing == Direction.EAST || facing == Direction.WEST)
+    	{
+        	matrix.mulPose(Axis.YP.rotationDegrees(90));
+    	}
+
+        matrix.pushPose();
+        
+    	matrix.mulPose(Axis.YP.rotationDegrees(0));
+    	
+        matrix.scale(0.5f, 0.5f, 0.5f);
+    	matrix.translate(-0.5, -0.5, -0.5);
+        
+        matrix.translate(0.0, 0.4, -0.75);
+        renderSpecialModel(tile, SpecialModels.SKULLUP.getModel(), matrix, buffer.getBuffer(RenderType.cutout()));
+        
+        matrix.translate(0.0, -0.1, 1.5);
+        matrix.mulPose(Axis.XP.rotationDegrees(5));
+        matrix.mulPose(Axis.XP.rotationDegrees(offset));
+        renderSpecialModel(tile, SpecialModels.SKULLLW.getModel(), matrix, buffer.getBuffer(RenderType.cutout()));
+        
         matrix.popPose();
 
         matrix.pushPose();
         
-        	renderHotGlow(tile, partialTick, matrix, multibuffer, mc, level, player, light, overlayLight);
-        	
+    	matrix.mulPose(Axis.YP.rotationDegrees(180));
+    	
+        matrix.scale(0.5f, 0.5f, 0.5f);
+    	matrix.translate(-0.5, -0.5, -0.5);
+        
+        matrix.translate(0.0, 0.4, -0.75);
+        renderSpecialModel(tile, SpecialModels.SKULLUP.getModel(), matrix, buffer.getBuffer(RenderType.cutout()));
+        
+        matrix.translate(0.0, -0.1, 1.5);
+        matrix.mulPose(Axis.XP.rotationDegrees(5));
+        matrix.mulPose(Axis.XP.rotationDegrees(offset));
+        renderSpecialModel(tile, SpecialModels.SKULLLW.getModel(), matrix, buffer.getBuffer(RenderType.cutout()));
+        
         matrix.popPose();
-    }
-
+	}
+    
+    public void renderSkullEmissive(AnvilBlockEntity tile, float partialTicks, PoseStack matrix, MultiBufferSource buffer, Minecraft mc, ClientLevel level, LocalPlayer player, int light, int overlay)
+    {
+        matrix.pushPose();
+        if(!AnvilBlockEntity.INPUT.getItemStack(tile.getInventory()).isEmpty())
+        {
+        	matrix.translate(0.5, 0.5, 0.5);
+        	Direction facing = tile.getCurrentFacing();
+        	if(facing == Direction.EAST || facing == Direction.WEST)
+            	matrix.mulPose(Axis.YP.rotationDegrees(90));
+        	matrix.translate(-0.5, -0.5, -0.5);
+        	
+            renderSpecialModel(tile, SpecialModels.SKULLEM.getModel(), matrix, buffer.getBuffer(RenderType.entityTranslucentEmissive(WitherUtilsRegistry.loc("textures/block/emissive/red.png"))));
+        }
+        matrix.popPose();
+	}
+	
     public void renderHotGlow(AnvilBlockEntity tile, float partialTicks, PoseStack matrix, MultiBufferSource buffer, Minecraft mc, ClientLevel level, LocalPlayer player, int light, int overlay)
     {
         matrix.translate(0.5, 0.5, 0.5);
@@ -115,8 +180,6 @@ public class AnvilRenderer extends AbstractBlockEntityRenderer<AnvilBlockEntity>
         if(facing == Direction.EAST || facing == Direction.WEST)
             matrix.mulPose(Axis.ZP.rotationDegrees(-90));
         matrix.translate(-0.5, -0.5, -0.5);
-    	
-        VertexConsumer vertexBuilder = buffer.getBuffer(RenderType.solid());
 
         matrix.pushPose();
         ANVIL_TRANSPARENCY = new TransparencyStateShard("ghost_transparency",
@@ -130,17 +193,38 @@ public class AnvilRenderer extends AbstractBlockEntityRenderer<AnvilBlockEntity>
                     RenderSystem.disableBlend();
                     RenderSystem.defaultBlendFunc();
                 });
-        ANVIL = RenderType.create("pylon_sphere", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, RenderType.CompositeState.builder()
+        ANVIL = RenderType.create("anvil_hot", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, RenderType.CompositeState.builder()
         		.setLightmapState(RenderStateShard.LIGHTMAP)
                 .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                 .setTransparencyState(ANVIL_TRANSPARENCY)
                 .setWriteMaskState(RenderStateShard.COLOR_WRITE)
                 .createCompositeState(false)
         );
-
-        vertexBuilder = buffer.getBuffer(ANVIL);
-        Minecraft.getInstance().getItemRenderer().renderModelLists(SpecialModels.ANVIL_HOT.getModel(), ItemStack.EMPTY, light, OverlayTexture.NO_OVERLAY, matrix, vertexBuilder);
-
+        
+        renderSpecialModel(tile, SpecialModels.ANVIL_HOT.getModel(), matrix, buffer.getBuffer(ANVIL));
         matrix.popPose();
 	}
+    
+    public void renderSpecialModel(AnvilBlockEntity tile, BakedModel BakedModel, PoseStack matrix, VertexConsumer vertexConsumer)
+    {
+        ItemRenderer renderer = Minecraft.getInstance().getItemRenderer();
+        renderer.renderModelLists(BakedModel, ItemStack.EMPTY, LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos().above()), OverlayTexture.NO_OVERLAY, matrix, vertexConsumer);
+    }
+    
+    public Quaternionf getFacing(@Nullable Direction facing)
+    {
+        if(facing != null)
+        {
+            if(facing == Direction.NORTH) {}
+            else if(facing == Direction.EAST)
+            	return Axis.YN.rotationDegrees(90);
+            else if(facing == Direction.WEST)
+            	return Axis.YP.rotationDegrees(90);
+            else if(facing == Direction.UP)
+            	return Axis.XP.rotationDegrees(90);
+            else if(facing == Direction.DOWN)
+            	return Axis.XN.rotationDegrees(90);
+        }
+		return Axis.YN.rotationDegrees(180);
+    }
 }

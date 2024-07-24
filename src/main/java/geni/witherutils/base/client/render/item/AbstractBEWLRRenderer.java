@@ -1,5 +1,12 @@
 package geni.witherutils.base.client.render.item;
 
+import static net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+import static net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
+import static net.minecraft.world.item.ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+import static net.minecraft.world.item.ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
+
+import org.joml.Quaternionf;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -14,6 +21,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -21,13 +29,9 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import static net.minecraft.world.item.ItemDisplayContext.*;
-
-import org.joml.Quaternionf;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.ClientHooks;
 
 @OnlyIn(Dist.CLIENT)
 public abstract class AbstractBEWLRRenderer extends BlockEntityWithoutLevelRenderer {
@@ -42,10 +46,10 @@ public abstract class AbstractBEWLRRenderer extends BlockEntityWithoutLevelRende
     {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        float partialTick = McTimerUtil.renderPartialTickTime;
+        float partialTick = McTimerUtil.getFps(mc);
         RandomSource rand = RandomSource.create();
         
-        ResourceLocation itemRegName = ForgeRegistries.ITEMS.getKey(pStack.getItem());
+        ResourceLocation itemRegName = BuiltInRegistries.ITEM.getKey(pStack.getItem());
         
         if (player != null)
         {
@@ -76,7 +80,7 @@ public abstract class AbstractBEWLRRenderer extends BlockEntityWithoutLevelRende
 	public static void renderSpecialModel(BakedModel model, ItemDisplayContext transformType, boolean leftHanded, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int color, int lightTexture, int overlayTexture, RenderType renderType)
     {
         matrixStack.pushPose();
-        net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(matrixStack, model, transformType, leftHanded);
+        ClientHooks.handleCameraTransforms(matrixStack, model, transformType, leftHanded);
         
         if(!model.isCustomRenderer())
         {

@@ -1,13 +1,18 @@
 package geni.witherutils.base.common.block.deco.door;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
+import geni.witherutils.base.common.init.WUTSounds;
+import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +42,7 @@ public class DoorsBlock extends DoorBlock {
 			AABB[] open_aabbs_bottom, AABB[] closed_aabbs_top, AABB[] closed_aabbs_bottom, SoundEvent open_sound,
 			SoundEvent close_sound)
 	{
-		super(properties, BlockSetType.STONE);
+		super(BlockSetType.STONE, properties);
 		VoxelShape[][][][] shapes = new VoxelShape[Direction.values().length][2][2][2];
 		for (Direction facing : Direction.values())
 		{
@@ -89,6 +94,48 @@ public class DoorsBlock extends DoorBlock {
 		this(properties, getPixeledAABB(13, 0, 0, 16, 16, 16), getPixeledAABB(0, 0, 13, 16, 16, 16), SoundEvents.WOODEN_DOOR_OPEN, SoundEvents.WOODEN_DOOR_CLOSE);
 	}
 
+	@Override
+	public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean moving)
+	{
+		super.onPlace(state, world, pos, oldState, moving);
+		world.scheduleTick(pos, this, 5);
+	}
+
+	@Override
+	public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random)
+	{
+		boolean powered = isPowered(state);
+		
+		if(level.isClientSide)
+			return;
+
+		level.scheduleTick(pos, this, 5);
+		
+		AABB bb = new AABB(pos).inflate(2, 1, 2);
+		List<Player> nearbyPlayers = level.getEntitiesOfClass(Player.class, bb);
+		boolean gettingPowered = nearbyPlayers.size() > 0;
+		
+		if(powered != gettingPowered)
+		{
+			level.setBlock(pos, state.setValue(POWERED, Boolean.valueOf(gettingPowered)).setValue(OPEN, Boolean.valueOf(gettingPowered)), 2);
+			notifyPower(level, pos, state);
+
+			if(gettingPowered != false)
+			SoundUtil.playSoundFromServer(level, pos, WUTSounds.ELECTRODISTANT.get());
+		}
+	}
+	
+	private void notifyPower(Level level, BlockPos pos, BlockState state)
+	{
+		level.updateNeighborsAt(pos, this);
+		level.updateNeighborsAt(pos.relative(state.getValue(FACING).getOpposite()), this);
+	}
+	
+	public static boolean isPowered(BlockState state)
+	{
+		return state.getValue(POWERED);
+	}
+	
 	protected void sound(BlockGetter world, BlockPos pos, boolean open)
 	{
 		if (world instanceof Level)
@@ -122,10 +169,10 @@ public class DoorsBlock extends DoorBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult pHitResult)
 	{
-		setOpen(player, world, state, pos, !state.getValue(OPEN));
-		return InteractionResult.sidedSuccess(world.isClientSide());
+		setOpen(player, level, state, pos, !state.getValue(OPEN));
+		return super.useWithoutItem(state, level, pos, player, pHitResult);
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
-import geni.witherutils.WitherUtils;
+import geni.witherutils.api.WitherUtilsRegistry;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
@@ -21,7 +21,7 @@ import net.minecraft.world.entity.Entity;
 @SuppressWarnings("rawtypes")
 public class SoulOrbProjectileRenderer extends ThrownItemRenderer {
 	
-	private static final ResourceLocation SOULORB = new ResourceLocation(WitherUtils.MODID, "textures/model/entity/soulorb.png");
+	private static final ResourceLocation SOULORB = WitherUtilsRegistry.loc("textures/block/model/entity/soulorb.png");
 	private static final RenderType RENDER_TYPE = RenderType.itemEntityTranslucentCull(SOULORB);
 	
 	public SoulOrbProjectileRenderer(Context p_174414_)
@@ -77,6 +77,6 @@ public class SoulOrbProjectileRenderer extends ThrownItemRenderer {
 	
 	private static void vertex(VertexConsumer vertexconsumer, Matrix4f matrix4f, Matrix3f matrix3f, float x, float y, int r, int g, int b, float u, float v, int lightcolor, int alpha)
 	{
-		vertexconsumer.vertex(matrix4f, x, y, 0.0F).color(r, g, b, alpha).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightcolor).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+		vertexconsumer.addVertex(matrix4f, x, y, 0.0F).setColor(r, g, b, alpha).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(lightcolor).setNormal(0.0F, 1.0F, 0.0F);
 	}
 }

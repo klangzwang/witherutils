@@ -3,14 +3,8 @@ package geni.witherutils.core.common.util;
 import java.util.List;
 import java.util.Random;
 
-import javax.annotation.Nonnull;
-
-import geni.witherutils.base.common.io.item.MachineInventory;
-import geni.witherutils.base.common.io.item.MultiSlotAccess;
-import geni.witherutils.base.common.io.item.SingleSlotAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -18,47 +12,46 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class ItemStackUtil {
 
 	private static final Random RANDOM_GENERATOR = new Random();
 
-    @Nonnull
-    public static ItemStack insertItemMultiSlot(MachineInventory inventory, @Nonnull ItemStack stack, MultiSlotAccess outputs)
-    {
-        if(inventory == null || stack.isEmpty())
-            return stack;
-
-        for (SingleSlotAccess access : outputs.getAccesses())
-        {
-        	ItemStack slot = inventory.getStackInSlot(access.getIndex());
-        	if(ItemHandlerHelper.canItemStacksStackRelaxed(slot, stack))
-        	{
-        		stack = inventory.insertItem(access.getIndex(), stack, false);
-        		if(stack.isEmpty())
-        		{
-        			break;
-        		}
-        	}
-        }
-        if(!stack.isEmpty())
-        {
-        	for (SingleSlotAccess access : outputs.getAccesses())
-            {
-                if(inventory.getStackInSlot(access.getIndex()).isEmpty())
-                {
-                    stack = inventory.insertItem(access.getIndex(), stack, false);
-                    if(stack.isEmpty())
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-        return stack;
-    }
+//    @Nonnull
+//    public static ItemStack insertItemMultiSlot(MachineInventory inventory, @Nonnull ItemStack stack, MultiSlotAccess outputs)
+//    {
+//        if(inventory == null || stack.isEmpty())
+//            return stack;
+//
+//        for (SingleSlotAccess access : outputs.getAccesses())
+//        {
+//        	ItemStack slot = inventory.getStackInSlot(access.getIndex());
+//        	if(ItemHandlerHelper.insertItemStacked(slot, stack, false))
+//        	{
+//        		stack = inventory.insertItem(access.getIndex(), stack, false);
+//        		if(stack.isEmpty())
+//        		{
+//        			break;
+//        		}
+//        	}
+//        }
+//        if(!stack.isEmpty())
+//        {
+//        	for (SingleSlotAccess access : outputs.getAccesses())
+//            {
+//                if(inventory.getStackInSlot(access.getIndex()).isEmpty())
+//                {
+//                    stack = inventory.insertItem(access.getIndex(), stack, false);
+//                    if(stack.isEmpty())
+//                    {
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//        return stack;
+//    }
 
 	public static void dropAll(IItemHandler items, Level world, BlockPos pos)
 	{
@@ -95,9 +88,9 @@ public class ItemStackUtil {
 
 	public static void damageItem(LivingEntity player, ItemStack stack)
 	{
-		stack.hurtAndBreak(1, player, (p) -> {
-			p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
-		});
+//		stack.hurtAndBreak(1, player, (p) -> {
+//			p.broadcastBreakEvent(InteractionHand.MAIN_HAND);
+//		});
 		if(stack.getDamageValue() >= stack.getMaxDamage())
 		{
 			stack.setCount(0);
@@ -178,7 +171,7 @@ public class ItemStackUtil {
 	public static void deleteTag(ItemStack itemstack)
 	{
 		int dmg = itemstack.getDamageValue();
-		itemstack.setTag(null);
+//		itemstack.setTag(null);
 		itemstack.setDamageValue(dmg);
 	}
 

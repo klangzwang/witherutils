@@ -1,7 +1,6 @@
 {
     "parent": "witherutils:block/door_top_rh",
     "textures": {
-        "bottom": "witherutils:block/door/cased_door_lower",
 		"particle": "witherutils:block/door/cased_door_lower",
         "top": "witherutils:block/door/cased_door_upper"
     }

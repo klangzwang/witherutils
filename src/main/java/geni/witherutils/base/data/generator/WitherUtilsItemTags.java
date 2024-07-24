@@ -3,6 +3,7 @@ package geni.witherutils.base.data.generator;
 import java.util.concurrent.CompletableFuture;
 
 import geni.witherutils.WitherUtils;
+import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.base.common.init.WUTItems;
 import geni.witherutils.base.common.init.WUTTags;
 import net.minecraft.core.HolderLookup;
@@ -16,7 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 @SuppressWarnings("unused")
 public class WitherUtilsItemTags extends ItemTagsProvider {
@@ -32,20 +33,20 @@ public class WitherUtilsItemTags extends ItemTagsProvider {
     
     private static TagKey<Item> witherUtilsTag(String name)
     {
-        return ItemTags.create(new ResourceLocation("witherutils", name));
+        return ItemTags.create(WitherUtilsRegistry.loc(name));
     }
     private static TagKey<Item> minecraftTag(String name)
     {
-        return ItemTags.create(new ResourceLocation("minecraft", name));
+        return ItemTags.create(WitherUtilsRegistry.loc(name));
     }
     private static TagKey<Item> forgeTag(String name)
     {
-        return ItemTags.create(new ResourceLocation("forge", name));
+        return ItemTags.create(WitherUtilsRegistry.loc(name));
     }
 
     public WitherUtilsItemTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTags, ExistingFileHelper helper)
     {
-        super(generator, lookupProvider, blockTags, WitherUtils.MODID, helper);
+        super(generator, lookupProvider, blockTags, WitherUtilsRegistry.MODID, helper);
     }
     
     @Override
@@ -66,25 +67,25 @@ public class WitherUtilsItemTags extends ItemTagsProvider {
                 .add(WUTItems.WRENCH.get());
         tag(WRENCH)
                 .add(WUTItems.WRENCH.get());
-        tag(RODS)
-                .add(WUTItems.IRON_ROD.get());
-        tag(GEARS)
-                .add(WUTItems.IRON_GEAR.get())
-                .add(WUTItems.WITHERSTEEL_GEAR.get());
-        tag(INGOTS)
-                .add(WUTItems.WITHERSTEEL_INGOT.get())
-                .add(WUTItems.SOULISHED_INGOT.get());
-        tag(NUGGETS)
-                .add(WUTItems.WITHERSTEEL_NUGGET.get())
-                .add(WUTItems.SOULISHED_NUGGET.get());
-        tag(PLATES)
-                .add(WUTItems.IRON_PLATE.get())
-                .add(WUTItems.WITHERSTEEL_PLATE.get());
+//        tag(RODS)
+//                .add(WUTItems.IRON_ROD.get());
+//        tag(GEARS)
+//                .add(WUTItems.IRON_GEAR.get())
+//                .add(WUTItems.WITHERSTEEL_GEAR.get());
+//        tag(INGOTS)
+//                .add(WUTItems.WITHERSTEEL_INGOT.get())
+//                .add(WUTItems.SOULISHED_INGOT.get());
+//        tag(NUGGETS)
+//                .add(WUTItems.WITHERSTEEL_NUGGET.get())
+//                .add(WUTItems.SOULISHED_NUGGET.get());
+//        tag(PLATES)
+//                .add(WUTItems.IRON_PLATE.get())
+//                .add(WUTItems.WITHERSTEEL_PLATE.get());
         tag(FISHING_RODS)
 		        .add(Items.FISHING_ROD);
         
-        tag(WUTTags.Items.COLLECTOR_BLACKLIST)
-				.add(Items.WITHER_SPAWN_EGG);
+//        tag(WUTTags.Items.COLLECTOR_BLACKLIST)
+//				.add(Items.WITHER_SPAWN_EGG);
     }
 
     @Override

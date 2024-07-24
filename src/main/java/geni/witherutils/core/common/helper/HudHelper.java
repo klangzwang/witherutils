@@ -2,9 +2,8 @@ package geni.witherutils.core.common.helper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public final class HudHelper {
 
@@ -16,20 +15,16 @@ public final class HudHelper {
 
 	public static int getEnergyBarScaled(ItemStack stack)
 	{
-		LazyOptional<IEnergyStorage> cap = stack.getCapability(ForgeCapabilities.ENERGY);
-        if(!cap.isPresent())
-        {
-        	return 0;
-        }
-    	int i = cap.map(e -> e.getEnergyStored()).orElse(0);
-    	int j = cap.map(e -> e.getMaxEnergyStored()).orElse(0);
+		IEnergyStorage cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+    	int i = cap.getEnergyStored();
+    	int j = cap.getMaxEnergyStored();
 		return (int) (j != 0 && i != 0 ? (long) i * 156 / j : 0);
 	}
 
 	public static String getFuelString(ItemStack stack)
 	{
-		LazyOptional<IEnergyStorage> cap = stack.getCapability(ForgeCapabilities.ENERGY);
-        int number = cap.map(e -> e.getEnergyStored()).orElse(0);
+		IEnergyStorage cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        int number = cap.getEnergyStored();
 		if(number >= 1000000000)
 		{
 			return number / 1000000000 + "\u00A77" + "G FE";

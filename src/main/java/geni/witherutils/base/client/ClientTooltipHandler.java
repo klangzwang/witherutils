@@ -14,15 +14,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
-import geni.witherutils.WitherUtils;
-import geni.witherutils.base.common.base.IWitherPoweredItem;
-import geni.witherutils.base.common.block.generator.solar.ISolarPowered;
-import geni.witherutils.base.common.block.generator.solar.SolarPanelBlockItem;
-import geni.witherutils.base.common.block.generator.solar.SolarType;
-import geni.witherutils.base.common.block.totem.handler.AttractionHandlers;
-import geni.witherutils.base.common.config.common.SolarConfig;
-import geni.witherutils.core.common.util.EnergyUtil;
-import geni.witherutils.core.common.util.SoulBankUtil;
+import geni.witherutils.api.WitherUtilsRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -30,125 +22,123 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+//@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class ClientTooltipHandler {
 
     ClientTooltipHandler() {}
     
-    @SubscribeEvent
+//    @SubscribeEvent
     public static void addAdvancedTooltips(ItemTooltipEvent evt)
     {
-        ItemStack stack = evt.getItemStack();
-        addSoulBankTooltips(stack, evt.getToolTip());
-        addTotemTooltips(stack, evt.getToolTip());
-        addEnergyPowerTooltips(stack, evt.getToolTip());
-        addEnergyCreateTooltips(stack, evt.getToolTip());
-        addDurabilityTooltips(stack, evt.getToolTip());
+//        ItemStack stack = evt.getItemStack();
+//        addSoulBankTooltips(stack, evt.getToolTip());
+//        addTotemTooltips(stack, evt.getToolTip());
+//        addEnergyPowerTooltips(stack, evt.getToolTip());
+//        addEnergyCreateTooltips(stack, evt.getToolTip());
+//        addDurabilityTooltips(stack, evt.getToolTip());
     }
 
-    private static void addSoulBankTooltips(ItemStack itemStack, List<Component> components)
-    {
-        SoulBankUtil.getSoulBankData(itemStack).ifPresent(data -> {
-            components.add(Component.translatable(ChatFormatting.GREEN + "BankType: ").append(data.toString()));
-        });
-    }
-    private static void addTotemTooltips(ItemStack stack, List<Component> components)
-    {
-		List<Item> item = AttractionHandlers.instance.getItemRegistry();
-		for (int i = 0; i < item.size(); i++)
-		{
-			if(stack.getItem() == item.get(i))
-				components.add(Component.translatable(ChatFormatting.GRAY + "- TotemBlock Item"));
-			if(stack.getItem() == Items.CHAIN)
-				components.add(Component.translatable(ChatFormatting.GRAY + "Pull Mobs together."));
-			else if(stack.getItem() == Items.HOPPER)
-				components.add(Component.translatable(ChatFormatting.GRAY + "Switch to Cursed Monster."));
-			else if(stack.getItem() == Items.TORCH)
-				components.add(Component.translatable(ChatFormatting.GRAY + "Burns the Monster."));
-		}
-    }
-    private static void addEnergyPowerTooltips(ItemStack stack, List<Component> components)
-    {
-    	if(EnergyUtil.hasEnergyHandler(stack))
-    	{
-        	IEnergyStorage storage = stack.getCapability(ForgeCapabilities.ENERGY, null).orElse(null);
-            if (storage != null)
-            {
-            	if(stack.getItem() instanceof IWitherPoweredItem iEnergyItem)
-            	{
-            		if(iEnergyItem.getPowerLevel(stack) == 0)
-            		{
-                    	components.add(Component.literal(" "));
-            			components.add(Component.translatable("tooltip.witherutils.powerstatus").withStyle(ChatFormatting.GRAY).append(Component.translatable(": ")
-            					.append(Component.translatable("tooltip.witherutils.isnotpowered").withStyle(ChatFormatting.DARK_RED))));
-            		}
-            		else
-            		{
-                    	components.add(Component.literal(" "));
-            			components.add(Component.translatable("tooltip.witherutils.powerstatus").withStyle(ChatFormatting.GRAY).append(Component.translatable(": ")
-            					.append(Component.translatable("tooltip.witherutils.ispowered").withStyle(ChatFormatting.GREEN))));
-            			
-                        String energy = String.format("%,d", EnergyUtil.getEnergyStored(stack)) + "/" +  String.format("%,d", EnergyUtil.getMaxEnergyStored(stack));
-                        components.add(ClientTooltipHandler.styledWithArgs("tooltip.witherutils.energy_amount", energy));
-            		}
-            	}
-            }
-    	}
-    }
-    @SuppressWarnings("incomplete-switch")
-	private static void addEnergyCreateTooltips(ItemStack stack, List<Component> components)
-    {
-    	if(stack.getItem() instanceof ISolarPowered iSolarItem)
-    	{
-        	if(iSolarItem instanceof SolarPanelBlockItem)
-        	{
-        		SolarPanelBlockItem solarBItem = (SolarPanelBlockItem) iSolarItem;
-        		SolarType type = solarBItem.getType();
-        		
-        		int prod = 0;
-        		switch(type)
-        		{
-					case BASIC:
-						prod = SolarConfig.SOLARBASICINPUTRF.get();
-						break;
-					case ADVANCED:
-						prod = SolarConfig.SOLARADVINPUTRF.get();
-						break;
-					case ULTRA:
-						prod = SolarConfig.SOLARULTRAINPUTRF.get();
-						break;
-        		}
-
-            	components.add(Component.literal(""));
-                components.add(Component.literal(ChatFormatting.GRAY + "Can produce " + ChatFormatting.WHITE + "" + prod + ChatFormatting.GRAY + " RF/t from" + ChatFormatting.YELLOW + " Sunlight"));
-        	}
-    	}
-    }
-    private static void addDurabilityTooltips(ItemStack stack, List<Component> components)
-    {
-        int durability = stack.getMaxDamage();
-
-        if(durability != 0)
-        {
-        	components.add(Component.literal(" "));
-        	components.add(Component.translatable("tooltip.witherutils.durability").withStyle(ChatFormatting.GRAY)
-                    .append(Component.translatable(": ")
-                    .append((stack.getMaxDamage() - stack.getDamageValue()) + "/" + stack.getMaxDamage()).withStyle(ChatFormatting.DARK_GRAY)));
-        }
-    }
+//    private static void addSoulBankTooltips(ItemStack itemStack, List<Component> components)
+//    {
+//        SoulBankUtil.getSoulBankData(itemStack).ifPresent(data -> {
+//            components.add(Component.translatable(ChatFormatting.GREEN + "BankType: ").append(data.toString()));
+//        });
+//    }
+    
+//    private static void addTotemTooltips(ItemStack stack, List<Component> components)
+//    {
+//		List<Item> item = AttractionHandlers.instance.getItemRegistry();
+//		for (int i = 0; i < item.size(); i++)
+//		{
+//			if(stack.getItem() == item.get(i))
+//				components.add(Component.translatable(ChatFormatting.GRAY + "- TotemBlock Item"));
+//		}
+//		if(stack.getItem() == Items.CHAIN)
+//			components.add(Component.translatable(ChatFormatting.GRAY + "Pull Mobs together."));
+//		else if(stack.getItem() == Items.HOPPER)
+//			components.add(Component.translatable(ChatFormatting.GRAY + "Switch to Cursed Monster."));
+//		else if(stack.getItem() == Items.TORCH)
+//			components.add(Component.translatable(ChatFormatting.GRAY + "Burns the Monster."));
+//    }
+    
+//    private static void addEnergyPowerTooltips(ItemStack stack, List<Component> components)
+//    {
+//    	if(EnergyUtil.hasEnergyHandler(stack))
+//    	{
+//        	IEnergyStorage storage = stack.getCapability(ForgeCapabilities.ENERGY, null).orElse(null);
+//            if (storage != null)
+//            {
+//            	if(stack.getItem() instanceof IWitherPoweredItem iEnergyItem)
+//            	{
+//            		if(iEnergyItem.getPowerLevel(stack) == 0)
+//            		{
+//                    	components.add(Component.literal(" "));
+//            			components.add(Component.translatable("tooltip.witherutils.powerstatus").withStyle(ChatFormatting.GRAY).append(Component.translatable(": ")
+//            					.append(Component.translatable("tooltip.witherutils.isnotpowered").withStyle(ChatFormatting.DARK_RED))));
+//            		}
+//            		else
+//            		{
+//                    	components.add(Component.literal(" "));
+//            			components.add(Component.translatable("tooltip.witherutils.powerstatus").withStyle(ChatFormatting.GRAY).append(Component.translatable(": ")
+//            					.append(Component.translatable("tooltip.witherutils.ispowered").withStyle(ChatFormatting.GREEN))));
+//            			
+//                        String energy = String.format("%,d", EnergyUtil.getEnergyStored(stack)) + "/" +  String.format("%,d", EnergyUtil.getMaxEnergyStored(stack));
+//                        components.add(ClientTooltipHandler.styledWithArgs("tooltip.witherutils.energy_amount", energy));
+//            		}
+//            	}
+//            }
+//    	}
+//    }
+    
+//    @SuppressWarnings("incomplete-switch")
+//	private static void addEnergyCreateTooltips(ItemStack stack, List<Component> components)
+//    {
+//    	if(stack.getItem() instanceof ISolarPowered iSolarItem)
+//    	{
+//        	if(iSolarItem instanceof SolarPanelBlockItem)
+//        	{
+//        		SolarPanelBlockItem solarBItem = (SolarPanelBlockItem) iSolarItem;
+//        		SolarType type = solarBItem.getType();
+//        		
+//        		int prod = 0;
+//        		switch(type)
+//        		{
+//					case BASIC:
+//						prod = SolarConfig.SOLARBASICINPUTRF.get();
+//						break;
+//					case ADVANCED:
+//						prod = SolarConfig.SOLARADVINPUTRF.get();
+//						break;
+//					case ULTRA:
+//						prod = SolarConfig.SOLARULTRAINPUTRF.get();
+//						break;
+//        		}
+//
+//            	components.add(Component.literal(""));
+//                components.add(Component.literal(ChatFormatting.GRAY + "Can produce " + ChatFormatting.WHITE + "" + prod + ChatFormatting.GRAY + " RF/t from" + ChatFormatting.YELLOW + " Sunlight"));
+//        	}
+//    	}
+//    }
+    
+//    private static void addDurabilityTooltips(ItemStack stack, List<Component> components)
+//    {
+//        int durability = stack.getMaxDamage();
+//
+//        if(durability != 0)
+//        {
+//        	components.add(Component.literal(" "));
+//        	components.add(Component.translatable("tooltip.witherutils.durability").withStyle(ChatFormatting.GRAY)
+//                    .append(Component.translatable(": ")
+//                    .append((stack.getMaxDamage() - stack.getDamageValue()) + "/" + stack.getMaxDamage()).withStyle(ChatFormatting.DARK_GRAY)));
+//        }
+//    }
 
     private final static Minecraft mc = Minecraft.getInstance();
 
@@ -195,7 +185,7 @@ public class ClientTooltipHandler {
             else if (addAdvancedTooltipHints)
             {
                 if (tip_available)
-                    tip_text += localize("tooltip." + WitherUtils.MODID + ".hint.extended");
+                    tip_text += localize("tooltip." + WitherUtilsRegistry.MODID + ".hint.extended");
             }
             
             if (tip_text.isEmpty())
@@ -217,7 +207,7 @@ public class ClientTooltipHandler {
         }
 
         @OnlyIn(Dist.CLIENT)
-        public static boolean addInformation(ItemStack stack, @Nullable BlockGetter world, List<Component> tooltip, TooltipFlag flag, boolean addAdvancedTooltipHints)
+        public static boolean addInformation(ItemStack stack, @Nullable TooltipContext pContext, List<Component> tooltip, TooltipFlag flag, boolean addAdvancedTooltipHints)
         {
             return addInformation(stack, stack.getDescriptionId(), stack.getDescriptionId(), tooltip, flag, addAdvancedTooltipHints);
         }
@@ -240,17 +230,17 @@ public class ClientTooltipHandler {
             player.sendSystemMessage(Component.translatable(s));
     }
 
-    public static @Nullable Component unserializeTextComponent(String serialized) {
-        return Component.Serializer.fromJson(serialized);
-    }
+//    public static @Nullable Component unserializeTextComponent(String serialized) {
+//        return Component.Serializer.fromJson(serialized, null);
+//    }
 
-    public static String serializeTextComponent(Component tc) {
-        return (tc == null) ? ("") : (Component.Serializer.toJson(tc));
-    }
+//    public static String serializeTextComponent(Component tc) {
+//        return (tc == null) ? ("") : (Component.Serializer.toJson(tc, null));
+//    }
 
     public static Component localizable(String modtrkey, Object... args) {
         return Component.translatable((modtrkey.startsWith("block.") || (modtrkey.startsWith("item."))) ? (modtrkey)
-                : (WitherUtils.MODID + "." + modtrkey), args);
+                : (WitherUtilsRegistry.MODID + "." + modtrkey), args);
     }
 
     public static Component localizable(String modtrkey) {
@@ -258,7 +248,7 @@ public class ClientTooltipHandler {
     }
 
     public static Component localizable_block_key(String blocksubkey) {
-        return Component.translatable("block." + WitherUtils.MODID + "." + blocksubkey);
+        return Component.translatable("block." + WitherUtilsRegistry.MODID + "." + blocksubkey);
     }
 
     @OnlyIn(Dist.CLIENT)

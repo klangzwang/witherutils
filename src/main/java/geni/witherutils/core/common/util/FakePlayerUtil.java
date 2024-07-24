@@ -9,15 +9,10 @@ import javax.annotation.Nullable;
 import geni.witherutils.core.common.fakeplayer.WUTFakePlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Direction.Axis;
-import net.minecraft.core.Direction.AxisDirection;
-import net.minecraft.core.Vec3i;
-import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket.Action;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Arrow;
@@ -32,98 +27,94 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
-@EventBusSubscriber
 public class FakePlayerUtil {
 
     public static void setupFakePlayerForUse(WUTFakePlayer player, BlockPos pos, Direction direction, ItemStack toHold, boolean sneaking)
     {
-        player.getInventory().items.set(player.getInventory().selected, toHold);
-        float pitch = direction == Direction.UP ? -90 : direction == Direction.DOWN ? 90 : 0;
-        float yaw = direction == Direction.SOUTH ? 0 : direction == Direction.WEST ? 90 : direction == Direction.NORTH ? 180 : -90;
-        Vec3i sideVec = direction.getNormal();
-        Axis a = direction.getAxis();
-        AxisDirection ad = direction.getAxisDirection();
-        double x = a == Axis.X && ad == AxisDirection.NEGATIVE ? -.5 : .5 + sideVec.getX() / 1.9D;
-        double y = 0.5 + sideVec.getY() / 1.9D;
-        double z = a == Axis.Z && ad == AxisDirection.NEGATIVE ? -.5 : .5 + sideVec.getZ() / 1.9D;
-        player.moveTo(pos.getX() + x, pos.getY() + y - player.getEyeHeight(), pos.getZ() + z, yaw, pitch);
-        if (!toHold.isEmpty()) player.getAttributes().addTransientAttributeModifiers(toHold.getAttributeModifiers(EquipmentSlot.MAINHAND));
+//        player.getInventory().items.set(player.getInventory().selected, toHold);
+//        float pitch = direction == Direction.UP ? -90 : direction == Direction.DOWN ? 90 : 0;
+//        float yaw = direction == Direction.SOUTH ? 0 : direction == Direction.WEST ? 90 : direction == Direction.NORTH ? 180 : -90;
+//        Vec3i sideVec = direction.getNormal();
+//        Axis a = direction.getAxis();
+//        AxisDirection ad = direction.getAxisDirection();
+//        double x = a == Axis.X && ad == AxisDirection.NEGATIVE ? -.5 : .5 + sideVec.getX() / 1.9D;
+//        double y = 0.5 + sideVec.getY() / 1.9D;
+//        double z = a == Axis.Z && ad == AxisDirection.NEGATIVE ? -.5 : .5 + sideVec.getZ() / 1.9D;
+//        player.moveTo(pos.getX() + x, pos.getY() + y - player.getEyeHeight(), pos.getZ() + z, yaw, pitch);
+//        if (!toHold.isEmpty()) player.getAttributes().addTransientAttributeModifiers(toHold.getAttributeModifiers(EquipmentSlot.MAINHAND));
         player.setShiftKeyDown(sneaking);
     }
 
     public static void cleanupFakePlayerFromUse(WUTFakePlayer player, ItemStack resultStack, ItemStack oldStack, Consumer<ItemStack> stackCallback)
     {
-        if (!oldStack.isEmpty()) player.getAttributes().removeAttributeModifiers(oldStack.getAttributeModifiers(EquipmentSlot.MAINHAND));
-        player.getInventory().items.set(player.getInventory().selected, ItemStack.EMPTY);
-        stackCallback.accept(resultStack);
-        if (!player.getInventory().isEmpty()) player.getInventory().dropAll();
+//        if (!oldStack.isEmpty()) player.getAttributes().removeAttributeModifiers(oldStack.getAttributeModifiers(EquipmentSlot.MAINHAND));
+//        player.getInventory().items.set(player.getInventory().selected, ItemStack.EMPTY);
+//        stackCallback.accept(resultStack);
+//        if (!player.getInventory().isEmpty()) player.getInventory().dropAll();
         player.setShiftKeyDown(false);
     }
 
     public static ItemStack rightClickInDirection(WUTFakePlayer player, Level world, BlockPos pos, Direction side, BlockState sourceState)
     {
-        HitResult toUse = rayTrace(player, world, player.getAttributeValue(ForgeMod.BLOCK_REACH.get()));
-        if (toUse == null) return player.getMainHandItem();
-
-        ItemStack itemstack = player.getMainHandItem();
-        if (toUse.getType() == HitResult.Type.ENTITY) {
-            if (processUseEntity(player, world, ((EntityHitResult) toUse).getEntity(), toUse, InteractionType.INTERACT_AT)) return player.getMainHandItem();
-            else if (processUseEntity(player, world, ((EntityHitResult) toUse).getEntity(), null, InteractionType.INTERACT)) return player.getMainHandItem();
-        }
-        else if (toUse.getType() == HitResult.Type.BLOCK) {
-            BlockPos blockpos = ((BlockHitResult) toUse).getBlockPos();
-            BlockState state = world.getBlockState(blockpos);
-            if (state != sourceState && !state.isAir()) {
-                InteractionResult type = player.gameMode.useItemOn(player, world, itemstack, InteractionHand.MAIN_HAND, (BlockHitResult) toUse);
-                if (type == InteractionResult.SUCCESS) return player.getMainHandItem();
-            }
-        }
-
-        if (toUse == null || toUse.getType() == HitResult.Type.MISS) {
-            for (int i = 1; i <= 5; i++) {
-                BlockState state = world.getBlockState(pos.relative(side, i));
-                if (state != sourceState && !state.isAir()) {
-                    player.gameMode.useItemOn(player, world, itemstack, InteractionHand.MAIN_HAND, (BlockHitResult) toUse);
-                    return player.getMainHandItem();
-                }
-            }
-        }
-
-        if (itemstack.isEmpty() && (toUse == null || toUse.getType() == HitResult.Type.MISS)) ForgeHooks.onEmptyClick(player, InteractionHand.MAIN_HAND);
-        if (!itemstack.isEmpty()) player.gameMode.useItem(player, world, itemstack, InteractionHand.MAIN_HAND);
+//        HitResult toUse = rayTrace(player, world, player.getAttributeValue(ForgeMod.BLOCK_REACH.get()));
+//        if (toUse == null) return player.getMainHandItem();
+//
+//        ItemStack itemstack = player.getMainHandItem();
+//        if (toUse.getType() == HitResult.Type.ENTITY) {
+//            if (processUseEntity(player, world, ((EntityHitResult) toUse).getEntity(), toUse, InteractionType.INTERACT_AT)) return player.getMainHandItem();
+//            else if (processUseEntity(player, world, ((EntityHitResult) toUse).getEntity(), null, InteractionType.INTERACT)) return player.getMainHandItem();
+//        }
+//        else if (toUse.getType() == HitResult.Type.BLOCK) {
+//            BlockPos blockpos = ((BlockHitResult) toUse).getBlockPos();
+//            BlockState state = world.getBlockState(blockpos);
+//            if (state != sourceState && !state.isAir()) {
+//                InteractionResult type = player.gameMode.useItemOn(player, world, itemstack, InteractionHand.MAIN_HAND, (BlockHitResult) toUse);
+//                if (type == InteractionResult.SUCCESS) return player.getMainHandItem();
+//            }
+//        }
+//
+//        if (toUse == null || toUse.getType() == HitResult.Type.MISS) {
+//            for (int i = 1; i <= 5; i++) {
+//                BlockState state = world.getBlockState(pos.relative(side, i));
+//                if (state != sourceState && !state.isAir()) {
+//                    player.gameMode.useItemOn(player, world, itemstack, InteractionHand.MAIN_HAND, (BlockHitResult) toUse);
+//                    return player.getMainHandItem();
+//                }
+//            }
+//        }
+//
+//        if (itemstack.isEmpty() && (toUse == null || toUse.getType() == HitResult.Type.MISS)) ForgeHooks.onEmptyClick(player, InteractionHand.MAIN_HAND);
+//        if (!itemstack.isEmpty()) player.gameMode.useItem(player, world, itemstack, InteractionHand.MAIN_HAND);
         return player.getMainHandItem();
     }
 
     public static ItemStack leftClickInDirection(WUTFakePlayer player, Level world, BlockPos pos, Direction side, BlockState sourceState)
     {
-        HitResult toUse = rayTrace(player, world, player.getAttributeValue(ForgeMod.BLOCK_REACH.get()));
-        if (toUse == null) return player.getMainHandItem();
-
-        if (toUse.getType() == HitResult.Type.ENTITY) {
-            if (processUseEntity(player, world, ((EntityHitResult) toUse).getEntity(), null, InteractionType.ATTACK)) return player.getMainHandItem();
-        }
-        else if (toUse.getType() == HitResult.Type.BLOCK) {
-            BlockPos blockpos = ((BlockHitResult) toUse).getBlockPos();
-            BlockState state = world.getBlockState(blockpos);
-            if (state != sourceState && !state.isAir()) {
-                player.gameMode.handleBlockBreakAction(blockpos, Action.START_DESTROY_BLOCK, ((BlockHitResult) toUse).getDirection(), player.level().getMaxBuildHeight(), 0);
-                return player.getMainHandItem();
-            }
-        }
-
-        if (toUse == null || toUse.getType() == HitResult.Type.MISS) {
-            for (int i = 1; i <= 5; i++) {
-                BlockState state = world.getBlockState(pos.relative(side, i));
-                if (state != sourceState && !state.isAir()) {
-                    player.gameMode.handleBlockBreakAction(pos.relative(side, i), Action.START_DESTROY_BLOCK, side.getOpposite(), player.level().getMaxBuildHeight(), 0);
-                    return player.getMainHandItem();
-                }
-            }
-        }
+//        HitResult toUse = rayTrace(player, world, player.getAttributeValue(ForgeMod.BLOCK_REACH.get()));
+//        if (toUse == null) return player.getMainHandItem();
+//
+//        if (toUse.getType() == HitResult.Type.ENTITY) {
+//            if (processUseEntity(player, world, ((EntityHitResult) toUse).getEntity(), null, InteractionType.ATTACK)) return player.getMainHandItem();
+//        }
+//        else if (toUse.getType() == HitResult.Type.BLOCK) {
+//            BlockPos blockpos = ((BlockHitResult) toUse).getBlockPos();
+//            BlockState state = world.getBlockState(blockpos);
+//            if (state != sourceState && !state.isAir()) {
+//                player.gameMode.handleBlockBreakAction(blockpos, Action.START_DESTROY_BLOCK, ((BlockHitResult) toUse).getDirection(), player.level().getMaxBuildHeight(), 0);
+//                return player.getMainHandItem();
+//            }
+//        }
+//
+//        if (toUse == null || toUse.getType() == HitResult.Type.MISS) {
+//            for (int i = 1; i <= 5; i++) {
+//                BlockState state = world.getBlockState(pos.relative(side, i));
+//                if (state != sourceState && !state.isAir()) {
+//                    player.gameMode.handleBlockBreakAction(pos.relative(side, i), Action.START_DESTROY_BLOCK, side.getOpposite(), player.level().getMaxBuildHeight(), 0);
+//                    return player.getMainHandItem();
+//                }
+//            }
+//        }
 
         return player.getMainHandItem();
     }
@@ -189,7 +180,7 @@ public class FakePlayerUtil {
                     return player.interactOn(entity, InteractionHand.MAIN_HAND) == InteractionResult.SUCCESS;
                 }
                 else if (action == InteractionType.INTERACT_AT) {
-                    if (ForgeHooks.onInteractEntityAt(player, entity, result.getLocation(), InteractionHand.MAIN_HAND) != null) return false;
+//                    if (EventHooks.onInteractEntityAt(player, entity, result.getLocation(), InteractionHand.MAIN_HAND) != null) return false;
                     return entity.interactAt(player, result.getLocation(), InteractionHand.MAIN_HAND) == InteractionResult.SUCCESS;
                 }
                 else if (action == InteractionType.ATTACK) {

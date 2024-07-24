@@ -5,8 +5,6 @@ import java.util.function.Consumer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
-import geni.witherutils.base.common.event.WitherKeyMappingHandler;
-import geni.witherutils.base.common.init.WUTEnchants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -19,10 +17,8 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class AbstractArmorModel<T extends LivingEntity> extends HumanoidModel<T> {
@@ -124,7 +120,7 @@ public class AbstractArmorModel<T extends LivingEntity> extends HumanoidModel<T>
 
     public AbstractArmorModel<T> withAnimations(LivingEntity entity)
     {
-    	float partialTick = Minecraft.getInstance().getFrameTime();
+    	float partialTick = Minecraft.getInstance().getFps();
         setupAnim(entity, 0, 0, entity.tickCount + partialTick, 0, 0);
         setupWings(entity, 0, 0, entity.tickCount + partialTick, 0, 0);
         return this;
@@ -163,19 +159,18 @@ public class AbstractArmorModel<T extends LivingEntity> extends HumanoidModel<T>
 		this.rightLeg.setPos(-1.9F, 11.0F, 0.0F);
 		this.hat.copyFrom(this.head);
 	}
-
+	
 	@Override
-	public void renderToBuffer(PoseStack mStack, VertexConsumer buffer, int light, int overlay, float r, float g, float b, float a)
+	public void renderToBuffer(PoseStack mStack, VertexConsumer buffer, int light, int overlay, int pColor)
 	{
-		super.renderToBuffer(mStack, buffer, light, overlay, r, g, b, a);
+		super.renderToBuffer(mStack, buffer, light, overlay, pColor);
 		setPartVisibility(slot);
 	}
 
-	@SuppressWarnings("deprecation")
 	private void setPartVisibility(EquipmentSlot slot)
 	{
-		final Minecraft mc = Minecraft.getInstance();
-		Player player = mc.player;
+//		final Minecraft mc = Minecraft.getInstance();
+//		Player player = mc.player;
 
 		setAllVisible(false);
 		switch (slot) {
@@ -191,8 +186,8 @@ public class AbstractArmorModel<T extends LivingEntity> extends HumanoidModel<T>
 				leftArm.visible = true;
 				lshoulder.visible = false;
 				rshoulder.visible = false;
-				leftWing.visible = EnchantmentHelper.getItemEnchantmentLevel(WUTEnchants.FEATHER_FALL.get(), player.getItemBySlot(slot)) > 0;
-				rightWing.visible = EnchantmentHelper.getItemEnchantmentLevel(WUTEnchants.FEATHER_FALL.get(), player.getItemBySlot(slot)) > 0;
+				leftWing.visible = true;
+				rightWing.visible = true;
 			}
 			case LEGS -> {
 				body.visible = true;
@@ -243,7 +238,7 @@ public class AbstractArmorModel<T extends LivingEntity> extends HumanoidModel<T>
 		}
 		else
 		{
-			if(player.fallDistance > 2.2F && WitherKeyMappingHandler.isFeatherActive)
+			if(player.fallDistance > 2.2F)
 			{
 				this.rightWing.yRot = 0.3491F * 1.5F + 1.2491F / 2 * (float) Math.sin(Math.PI * rotationTime / 2);
 				this.leftWing.yRot = -this.rightWing.yRot;

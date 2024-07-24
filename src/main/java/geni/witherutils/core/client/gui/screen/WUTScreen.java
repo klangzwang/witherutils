@@ -11,9 +11,8 @@ import javax.annotation.Nullable;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import geni.witherutils.WitherUtils;
+import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.core.common.math.Vector2i;
-import geni.witherutils.core.common.util.McTimerUtil;
 import geni.witherutils.core.common.util.TextUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -72,7 +71,7 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
     @Override
     public void render(GuiGraphics gui, int pMouseX, int pMouseY, float pPartialTicks)
     {
-        renderBackground(gui);
+        renderBackground(gui, pMouseX, pMouseY, pPartialTicks);
         super.render(gui, pMouseX, pMouseY, pPartialTicks);
         this.renderTooltip(gui, pMouseX, pMouseY);
         for (LateTooltipData tooltip : tooltips)
@@ -88,7 +87,7 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
         gui.blit(getBackgroundImage(), getGuiLeft(), getGuiTop(), 0, 0, imageWidth, imageHeight);
         
         if(showHotbar)
-        	gui.blit(WitherUtils.loc("textures/gui/hotbar.png"), getGuiLeft(), getGuiTop() + hotbarOffset, 0, 0, 179, 49, 179, 49);
+        	gui.blit(WitherUtilsRegistry.loc("textures/gui/hotbar.png"), getGuiLeft(), getGuiTop() + hotbarOffset, 0, 0, 179, 49, 179, 49);
 		
         renderBar(gui, pMouseX, pMouseY, pPartialTick, true);
         
@@ -103,10 +102,10 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
             if(isHovering(slotX, slotY, 16, 16, pMouseX, pMouseY))
             {
                 gui.pose().pushPose();
-                float f = ((McTimerUtil.clientTimer + pPartialTick) % 10F) / 10F;
+                float f = pPartialTick % 10F / 10F;
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 RenderSystem.setShaderColor(0.5f + f, 0.5f + f, 0.5f + f, 1.0f);
-                gui.blit(WitherUtils.loc("textures/gui/hbslot_hover.png"), leftPos - 4 + slotX, topPos - 4 + slotY, 0, 0, 24, 24, 24, 24);
+                gui.blit(WitherUtilsRegistry.loc("textures/gui/hbslot_hover.png"), leftPos - 4 + slotX, topPos - 4 + slotY, 0, 0, 24, 24, 24, 24);
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 gui.pose().popPose();
             }
@@ -183,13 +182,13 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
         Minecraft mc = Minecraft.getInstance();
         gui.pose().pushPose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WitherUtils.loc("textures/gui/bareffect.png"));
+        RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/bareffect.png"));
         float time = mc.level.getGameTime() + partialTicks;
         double offset = Math.sin(time * 1.0D / 4.0D) / 10.0D;
         if (redstone == true)
             offset = Math.sin(time * 1.0D / 12.0D) / 10.0D;
         gui.pose().translate(0.0D + offset * 100, 0.0D, 0.0D);
-        gui.blit(WitherUtils.loc("textures/gui/bareffect.png"), this.leftPos + 120, this.topPos + 7, 0, 0, 32, 16, 32, 16);
+        gui.blit(WitherUtilsRegistry.loc("textures/gui/bareffect.png"), this.leftPos + 120, this.topPos + 7, 0, 0, 32, 16, 32, 16);
         gui.pose().popPose();
         drawTextWithScale(gui, Component.translatable("gui.witherutils.namesquares").append(getBarName()), this.leftPos + 9, this.topPos + 4, 0xFFCCCCCC, 0.749f, false);
         drawTextWithScale(gui, Component.translatable("gui.witherutils.blockheads"), this.leftPos + 32, this.topPos + 10, 0xFF00AAFF, 0.5f, false);
@@ -236,9 +235,9 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
             if(isHovering(7 + (i * 18), 150, 18, 18, mouseX, mouseY))
             {
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.setShaderTexture(0, WitherUtils.loc("textures/gui/slot2x2.png"));
+                RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/slot2x2.png"));
                 RenderSystem.setShaderColor(0.0f, 0.995f, 1.0f, 1.0f);
-                gui.blit(WitherUtils.loc("textures/gui/slot2x2.png"), leftPos + 7 + (i * 18), topPos + 167, 0, 0, 18, 3, 18, 18);
+                gui.blit(WitherUtilsRegistry.loc("textures/gui/slot2x2.png"), leftPos + 7 + (i * 18), topPos + 167, 0, 0, 18, 3, 18, 18);
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
@@ -251,36 +250,36 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
      */
     protected void drawSlotNormal(GuiGraphics ms, int x, int y, boolean blueborder, boolean redborder, boolean locked)
     {
-        drawSlotNormal(ms, x, y, WitherUtils.loc("textures/gui/slot/slot_normal.png"), 18, blueborder, redborder, locked);
+        drawSlotNormal(ms, x, y, WitherUtilsRegistry.loc("textures/gui/slot/slot_normal.png"), 18, blueborder, redborder, locked);
     }
     protected void drawSlotNormal(GuiGraphics gg, int x, int y, ResourceLocation texture, int size, boolean blueborder, boolean redborder, boolean locked)
     {
         if(locked)
-            gg.blit(WitherUtils.loc("textures/gui/slot/slot_normal_locked.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
+            gg.blit(WitherUtilsRegistry.loc("textures/gui/slot/slot_normal_locked.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
         if(blueborder)
-        	gg.blit(WitherUtils.loc("textures/gui/slot/slot_normal_in.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
+        	gg.blit(WitherUtilsRegistry.loc("textures/gui/slot/slot_normal_in.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
         if(redborder)
-        	gg.blit(WitherUtils.loc("textures/gui/slot/slot_normal_out.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
+        	gg.blit(WitherUtilsRegistry.loc("textures/gui/slot/slot_normal_out.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
     }
     
     protected void drawSlotLarge(GuiGraphics ms, int x, int y, boolean blueborder, boolean redborder, boolean locked)
     {
-        drawSlotLarge(ms, x, y, WitherUtils.loc("textures/gui/slot/slot_large.png"), 22, blueborder, redborder, locked);
+        drawSlotLarge(ms, x, y, WitherUtilsRegistry.loc("textures/gui/slot/slot_large.png"), 22, blueborder, redborder, locked);
     }
     protected void drawSlotLarge(GuiGraphics gg, int x, int y, ResourceLocation texture, int size, boolean blueborder, boolean redborder, boolean locked)
     {
         if(locked)
-            gg.blit(WitherUtils.loc("textures/gui/slot/slot_large_locked.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
-        gg.blit(WitherUtils.loc("textures/gui/slot/slot_large_out.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
+            gg.blit(WitherUtilsRegistry.loc("textures/gui/slot/slot_large_locked.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
+        gg.blit(WitherUtilsRegistry.loc("textures/gui/slot/slot_large_out.png"), leftPos + x, topPos + y, 0, 0, size, size, size, size);
     }
     
     protected void drawLockedGreySlot(GuiGraphics gui, int x, int y, int width, int height, int mouseX, int mouseY, boolean hide)
     {
         if(hide) return;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WitherUtils.loc("textures/gui/slot2x2.png"));
+        RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/slot2x2.png"));
         RenderSystem.setShaderColor(0.6f, 0.6f, 0.6f, 1.0f);
-        gui.blit(WitherUtils.loc("textures/gui/slot2x2.png"), leftPos + x, topPos + y, 0, 0, 16, 16, 16, 16);
+        gui.blit(WitherUtilsRegistry.loc("textures/gui/slot2x2.png"), leftPos + x, topPos + y, 0, 0, 16, 16, 16, 16);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
     protected void drawHoverColoredSlot(GuiGraphics gui, int x, int y, int width, int height, int mouseX, int mouseY, boolean hovered, float red, float green, float blue, float alphaHover, float alphaUnhover)
@@ -289,9 +288,9 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
         final float alpha = hovered ? alphaHover : alphaUnhover;
         
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WitherUtils.loc("textures/gui/slot2x2.png"));
+        RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/slot2x2.png"));
         RenderSystem.setShaderColor(red, green, blue, alpha);
-        gui.blit(WitherUtils.loc("textures/gui/slot2x2.png"), hovered ? leftPos + x + 1 : leftPos + x, hovered ? topPos + y + 1 : topPos + y, 0, 0, inputsize, inputsize, inputsize, inputsize);
+        gui.blit(WitherUtilsRegistry.loc("textures/gui/slot2x2.png"), hovered ? leftPos + x + 1 : leftPos + x, hovered ? topPos + y + 1 : topPos + y, 0, 0, inputsize, inputsize, inputsize, inputsize);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
     protected void drawHoverBlueInputSlot(GuiGraphics gui, int x, int y, int width, int height, int mouseX, int mouseY, boolean hovered)
@@ -299,17 +298,17 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
         final int inputsize = hovered ? 14 : 16;
         
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WitherUtils.loc("textures/gui/slot2x2.png"));
+        RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/slot2x2.png"));
         RenderSystem.setShaderColor(0.392f, 0.521f, 0.627f, 1.0f);
-        gui.blit(WitherUtils.loc("textures/gui/slot2x2.png"), hovered ? leftPos + x + 1 : leftPos + x, hovered ? topPos + y + 1 : topPos + y, 0, 0, inputsize, inputsize, inputsize, inputsize);
+        gui.blit(WitherUtilsRegistry.loc("textures/gui/slot2x2.png"), hovered ? leftPos + x + 1 : leftPos + x, hovered ? topPos + y + 1 : topPos + y, 0, 0, inputsize, inputsize, inputsize, inputsize);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
     protected void drawHoverRedOutputSlot(GuiGraphics gui, int x, int y, int width, int height, int mouseX, int mouseY, boolean hovered)
     {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WitherUtils.loc("textures/gui/slot2x2.png"));
+        RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/slot2x2.png"));
         RenderSystem.setShaderColor(hovered ? 0.6f : 0.627f, hovered ? 0.4f : 0.423f, hovered ? 0.3f : 0.392f, 1.0f);
-        gui.blit(WitherUtils.loc("textures/gui/slot2x2.png"), leftPos + x, topPos + y, 0, 0, 24, 20, 20, 20);
+        gui.blit(WitherUtilsRegistry.loc("textures/gui/slot2x2.png"), leftPos + x, topPos + y, 0, 0, 24, 20, 20, 20);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
     protected void drawHoverGrayInventorySlot(GuiGraphics gui, int x, int y, int width, int height, int mouseX, int mouseY, boolean hovered)
@@ -317,9 +316,9 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
         final int inputsize = hovered ? 14 : 16;
         
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WitherUtils.loc("textures/gui/slot2x2.png"));
+        RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/slot2x2.png"));
         RenderSystem.setShaderColor(hovered ? 0.392f : 0.9f, hovered ? 0.521f : 0.95f, hovered ? 0.627f : 1.0f, 1.0f);
-        gui.blit(WitherUtils.loc("textures/gui/slot2x2.png"), hovered ? leftPos + x + 1 : leftPos + x, hovered ? topPos + y + 1 : topPos + y, 0, 0, inputsize, inputsize, inputsize, inputsize);
+        gui.blit(WitherUtilsRegistry.loc("textures/gui/slot2x2.png"), hovered ? leftPos + x + 1 : leftPos + x, hovered ? topPos + y + 1 : topPos + y, 0, 0, inputsize, inputsize, inputsize, inputsize);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
     public void renderSlotColor(PoseStack ms, int mouseX, int mouseY, int yOffset)
@@ -359,7 +358,7 @@ public abstract class WUTScreen<T extends AbstractContainerMenu> extends Abstrac
     {
         gg.pose().pushPose();
         NumberFormat fmt = NumberFormat.getInstance(Locale.ENGLISH);
-        ResourceLocation SOULIEFONT = WitherUtils.loc("soulie");
+        ResourceLocation SOULIEFONT = WitherUtilsRegistry.loc("soulie");
         Style STYLE = Style.EMPTY.withFont(SOULIEFONT);
         Component text = Component.translatable(leftFormatColor + firsttext + " ").append(rightFormatColor + appendText + " ").append(fmt.format(number) + " " + appendFormatProvider).setStyle(STYLE);
         float scale = Math.min(0.75f, maxScale / getStringWidth(text));

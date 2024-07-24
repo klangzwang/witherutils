@@ -1,16 +1,16 @@
 package geni.witherutils.core.common.helper;
 
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.LinkedList;
-import java.util.List;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
 
 public class ModelRegistryHelper {
 
@@ -25,7 +25,7 @@ public class ModelRegistryHelper {
 
     public ModelRegistryHelper()
     {
-        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+//        FMLJavaModLoadingContext.get().getModEventBus().register(this);
     }
 
     public void registerPreBakeCallback(IModelBakeCallbackPre callback)

@@ -1,72 +1,37 @@
 package geni.witherutils.core.common.network;
 
-import java.util.Optional;
-
+import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.core.common.util.PlaceBlocksUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class PacketRotateBlock implements Packet {
+public record PacketRotateBlock(BlockPos pos, Direction side) implements CustomPacketPayload {
 
-    private BlockPos pos;
-    private Direction side;
-    private InteractionHand hand;
-    
-    public PacketRotateBlock(BlockPos mouseover, Direction s, InteractionHand hand)
-    {
-        pos = mouseover;
-        side = s;
-        this.hand = hand;
-    }
+	public static final Type<PacketRotateBlock> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(WitherUtilsRegistry.MODID, "wrenchrotation"));
 
-    public PacketRotateBlock(FriendlyByteBuf buf)
-    {
-        pos = buf.readBlockPos();
-        side = Direction.values()[buf.readInt()];
-        hand = InteractionHand.values()[buf.readInt()];
-    }
-    
-    protected void write(FriendlyByteBuf writeInto)
-    {
-        writeInto.writeBlockPos(pos);
-        writeInto.writeInt(side.ordinal());
-        writeInto.writeInt(hand.ordinal());
-    }
-    
-    @Override
-    public boolean isValid(Context context)
-    {
-        return context.getDirection() == NetworkDirection.PLAY_TO_SERVER;
-    }
-
-    @Override
-    public void handle(Context context)
-    {
-        Level world = context.getSender().level();
-        PlaceBlocksUtil.rotateBlockValidState(world, pos, side);
-    }
-
-    public static class Handler extends PacketHandler<PacketRotateBlock>
-    {
-        @Override
-        public PacketRotateBlock fromNetwork(FriendlyByteBuf buf)
-        {
-            return new PacketRotateBlock(buf);
-        }
-        @Override
-        public Optional<NetworkDirection> getDirection()
-        {
-            return Optional.of(NetworkDirection.PLAY_TO_SERVER);
-        }
-        @Override
-        public void toNetwork(PacketRotateBlock packet, FriendlyByteBuf buf)
-        {
-            packet.write(buf);
-        }
+	public static final StreamCodec<RegistryFriendlyByteBuf, PacketRotateBlock> CODEC = StreamCodec.composite(
+		BlockPos.STREAM_CODEC, PacketRotateBlock::pos,
+		Direction.STREAM_CODEC, PacketRotateBlock::side,
+        PacketRotateBlock::new
+	);
+	
+	@Override
+	public Type<? extends CustomPacketPayload> type()
+	{
+		return TYPE;
+	}
+	
+	public static void handle(PacketRotateBlock message, IPayloadContext ctx)
+	{
+		ctx.enqueueWork(() -> {
+	        Level world = ctx.player().level();
+	        PlaceBlocksUtil.rotateBlockValidState(world, message.pos, message.side);
+		});
     }
 }

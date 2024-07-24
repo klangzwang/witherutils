@@ -2,24 +2,22 @@ package geni.witherutils.base.client.render.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import geni.witherutils.base.common.item.withersteel.wand.WandSteelItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.client.event.RenderHandEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class ItemRenderOverrideHandler {
 	
     public static void init()
     {
-        MinecraftForge.EVENT_BUS.addListener(ItemRenderOverrideHandler::renderHandEvent);
+        NeoForge.EVENT_BUS.addListener(ItemRenderOverrideHandler::renderHandEvent);
     }
 
     private static void renderHandEvent(RenderHandEvent event)
@@ -30,35 +28,35 @@ public class ItemRenderOverrideHandler {
         if (player == null)
         	return;
         
-        ItemStack stack = event.getItemStack();
-        if (event.getHand() == InteractionHand.MAIN_HAND && stack.getItem() instanceof WandSteelItem)
-        {
-            modularItemRenderOverride(stack, event);
-            
-            if (event.isCanceled())
-            	return;
-
-            HumanoidArm handside = mc.player.getMainArm();
-
-            boolean rightHand = handside == HumanoidArm.RIGHT;
-            float swingProgress = event.getSwingProgress();
-            float equippedProgress = 0;
-            PoseStack mStack = event.getPoseStack();
-            mStack.pushPose();
-
-            float f5 = -0.3F * Mth.sin(Mth.sqrt(swingProgress) * (float) Math.PI);
-            float f6 = 0.05F * Mth.sin(Mth.sqrt(swingProgress) * ((float) Math.PI * 2F));
-            float f10 = -0.3F * Mth.sin(swingProgress * (float) Math.PI);
-
-            int l = rightHand ? 1 : -1;
-            mStack.translate((float) l * f5, f6, f10);
-
-            event.setCanceled(true);
-            applyItemArmTransform(mStack, handside, equippedProgress);
-
-            mc.gameRenderer.itemInHandRenderer.renderItem(mc.player, stack, rightHand ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND, !rightHand, mStack, event.getMultiBufferSource(), event.getPackedLight());
-            mStack.popPose();
-        }
+//        ItemStack stack = event.getItemStack();
+//        if (event.getHand() == InteractionHand.MAIN_HAND && stack.getItem() instanceof WandSteelItem)
+//        {
+//            modularItemRenderOverride(stack, event);
+//            
+//            if (event.isCanceled())
+//            	return;
+//
+//            HumanoidArm handside = mc.player.getMainArm();
+//
+//            boolean rightHand = handside == HumanoidArm.RIGHT;
+//            float swingProgress = event.getSwingProgress();
+//            float equippedProgress = 0;
+//            PoseStack mStack = event.getPoseStack();
+//            mStack.pushPose();
+//
+//            float f5 = -0.3F * Mth.sin(Mth.sqrt(swingProgress) * (float) Math.PI);
+//            float f6 = 0.05F * Mth.sin(Mth.sqrt(swingProgress) * ((float) Math.PI * 2F));
+//            float f10 = -0.3F * Mth.sin(swingProgress * (float) Math.PI);
+//
+//            int l = rightHand ? 1 : -1;
+//            mStack.translate((float) l * f5, f6, f10);
+//
+//            event.setCanceled(true);
+//            applyItemArmTransform(mStack, handside, equippedProgress);
+//
+//            mc.gameRenderer.itemInHandRenderer.renderItem(mc.player, stack, rightHand ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND, !rightHand, mStack, event.getMultiBufferSource(), event.getPackedLight());
+//            mStack.popPose();
+//        }
     }
 
     private static void applyItemArmTransform(PoseStack poseStack, HumanoidArm arm, float equippedProg)
@@ -67,7 +65,8 @@ public class ItemRenderOverrideHandler {
         poseStack.translate((float) i * 0.56F, -0.52F + equippedProg * -0.6F, -0.72F);
     }
 
-    private static void modularItemRenderOverride(ItemStack stack, RenderHandEvent event)
+    @SuppressWarnings("unused")
+	private static void modularItemRenderOverride(ItemStack stack, RenderHandEvent event)
     {
         Minecraft mc = Minecraft.getInstance();
         AbstractClientPlayer player = mc.player;

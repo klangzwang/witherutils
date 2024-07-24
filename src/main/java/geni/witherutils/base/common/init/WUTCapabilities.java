@@ -1,83 +1,80 @@
 package geni.witherutils.base.common.init;
 
-import java.util.Map;
+import static geni.witherutils.api.WitherUtilsRegistry.loc;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
-import geni.witherutils.WitherUtils;
-import geni.witherutils.api.font.ISoulieTextProvider;
-import geni.witherutils.api.font.SoulieInkProvider;
-import geni.witherutils.api.io.ISideConfig;
-import geni.witherutils.api.soulbank.ISoulBankData;
-import geni.witherutils.api.soulorb.ISoulOrbData;
-import geni.witherutils.api.steelupable.ISteelUpable;
-import geni.witherutils.api.thermal.IThermal;
-import geni.witherutils.core.common.helper.SoulieInkHelper;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import geni.witherutils.api.soul.PlayerSoul;
+import geni.witherutils.base.common.base.IWitherPoweredItem;
+import geni.witherutils.base.common.block.LogicalBlockEntities;
+import geni.witherutils.core.common.blockentity.WitherBlockEntity;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
-@Mod.EventBusSubscriber(modid = WitherUtils.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class WUTCapabilities {
+	
+    public static final EntityCapability<PlayerSoul, Void> PLAYERSOUL = EntityCapability.createVoid(loc("playersoul"), PlayerSoul.class);
     
-    private static final Map<Class<?>, Capability<?>> TOKENS = new Object2ObjectOpenHashMap<>();
-    public static final Capability<ISoulBankData> SOULBANK = CapabilityManager.get(new CapabilityToken<>() {});
-    public static final Capability<ISoulieTextProvider> SOULIETEXT = CapabilityManager.get(new CapabilityToken<>() {});
-    public static final Capability<ISideConfig> SIDECONFIG = CapabilityManager.get(new CapabilityToken<>() {});
-    public static final Capability<IThermal> THERMAL = CapabilityManager.get(new CapabilityToken<>() {});
-    public static final Capability<ISteelUpable> STEELUPABLE = CapabilityManager.get(new CapabilityToken<>(){});
-    public static final Capability<ISoulOrbData> SOULORB = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Optional<PlayerSoul> getPlayerSoulHandler(Entity entity)
+    {
+        return Optional.ofNullable(entity.getCapability(PLAYERSOUL));
+    }
+    public static Optional<IEnergyStorage> getItemEnergyHandler(ItemStack stack)
+    {
+        return Optional.ofNullable(stack.getCapability(Capabilities.EnergyStorage.ITEM));
+    }
+    public static Optional<IEnergyStorage> getBlockEnergyHandler(BlockEntity blockEntity, Direction side)
+    {
+        return Optional.ofNullable(blockEntity.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, blockEntity.getBlockPos(), side));
+    }
     
-    @SubscribeEvent
     public static void register(RegisterCapabilitiesEvent event)
     {
-        event.register(ISoulBankData.class);
-        event.register(ISoulieTextProvider.class);
-        event.register(ISideConfig.class);
-        event.register(IThermal.class);
-        event.register(ISteelUpable.class);
-        event.register(ISoulOrbData.class);
-        
-        TOKENS.put(ISoulBankData.class, SOULBANK);
-        TOKENS.put(ISoulieTextProvider.class, SOULIETEXT);
-        TOKENS.put(ISideConfig.class, SIDECONFIG);
-        TOKENS.put(IThermal.class, THERMAL);
-        TOKENS.put(ISteelUpable.class, STEELUPABLE);
-        TOKENS.put(ISoulOrbData.class, SOULORB);
+    	registerEntityCapabilities(event);
+    	registerItemCapabilities(event);
+    	registerBlockCapabilities(event);
     }
     
-    public static void attachBlockEntityCapabilities(AttachCapabilitiesEvent<BlockEntity> event)
+    public static void registerEntityCapabilities(RegisterCapabilitiesEvent event)
     {
-        if (SoulieInkHelper.isEnabled() && (event.getObject() instanceof SignBlockEntity ||  event.getObject() instanceof HangingSignBlockEntity))
-        {
-            event.addCapability(WitherUtils.loc("soulie_ink"), new SoulieInkProvider());
-        }
+        event.registerEntity(PLAYERSOUL, EntityType.PLAYER, (player, ctx) -> new PlayerSoul());
     }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public static <T> Capability<T> getToken(Class<T> capClass)
+    
+    public static void registerItemCapabilities(RegisterCapabilitiesEvent event)
     {
-       return (Capability<T>) TOKENS.get(capClass);
+        WUTItems.ITEM_TYPES.getEntries().forEach(entry -> {
+            if (entry.get() instanceof IWitherPoweredItem ipowered)
+            {
+                event.registerItem(Capabilities.EnergyStorage.ITEM, ipowered.initEnergyCap(), entry.get());
+            }
+        });
     }
-    @org.jetbrains.annotations.Nullable
-    public static <T> T get(ICapabilityProvider provider, Capability<T> cap)
+    
+    public static void registerBlockCapabilities(RegisterCapabilitiesEvent event)
     {
-        return provider.getCapability(cap).orElse(null);
-    }
-    @org.jetbrains.annotations.Nullable
-    public static <T> T get(ICapabilityProvider provider, Capability<T> cap, Direction dir)
-    {
-        return provider.getCapability(cap, dir).orElse(null);
+        LogicalBlockEntities.streamBlockEntities().forEach(blockEntity -> {
+            if (blockEntity instanceof WitherBlockEntity wbe)
+            {
+                if (wbe.hasItemCapability()) {
+                    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, wbe.getType(),
+                            (object, dir) -> object instanceof WitherBlockEntity be ? be.getItemHandler(dir) : null);
+                }
+                if (wbe.hasFluidCapability()) {
+                    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, wbe.getType(),
+                            (object, dir) -> object instanceof WitherBlockEntity be ? be.getFluidHandler(dir) : null);
+                }
+                if (wbe.hasEnergyCapability()) {
+                    event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, wbe.getType(),
+                            (object, dir) -> object instanceof WitherBlockEntity be ? be.getEnergyHandler(dir) : null);
+                }
+            }
+        });
     }
 }

@@ -1,264 +1,105 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/maven' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '6.0.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
-
 plugins {
-    id "maven-publish"
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-	id 'com.modrinth.minotaur' version '2.+'
+    id 'java-library'
     id 'eclipse'
+    id 'net.neoforged.gradle.userdev' version '7.0.145'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: "eclipse"
-
-repositories
-{
-	flatDir {
-		dir 'libs'
-	}
-    mavenLocal()
-    mavenCentral()
-    maven { url = 'https://modmaven.dev' }
-    maven { url = 'https://dvs1.progwml6.com/files/maven/' }
+repositories {
+	mavenCentral()
 	maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven { url = 'https://repo.spongepowered.org/maven' }
+		url "https://www.cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
+	}
+	maven {
+		name "Jei"
+		url "https://maven.blamejared.com/"
+		content {
+			includeGroup "mezz.jei"
+		}
+	}
+	maven {
+		name "K-4u Mod maven"
+		url "https://modmaven.dev/"
+		content {
+			includeGroup "mcjty.theoneprobe"
+			includeGroup "mekanism"
+		}
+	}
+    maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
-dependencies
-{
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    
-    compileOnly "org.jetbrains:annotations:22.0.0"
-    
-	compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
-
-//	runtimeOnly fg.deobf("curse.maven:titanium-287342:4680554")
-//	runtimeOnly fg.deobf("curse.maven:industrial-foregoing-266515:4683880")
-	
-	runtimeOnly fg.deobf("curse.maven:athena-841890:4621937")
-//  compileOnly fg.deobf("curse.maven:alltheores-405593:4590570")
-//	runtimeOnly fg.deobf("curse.maven:ender-io-64578:4719371")
-//	runtimeOnly fg.deobf("curse.maven:pipez-443900:4584211")
-//  runtimeOnly fg.deobf("curse.maven:cyclic-239286:4585596")
-//	runtimeOnly fg.deobf("curse.maven:mmmmmmmmmmmm-225738:4724732")
-//	runtimeOnly fg.deobf("curse.maven:selene-499980:4748073")
-//	runtimeOnly fg.deobf("libs:CTM_DEV-1.20.1-1.1.8+4")
-//	runtimeOnly fg.deobf("curse.maven:fake-player-845992:4704893")
-	
-	annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+dependencies {
+	implementation 'net.neoforged:neoforge:21.0.86-beta'
+	implementation("maven.modrinth:athena-ctm:${athenaVersion}")	
+	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
 }
 
-version = "${minecraft_version}-${mod_version}"
-group = 'geni.witherutils'
-archivesBaseName = 'witherutils'
+base {
+    archivesName = "${archive_base_name}-${mod_version}+mc${minecraft_version}"
+}
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+version = project.mod_version
+group = project.maven_group
 
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-
-sourceSets
-{
-    main
-    {
-        resources
-        {
-			ext.refMap = "mixins.witherutils.refmap.json"
-			resources { srcDir 'src/generated/resources' }
-        }
+java {
+    withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
-minecraft {
+sourceSets {
+	api {
+		compileClasspath = main.compileClasspath
+		resources.srcDirs = []
+	}
+	main {
+		compileClasspath += api.output
+		runtimeClasspath += api.output
+		resources {
+			srcDir "src/generated/resources"
+		}
+	}
+}
 
-	mappings channel: 'official', version: project.minecraft_version
-	
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-	
-    copyIdeResources = true
-	
-    runs {
-        client {
-            workingDirectory project.file('run')
-            taskName "Client"
-			
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
+runs {
 
-            property 'forge.enabledGameTestNamespaces', 'witherutils'
-            
-			arg '-mixin.config=witherutils.mixins.json'
-			
-            mods {
-                witherutils {
-                    source sourceSets.main
-                }
-            }
-        }
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
 
-        server {
-            workingDirectory project.file('run')
-            taskName "Server"
-			
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'witherutils'
-
-			arg '-mixin.config=witherutils.mixins.json'
-
-            mods {
-                witherutils {
-                    source sourceSets.main
-                }
-            }
-        }
-        
-        gameTestServer {
-            workingDirectory project.file('run')
-			taskName "TestServer"
-			
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-			
-            property 'forge.enabledGameTestNamespaces', 'witherutils'
-			
-            mods {
-                witherutils {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-            taskName "Data"
-			
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'witherutils', '--server', '--client', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-			arg '-mixin.config=witherutils.mixins.json'
-
-            mods {
-                witherutils {
-                    source sourceSets.main
-                }
-            }
-        }
+        modSource project.sourceSets.api
+        modSource project.sourceSets.main
     }
+	client {
+        systemProperty 'forge.enabledGameTestNamespaces', 'witherutils'
+		jvmArguments.addAll('-Xmx4G')
+	}
+	server {
+		systemProperty 'forge.enabledGameTestNamespaces', 'witherutils'
+        programArgument '--nogui'
+	}
+	data {
+		programArguments = ['--mod', 'witherutils',
+							'--all',
+							'--output', file('src/generated/resources/').absolutePath,
+							'--existing', file('src/main/resources').absolutePath]
+	}
 }
 
-mixin
-{
-    add sourceSets.main, "witherutils.mixins.refmap.json"
-}
-
-processResources
-{
-}
-
-jar {
-    manifest {
-        attributes([
-                "Specification-Title"     : 'witherutils',
-                "Specification-Vendor"    : 'helgenius',
-                "Specification-Version"   : "1",
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : 'helgenius',
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs"            : "witherutils.mixins.json"
-        ])
-    }
-}
-
-jar.finalizedBy('reobfJar')
-
-publishing
-{
-    publications
-	{
-        maven(MavenPublication)
-		{
-            groupId = 'geni.witherutils'
-            artifactId = 'WitherUtils'
-            version = project.version
-            artifact jar
-            pom {
-                name = 'WitherUtils'
-                description = 'When working at Technical Ideas.'
-                url = 'https://github.com/klangzwang/WitherUtils'
-            }
-        }
-    }
-}
-
-tasks.withType(JavaCompile).configureEach 
+tasks.withType(JavaCompile).configureEach
 {
     options.encoding = 'UTF-8'
 }
 
-////////////////
-// Modrinth
-if (modrinth_publish && (System.getenv("MODRINTH_TOKEN") != null))
-{
-    modrinth
-	{
-        token = System.getenv("MODRINTH_TOKEN") ?: project.findProperty("modrinthToken")
-        projectId = "${modrinth_projectId}"
-        versionNumber = project.version
-        versionType = release_type
-        uploadFile = jar
-        gameVersions = [minecraft_version]
-        loaders = ["forge"]
-        
-		syncBodyFrom = rootProject.file("README.md").text
-		
-        dependencies
-		{
-        }
-    }
-}
-
-////////////////
-// Curse Forge
-if (System.getenv("CURSEFORGE") && !version.endsWith("-SNAPSHOT") && project.version != "0.0.0")
-{
-	def cfReleaseType = "beta"
-    curseforge
-	{
-        apiKey = System.getenv("CURSEFORGE")
-        project
-		{
-            id = project.curseforge_project
-            changelogType = "markdown"
-            releaseType = cfReleaseType
-            addGameVersion project.minecraft_version
-            addGameVersion "Forge"
-            mainArtifact(jar.archiveFile)
-			{
-                displayName = "WitherUtils ${project.version}"
-            }
-        }
-    }
+jar {
+	from sourceSets.api.output
 }

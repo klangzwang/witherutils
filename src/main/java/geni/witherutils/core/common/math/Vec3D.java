@@ -1,13 +1,13 @@
 package geni.witherutils.core.common.math;
 
+import static net.minecraft.core.Direction.Axis.X;
+import static net.minecraft.core.Direction.Axis.Y;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-
-import static net.minecraft.core.Direction.Axis.X;
-import static net.minecraft.core.Direction.Axis.Y;
 
 public class Vec3D {
 

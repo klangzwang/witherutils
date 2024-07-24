@@ -1,6 +1,7 @@
 package geni.witherutils.core.common.util;
 
 import java.net.SocketAddress;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.crypto.Cipher;
@@ -8,26 +9,28 @@ import javax.crypto.Cipher;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.Connection;
-import net.minecraft.network.ConnectionProtocol;
+import net.minecraft.network.DisconnectionDetails;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.common.ServerboundClientInformationPacket;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket;
+import net.minecraft.network.protocol.common.ServerboundPongPacket;
+import net.minecraft.network.protocol.common.ServerboundResourcePackPacket;
 import net.minecraft.network.protocol.game.ServerboundAcceptTeleportationPacket;
-import net.minecraft.network.protocol.game.ServerboundBlockEntityTagQuery;
+import net.minecraft.network.protocol.game.ServerboundBlockEntityTagQueryPacket;
 import net.minecraft.network.protocol.game.ServerboundChangeDifficultyPacket;
 import net.minecraft.network.protocol.game.ServerboundChatPacket;
 import net.minecraft.network.protocol.game.ServerboundClientCommandPacket;
-import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.network.protocol.game.ServerboundCommandSuggestionPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerButtonClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
-import net.minecraft.network.protocol.game.ServerboundEntityTagQuery;
+import net.minecraft.network.protocol.game.ServerboundEntityTagQueryPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ServerboundJigsawGeneratePacket;
-import net.minecraft.network.protocol.game.ServerboundKeepAlivePacket;
 import net.minecraft.network.protocol.game.ServerboundLockDifficultyPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.network.protocol.game.ServerboundMoveVehiclePacket;
@@ -38,11 +41,9 @@ import net.minecraft.network.protocol.game.ServerboundPlayerAbilitiesPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerInputPacket;
-import net.minecraft.network.protocol.game.ServerboundPongPacket;
 import net.minecraft.network.protocol.game.ServerboundRecipeBookChangeSettingsPacket;
 import net.minecraft.network.protocol.game.ServerboundRecipeBookSeenRecipePacket;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
-import net.minecraft.network.protocol.game.ServerboundResourcePackPacket;
 import net.minecraft.network.protocol.game.ServerboundSeenAdvancementsPacket;
 import net.minecraft.network.protocol.game.ServerboundSelectTradePacket;
 import net.minecraft.network.protocol.game.ServerboundSetBeaconPacket;
@@ -59,15 +60,21 @@ import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.RelativeMovement;
 
 public class FakeNetHandler extends ServerGamePacketListenerImpl {
-    public FakeNetHandler(MinecraftServer server, ServerPlayer playerIn) {
-        super(server, new FakeManager(PacketFlow.CLIENTBOUND), playerIn);
-    }
+	
+	public FakeNetHandler(MinecraftServer pServer, Connection pConnection, ServerPlayer pPlayer, CommonListenerCookie pCookie)
+	{
+		super(pServer, new FakeManager(PacketFlow.CLIENTBOUND), pPlayer, pCookie);
+	}
 
-    private static class FakeManager extends Connection {
-        public FakeManager(PacketFlow packetDirection) {
+    private static class FakeManager extends Connection
+    {
+        public FakeManager(PacketFlow packetDirection)
+        {
             super(packetDirection);
         }
 
@@ -76,9 +83,6 @@ public class FakeNetHandler extends ServerGamePacketListenerImpl {
 
         @Override
         public void channelInactive(@Nonnull ChannelHandlerContext p_channelInactive_1_) {}
-
-        @Override
-        public void setProtocol(@Nonnull ConnectionProtocol newState) {}
 
         @Override
         public void exceptionCaught(@Nonnull ChannelHandlerContext p_exceptionCaught_1_, @Nonnull Throwable p_exceptionCaught_2_) {}
@@ -194,10 +198,10 @@ public class FakeNetHandler extends ServerGamePacketListenerImpl {
     public void handleEditBook(ServerboundEditBookPacket packetIn) {}
 
     @Override
-    public void handleEntityTagQuery(ServerboundEntityTagQuery packetIn) {}
+    public void handleEntityTagQuery(ServerboundEntityTagQueryPacket packetIn) {}
 
     @Override
-    public void handleBlockEntityTagQuery(ServerboundBlockEntityTagQuery packetIn) {}
+    public void handleBlockEntityTagQuery(ServerboundBlockEntityTagQueryPacket packetIn) {}
 
     @Override
     public void handleMovePlayer(ServerboundMovePlayerPacket packetIn) {}
@@ -205,9 +209,9 @@ public class FakeNetHandler extends ServerGamePacketListenerImpl {
     @Override
     public void teleport(double x, double y, double z, float yaw, float pitch) {}
 
-//    @Override
-//    public void teleport(double x, double y, double z, float yaw, float pitch, Set<ClientboundPlayerPositionPacket.RelativeArgument> relativeSet) {}
-
+    @Override
+    public void teleport(double x, double y, double z, float yaw, float pitch, Set<RelativeMovement> pRelativeSet) {}
+    
     @Override
     public void handlePlayerAction(ServerboundPlayerActionPacket packetIn) {}
 
@@ -227,7 +231,7 @@ public class FakeNetHandler extends ServerGamePacketListenerImpl {
     public void handlePaddleBoat(ServerboundPaddleBoatPacket packetIn) {}
 
     @Override
-    public void onDisconnect(Component reason) {}
+    public void onDisconnect(DisconnectionDetails reason) {}
 
     @Override
     public void send(Packet<?> packetIn) {}

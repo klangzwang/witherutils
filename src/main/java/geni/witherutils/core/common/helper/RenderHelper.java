@@ -14,54 +14,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
-//
-//import com.mojang.blaze3d.platform.GlStateManager;
-//import com.mojang.blaze3d.systems.RenderSystem;
-//import com.mojang.blaze3d.vertex.*;
-//import com.mojang.math.Axis;
-//
-//import geni.witherutils.CustomRenderTypes;
-//import geni.witherutils.RenderSettings;
-//import net.minecraft.client.Minecraft;
-//import net.minecraft.client.gui.Font;
-//import net.minecraft.client.gui.GuiGraphics;
-//import net.minecraft.client.player.LocalPlayer;
-//import net.minecraft.client.renderer.GameRenderer;
-//import net.minecraft.client.renderer.LightTexture;
-//import net.minecraft.client.renderer.MultiBufferSource;
-//import net.minecraft.client.renderer.RenderType;
-//import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-//import net.minecraft.client.renderer.entity.ItemRenderer;
-//import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-//import net.minecraft.client.resources.model.BakedModel;
-//import net.minecraft.core.BlockPos;
-//import net.minecraft.core.Direction;
-//import net.minecraft.core.Position;
-//import net.minecraft.resources.ResourceLocation;
-//import net.minecraft.util.Mth;
-//import net.minecraft.world.entity.Entity;
-//import net.minecraft.world.inventory.InventoryMenu;
-//import net.minecraft.world.item.Item;
-//import net.minecraft.world.item.ItemDisplayContext;
-//import net.minecraft.world.item.ItemStack;
-//import net.minecraft.world.level.block.Block;
-//import net.minecraft.world.level.block.state.BlockState;
-//import net.minecraft.world.level.material.Fluid;
-//import net.minecraft.world.phys.Vec3;
-//import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-//import net.minecraftforge.client.model.data.ModelData;
-//import net.minecraftforge.client.model.generators.ModelBuilder;
-//import net.minecraftforge.fluids.FluidStack;
-//import org.joml.Matrix4f;
-//import org.joml.Quaternionf;
-//
-//import javax.annotation.Nonnull;
-//import javax.annotation.Nullable;
-
-import static net.minecraft.client.renderer.LightTexture.FULL_BLOCK;
-import static net.minecraft.client.renderer.LightTexture.FULL_SKY;
-
-@SuppressWarnings({ "resource", "unused" })
 public class RenderHelper {
 
 //    public static float rot = 0.0f;
@@ -69,16 +21,14 @@ public class RenderHelper {
     
     public static final int MAX_BRIGHTNESS = 0xf000f0;
 
-//    public static final RenderSettings DEFAULT_SETTINGS = RenderSettings.builder()
-//            .color(255, 255, 255)
-//            .alpha(128)
-//            .build();
+
 //
 //    public static final RenderSettings FULLBRIGHT_SETTINGS = RenderSettings.builder()
 //            .color(255, 255, 255)
 //            .alpha(MAX_BRIGHTNESS)
 //            .build();
 
+	@SuppressWarnings("resource")
 	public static void renderItemGround(PoseStack matrixStack, MultiBufferSource buffer, ItemStack stack, int brightness, int combinedOverlay)
 	{
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
@@ -86,7 +36,8 @@ public class RenderHelper {
         itemRenderer.render(stack, ItemDisplayContext.GROUND, false, matrixStack, buffer, brightness, combinedOverlay, ibakedmodel);
     }
 
-    public static void renderItemGround(@Nonnull PoseStack poseStack, @Nonnull MultiBufferSource buffer, @Nonnull RenderType renderType, ItemStack stack, int lightmap, int overlay)
+    @SuppressWarnings("resource")
+	public static void renderItemGround(@Nonnull PoseStack poseStack, @Nonnull MultiBufferSource buffer, @Nonnull RenderType renderType, ItemStack stack, int lightmap, int overlay)
     {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         BakedModel ibakedmodel = itemRenderer.getModel(stack, Minecraft.getInstance().level, null, 0);
@@ -906,41 +857,7 @@ public class RenderHelper {
 //        return width;
 //    }
 //
-//    /**
-//     * Draw a beam with some thickness.
-//     */
-//    public static void drawBeam(PoseStack matrix, VertexConsumer builder, TextureAtlasSprite sprite, Vec3 S, Vec3 E, Vec3 P, float width) {
-//        Vec3 PS = S.subtract(P);
-//        Vec3 SE = E.subtract(S);
-//
-//        Vec3 normal = PS.cross(SE).normalize();
-//
-//        Vec3 half = normal.multiply(width, width, width);
-//        Vec3 p1 = S.add(half);
-//        Vec3 p2 = S.subtract(half);
-//        Vec3 p3 = E.add(half);
-//        Vec3 p4 = E.subtract(half);
-//
-//        drawQuad(matrix.last().pose(), builder, sprite, p1, p3, p4, p2, DEFAULT_SETTINGS);
-//    }
-//
-//    /**
-//     * Draw a beam with some thickness.
-//     */
-//    public static void drawBeam(PoseStack poseStack, VertexConsumer buffer, TextureAtlasSprite sprite, Vec3 S, Vec3 E, Vec3 P, RenderSettings settings) {
-//        Vec3 PS = S.subtract(P);
-//        Vec3 SE = E.subtract(S);
-//
-//        Vec3 normal = PS.cross(SE).normalize();
-//
-//        Vec3 half = normal.multiply(settings.width(), settings.width(), settings.width());
-//        Vec3 p1 = S.add(half);
-//        Vec3 p2 = S.subtract(half);
-//        Vec3 p3 = E.add(half);
-//        Vec3 p4 = E.subtract(half);
-//
-//        drawQuad(poseStack.last().pose(), buffer, sprite, p1, p3, p4, p2, settings);
-//    }
+
 //
 //    public static void renderQuadGui(PoseStack matrixStack, TextureAtlasSprite sprite, int packedLight, VertexConsumer builder, float zfront, float size) {
 //        float u0 = sprite.getU0();
@@ -970,17 +887,7 @@ public class RenderHelper {
 //        builder.vertex(matrix, x1, y1, z).color(r, g, b, a).uv2(packedLightIn).endVertex();
 //    }
 //
-//    private static void drawQuad(Matrix4f matrix, VertexConsumer buffer, TextureAtlasSprite sprite, Vec3 p1, Vec3 p2, Vec3 p3, Vec3 p4,
-//                                 RenderSettings settings) {
-//        int b1 = settings.brightness() >> 16 & 65535;
-//        int b2 = settings.brightness() & 65535;
-//
-//        vt(buffer, matrix, (float) p1.x(), (float) p1.y(), (float) p1.z(), sprite.getU0(), sprite.getV0(), b1, b2, settings.r(), settings.g(), settings.b(), settings.a());
-//        vt(buffer, matrix, (float) p2.x(), (float) p2.y(), (float) p2.z(), sprite.getU1(), sprite.getV0(), b1, b2, settings.r(), settings.g(), settings.b(), settings.a());
-//        vt(buffer, matrix, (float) p3.x(), (float) p3.y(), (float) p3.z(), sprite.getU1(), sprite.getV1(), b1, b2, settings.r(), settings.g(), settings.b(), settings.a());
-//        vt(buffer, matrix, (float) p4.x(), (float) p4.y(), (float) p4.z(), sprite.getU0(), sprite.getV1(), b1, b2, settings.r(), settings.g(), settings.b(), settings.a());
-//    }
-//
+
 //    private static void drawQuadUnit(Matrix4f matrix, VertexConsumer buffer, TextureAtlasSprite sprite, Vec3 p1, Vec3 p2, Vec3 p3, Vec3 p4,
 //                                     double u0Par, double u1Par,
 //                                     double v0Par, double v1Par,

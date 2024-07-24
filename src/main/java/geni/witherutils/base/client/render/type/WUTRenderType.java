@@ -11,7 +11,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
-import geni.witherutils.WitherUtils;
+import geni.witherutils.api.WitherUtilsRegistry;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -101,7 +101,7 @@ public class WUTRenderType extends RenderType {
                 .setWriteMaskState(COLOR_WRITE)
                 .createCompositeState(false)
     );
-	public static final RenderType LASER = create(WitherUtils.MODID + ":laserlaser", DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT, RenderType.CompositeState.builder()
+	public static final RenderType LASER = create(WitherUtilsRegistry.MODID + ":laserlaser", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT, RenderType.CompositeState.builder()
 			.setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
 			.setLayeringState(VIEW_OFFSET_Z_LAYERING)
 			.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
@@ -111,7 +111,7 @@ public class WUTRenderType extends RenderType {
 			.setWriteMaskState(COLOR_WRITE)
 			.createCompositeState(false));
 
-	public static final RenderType FLUIDTANKRESIZABLE = create(WitherUtils.MODID + ":resizable_cuboid", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false, RenderType.CompositeState.builder()
+	public static final RenderType FLUIDTANKRESIZABLE = create(WitherUtilsRegistry.MODID + ":resizable_cuboid", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false, RenderType.CompositeState.builder()
 			.setShaderState(RENDERTYPE_CUTOUT_SHADER)
 			.setTextureState(new RenderStateShard.TextureStateShard(InventoryMenu.BLOCK_ATLAS, false, false))
 			.setCullState(CULL)
@@ -120,7 +120,7 @@ public class WUTRenderType extends RenderType {
 			.setLightmapState(LIGHTMAP)
 			.createCompositeState(true));
 
-	public static final RenderType ITEMSTACKRESIZABLE = create(WitherUtils.MODID + ":resizable_cuboid_item", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false, RenderType.CompositeState.builder()
+	public static final RenderType ITEMSTACKRESIZABLE = create(WitherUtilsRegistry.MODID + ":resizable_cuboid_item", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false, RenderType.CompositeState.builder()
 			.setShaderState(RENDERTYPE_SOLID_SHADER)
 			.setTextureState(new RenderStateShard.TextureStateShard(InventoryMenu.BLOCK_ATLAS, false, false))
 			.setCullState(NO_CULL)
@@ -129,7 +129,7 @@ public class WUTRenderType extends RenderType {
 			.setLightmapState(LIGHTMAP)
 			.createCompositeState(true));
 
-	public static final RenderType ITEMSTACKRESIZABLE_SOLID = create(WitherUtils.MODID + ":resizable_cuboid_solid", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false, RenderType.CompositeState.builder()
+	public static final RenderType ITEMSTACKRESIZABLE_SOLID = create(WitherUtilsRegistry.MODID + ":resizable_cuboid_solid", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false, RenderType.CompositeState.builder()
 			.setLightmapState(LIGHTMAP)
 			.setShaderState(RENDERTYPE_SOLID_SHADER)
 			.setTextureState(BLOCK_SHEET_MIPPED)
@@ -227,7 +227,7 @@ public class WUTRenderType extends RenderType {
 //        return COLLECTOR_PORTAL;
 //    }
     
-	public static final RenderType SOLID_COLOUR = create(WitherUtils.MODID + ":solidcolour",
+	public static final RenderType SOLID_COLOUR = create(WitherUtilsRegistry.MODID + ":solidcolour",
 			DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, BUFFERSIZE, CRUMBLING, SORT,
 			RenderType.CompositeState.builder()
 					.setShaderState(RenderStateShard.ShaderStateShard.RENDERTYPE_LINES_SHADER)
@@ -236,7 +236,7 @@ public class WUTRenderType extends RenderType {
 					.setDepthTestState(NO_DEPTH_TEST).setCullState(CULL).setLightmapState(NO_LIGHTMAP)
 					.setWriteMaskState(COLOR_DEPTH_WRITE).createCompositeState(false));
 	
-	  public static final RenderType TOMB_LINES = create(WitherUtils.MODID + ":tomb_lines",
+	  public static final RenderType TOMB_LINES = create(WitherUtilsRegistry.MODID + ":tomb_lines",
 		      DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, BUFFERSIZE, CRUMBLING, SORT,
 		      RenderType.CompositeState.builder()
 		          .setShaderState(RENDERTYPE_LINES_SHADER)
@@ -249,7 +249,7 @@ public class WUTRenderType extends RenderType {
 		          .setDepthTestState(NO_DEPTH_TEST)
 		          .createCompositeState(false));
 
-	  public static final RenderType RESIZABLE = create(WitherUtils.MODID + ":resizable_cuboid", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false,
+	  public static final RenderType RESIZABLE = create(WitherUtilsRegistry.MODID + ":resizable_cuboid", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256, true, false,
 		      RenderType.CompositeState.builder()
 		          .setShaderState(RENDERTYPE_CUTOUT_SHADER)
 		          .setTextureState(new RenderStateShard.TextureStateShard(InventoryMenu.BLOCK_ATLAS, false, false))
@@ -278,9 +278,9 @@ public class WUTRenderType extends RenderType {
 	{
         CompositeState state = CompositeState.builder().setTextureState(new TextureStateShard(location, false, false))
                 .setTransparencyState(BLENDED_NO_DEPT)
-                .setShaderState(RenderStateShard.POSITION_COLOR_TEX_SHADER)
+                .setShaderState(RenderStateShard.POSITION_TEX_SHADER)
                 .setCullState(NO_CULL)
                 .setLightmapState(NO_LIGHTMAP).createCompositeState(true);
-        return create("blend_bo_dept", DefaultVertexFormat.POSITION_COLOR_TEX, VertexFormat.Mode.QUADS, 256, true, true, state);
+        return create("blend_bo_dept", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 256, true, true, state);
 	}
 }

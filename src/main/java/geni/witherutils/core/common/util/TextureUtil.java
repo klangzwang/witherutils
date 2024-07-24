@@ -98,7 +98,7 @@ public class TextureUtil {
     }
     public static TextureAtlasSprite getTexture(String location)
     {
-        return getTextureMap().getSprite(new ResourceLocation(location));
+        return getTextureMap().getSprite(ResourceLocation.withDefaultNamespace(location));
     }
     public static TextureAtlasSprite getTexture(ResourceLocation location)
     {
@@ -106,23 +106,23 @@ public class TextureUtil {
     }
     public static TextureAtlasSprite getBlockTexture(String string)
     {
-        return getBlockTexture(new ResourceLocation(string));
+        return getBlockTexture(ResourceLocation.withDefaultNamespace(string));
     }
     public static TextureAtlasSprite getBlockTexture(ResourceLocation location)
     {
-        return getTexture(new ResourceLocation(location.getNamespace(), "block/" + location.getPath()));
+        return getTexture(ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "block/" + location.getPath()));
     }
     public static TextureAtlasSprite getItemTexture(String string)
     {
-        return getItemTexture(new ResourceLocation(string));
+        return getItemTexture(ResourceLocation.withDefaultNamespace(string));
     }
     public static TextureAtlasSprite getItemTexture(ResourceLocation location)
     {
-        return getTexture(new ResourceLocation(location.getNamespace(), "items/" + location.getPath()));
+        return getTexture(ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "items/" + location.getPath()));
     }
     public static void changeTexture(String texture)
     {
-        changeTexture(new ResourceLocation(texture));
+        changeTexture(ResourceLocation.withDefaultNamespace(texture));
     }
     public static void changeTexture(ResourceLocation texture)
     {
@@ -130,7 +130,7 @@ public class TextureUtil {
     }
     public static void disableMipmap(String texture)
     {
-        disableMipmap(new ResourceLocation(texture));
+        disableMipmap(ResourceLocation.withDefaultNamespace(texture));
     }
     public static void disableMipmap(ResourceLocation texture)
     {
@@ -138,7 +138,7 @@ public class TextureUtil {
     }
     public static void restoreLastMipmap(String texture)
     {
-        restoreLastMipmap(new ResourceLocation(texture));
+        restoreLastMipmap(ResourceLocation.withDefaultNamespace(texture));
     }
     public static void restoreLastMipmap(ResourceLocation location)
     {

@@ -1,11 +1,7 @@
 package geni.witherutils.core.common.util;
 
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
-import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 
 public class ModelRenderUtil {
 
@@ -52,43 +48,43 @@ public class ModelRenderUtil {
         };
     }
 
-    public static BakedQuad createQuad(Vec3[] verts, TextureAtlasSprite sprite) {
-        return createQuad(verts[0], verts[1], verts[2], verts[3], sprite);
-    }
-
-    public static BakedQuad createQuad(Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4, TextureAtlasSprite sprite) {
-        return createQuad(v1, v2, v3, v4, sprite, 0xFFFFFF, 1.0f);
-    }
-
-    public static BakedQuad createQuad(Vec3[] verts, TextureAtlasSprite sprite, int color) {
-        return createQuad(verts[0], verts[1], verts[2], verts[3], sprite, color, 1.0f);
-    }
-
-    public static BakedQuad createQuad(Vec3[] verts, TextureAtlasSprite sprite, int color, float alpha) {
-        return createQuad(verts[0], verts[1], verts[2], verts[3], sprite, color, alpha);
-    }
-
-    public static BakedQuad createQuad(Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4, TextureAtlasSprite sprite, int color, float alpha) {
-        Vec3 normal = v3.subtract(v2).cross(v1.subtract(v2)).normalize();
-        float nx = (float) normal.x;
-        float ny = (float) normal.y;
-        float nz = (float) normal.z;
-
-        int tw = sprite.contents().width();
-        int th = sprite.contents().height();
-
-        float r = FastColor.ARGB32.red(color) / 255.0f;
-        float g = FastColor.ARGB32.green(color) / 255.0f;
-        float b = FastColor.ARGB32.blue(color) / 255.0f;
-
-        BakedQuad[] quad = new BakedQuad[1];
-        QuadBakingVertexConsumer baker = new QuadBakingVertexConsumer(q -> quad[0] = q);
-        baker.setSprite(sprite);
-        baker.setDirection(Direction.getNearest(normal.x, normal.y, normal.z));
-        baker.normal(nx, ny, nz).vertex(v1.x, v1.y, v1.z).uv(sprite.getU(0), sprite.getV(0)).color(r, g, b, alpha).endVertex();
-        baker.normal(nx, ny, nz).vertex(v2.x, v2.y, v2.z).uv(sprite.getU(0), sprite.getV(th)).color(r, g, b, alpha).endVertex();
-        baker.normal(nx, ny, nz).vertex(v3.x, v3.y, v3.z).uv(sprite.getU(tw), sprite.getV(th)).color(r, g, b, alpha).endVertex();
-        baker.normal(nx, ny, nz).vertex(v4.x, v4.y, v4.z).uv(sprite.getU(tw), sprite.getV(0)).color(r, g, b, alpha).endVertex();
-        return quad[0];
-    }
+//    public static BakedQuad createQuad(Vec3[] verts, TextureAtlasSprite sprite) {
+//        return createQuad(verts[0], verts[1], verts[2], verts[3], sprite);
+//    }
+//
+//    public static BakedQuad createQuad(Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4, TextureAtlasSprite sprite) {
+//        return createQuad(v1, v2, v3, v4, sprite, 0xFFFFFF, 1.0f);
+//    }
+//
+//    public static BakedQuad createQuad(Vec3[] verts, TextureAtlasSprite sprite, int color) {
+//        return createQuad(verts[0], verts[1], verts[2], verts[3], sprite, color, 1.0f);
+//    }
+//
+//    public static BakedQuad createQuad(Vec3[] verts, TextureAtlasSprite sprite, int color, float alpha) {
+//        return createQuad(verts[0], verts[1], verts[2], verts[3], sprite, color, alpha);
+//    }
+//
+//    public static BakedQuad createQuad(Vec3 v1, Vec3 v2, Vec3 v3, Vec3 v4, TextureAtlasSprite sprite, int color, float alpha) {
+//        Vec3 normal = v3.subtract(v2).cross(v1.subtract(v2)).normalize();
+//        float nx = (float) normal.x;
+//        float ny = (float) normal.y;
+//        float nz = (float) normal.z;
+//
+//        int tw = sprite.contents().width();
+//        int th = sprite.contents().height();
+//
+//        float r = FastColor.ARGB32.red(color) / 255.0f;
+//        float g = FastColor.ARGB32.green(color) / 255.0f;
+//        float b = FastColor.ARGB32.blue(color) / 255.0f;
+//
+//        BakedQuad[] quad = new BakedQuad[1];
+//        QuadBakingVertexConsumer baker = new QuadBakingVertexConsumer(q -> quad[0] = q);
+//        baker.setSprite(sprite);
+//        baker.setDirection(Direction.getNearest(normal.x, normal.y, normal.z));
+//        baker.normal(nx, ny, nz).vertex(v1.x, v1.y, v1.z).uv(sprite.getU(0), sprite.getV(0)).color(r, g, b, alpha).endVertex();
+//        baker.normal(nx, ny, nz).vertex(v2.x, v2.y, v2.z).uv(sprite.getU(0), sprite.getV(th)).color(r, g, b, alpha).endVertex();
+//        baker.normal(nx, ny, nz).vertex(v3.x, v3.y, v3.z).uv(sprite.getU(tw), sprite.getV(th)).color(r, g, b, alpha).endVertex();
+//        baker.normal(nx, ny, nz).vertex(v4.x, v4.y, v4.z).uv(sprite.getU(tw), sprite.getV(0)).color(r, g, b, alpha).endVertex();
+//        return quad[0];
+//    }
 }

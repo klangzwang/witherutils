@@ -1,46 +1,30 @@
 package geni.witherutils.base.common.io.energy;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.Nullable;
 
-import geni.witherutils.api.capability.IWitherCapabilityProvider;
-import geni.witherutils.api.io.IIOConfig;
 import geni.witherutils.api.io.energy.EnergyIOMode;
+import geni.witherutils.api.lib.NBTKeys;
 
-import java.util.EnumMap;
 import java.util.function.Supplier;
 
-public class WitherEnergyStorage implements IWitherEnergyStorage, IWitherCapabilityProvider<IEnergyStorage>, INBTSerializable<CompoundTag> {
-    
-    private final IIOConfig config;
+public class WitherEnergyStorage implements IWitherEnergyStorage, INBTSerializable<CompoundTag> {
+	
     private final EnergyIOMode ioMode;
 
     private int energyStored;
 
-    private final Supplier<Integer> capacity, transferRate, usageRate;
+    private final Supplier<Integer> capacity;
+    private final Supplier<Integer> usageRate;
 
-    private final EnumMap<Direction, LazyOptional<Sided>> sideCache = new EnumMap<>(Direction.class);
-    private LazyOptional<WitherEnergyStorage> selfCache = LazyOptional.empty();
-
-    public WitherEnergyStorage(IIOConfig config, EnergyIOMode ioMode, Supplier<Integer> capacity, Supplier<Integer> transferRate, Supplier<Integer> usageRate)
-    {
-        this.config = config;
+    public WitherEnergyStorage(EnergyIOMode ioMode, Supplier<Integer> capacity, Supplier<Integer> usageRate) {
         this.ioMode = ioMode;
         this.capacity = capacity;
-        this.transferRate = transferRate;
         this.usageRate = usageRate;
-    }
-
-    @Override
-    public final IIOConfig getConfig()
-    {
-        return config;
     }
 
     @Override
@@ -48,7 +32,8 @@ public class WitherEnergyStorage implements IWitherEnergyStorage, IWitherCapabil
     {
         return ioMode;
     }
-    
+
+    // Override in BE
     protected void onContentsChanged() {}
 
     @Override
@@ -60,24 +45,35 @@ public class WitherEnergyStorage implements IWitherEnergyStorage, IWitherCapabil
     public void setEnergyStored(int energy)
     {
         energyStored = Math.min(energy, getMaxEnergyStored());
+        onContentsChanged();
     }
 
     @Override
     public int addEnergy(int energy)
     {
-        int energyBefore = energyStored;
-        energyStored = Math.min(energyStored + energy, getMaxEnergyStored());
-        onContentsChanged();
-        return energyStored - energyBefore;
+        return addEnergy(energy, false);
+    }
+
+    @Override
+    public int addEnergy(int energy, boolean simulate)
+    {
+        int energyBefore = getEnergyStored();
+        int newEnergyStored = Math.min(getEnergyStored() + energy, getMaxEnergyStored());
+        if (!simulate)
+        {
+            setEnergyStored(newEnergyStored);
+            onContentsChanged();
+        }
+        return newEnergyStored - energyBefore;
     }
 
     @Override
     public int takeEnergy(int energy)
     {
-        int energyBefore = energyStored;
-        energyStored = Math.max(energyStored - energy, 0);
+        int energyBefore = getEnergyStored();
+        setEnergyStored(Math.max(getEnergyStored() - energy, 0));
         onContentsChanged();
-        return energyBefore - energyStored;
+        return energyBefore - getEnergyStored();
     }
 
     @Override
@@ -98,12 +94,6 @@ public class WitherEnergyStorage implements IWitherEnergyStorage, IWitherCapabil
     }
 
     @Override
-    public int getMaxEnergyTransfer()
-    {
-        return transferRate.get();
-    }
-
-    @Override
     public int getMaxEnergyUse()
     {
         return usageRate.get();
@@ -112,21 +102,23 @@ public class WitherEnergyStorage implements IWitherEnergyStorage, IWitherCapabil
     @Override
     public boolean canExtract()
     {
-        return getMaxEnergyTransfer() > 0 && ioMode.canOutput();
+        return ioMode.canOutput();
     }
 
     @Override
     public boolean canReceive()
     {
-        return getMaxEnergyTransfer() > 0 && ioMode.canInput();
+        return ioMode.canInput();
     }
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate)
     {
-        if (!canReceive())
+        if (!canReceive() || getMaxEnergyStored() == 0)
+        {
             return 0;
-        int energyReceived = Math.min(getMaxEnergyStored() - getEnergyStored(), Math.min(getMaxEnergyTransfer(), maxReceive));
+        }
+        int energyReceived = Math.min(getMaxEnergyStored() - getEnergyStored(), Math.min(getMaxEnergyUse() * 2, maxReceive));
         if (!simulate)
         {
             addEnergy(energyReceived);
@@ -138,86 +130,40 @@ public class WitherEnergyStorage implements IWitherEnergyStorage, IWitherCapabil
     public int extractEnergy(int maxExtract, boolean simulate)
     {
         if (!canExtract())
+        {
             return 0;
-        int energyExtracted = Math.min(getEnergyStored(), Math.min(getMaxEnergyTransfer(), maxExtract));
+        }
+        int energyExtracted = Math.min(getEnergyStored(), maxExtract);
         if (!simulate)
         {
-            addEnergy(-energyExtracted);
+            takeEnergy(energyExtracted);
         }
         return energyExtracted;
     }
 
-    @Override
-    public Capability<IEnergyStorage> getCapabilityType()
-    {
-        return ForgeCapabilities.ENERGY;
-    }
-
-    @Override
-    public LazyOptional<IEnergyStorage> getCapability(@Nullable Direction side)
+    @Nullable
+    public IEnergyStorage getForSide(@Nullable Direction side)
     {
         if (side == null)
-        {
-            if (!selfCache.isPresent())
-                selfCache = LazyOptional.of(() -> this);
-            return selfCache.cast();
-        }
-        if (!config.getMode(side).canConnect())
-            return LazyOptional.empty();
-        return sideCache.computeIfAbsent(side, dir -> LazyOptional.of(() -> new Sided(this, dir))).cast();
+            return this;
+        return new Sided(this, side);
     }
 
     @Override
-    public void invalidateSide(@Nullable Direction side)
-    {
-        if (side != null)
-        {
-            if (sideCache.containsKey(side))
-            {
-                sideCache.get(side).invalidate();
-                sideCache.remove(side);
-            }
-        }
-        else
-        {
-            selfCache.invalidate();
-        }
-    }
-
-    @Override
-    public void invalidateCaps()
-    {
-        for (LazyOptional<Sided> side : sideCache.values())
-        {
-            side.invalidate();
-        }
-        selfCache.invalidate();
-    }
-
-    @Override
-    public CompoundTag serializeNBT()
+    public CompoundTag serializeNBT(HolderLookup.Provider lookupProvider)
     {
         CompoundTag tag = new CompoundTag();
-        tag.putInt("stored", energyStored);
+        tag.putInt(NBTKeys.ENERGY_STORED, getEnergyStored());
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt)
+    public void deserializeNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt)
     {
-        energyStored = nbt.getInt("stored");
+        energyStored = nbt.getInt(NBTKeys.ENERGY_STORED);
     }
 
-    private static class Sided implements IEnergyStorage
-    {
-        private final WitherEnergyStorage wrapped;
-        private final Direction side;
-
-        public Sided(WitherEnergyStorage wrapped, Direction side)
-        {
-            this.wrapped = wrapped;
-            this.side = side;
-        }
+    private record Sided(WitherEnergyStorage wrapped, Direction side) implements IEnergyStorage {
 
         @Override
         public int getEnergyStored()
@@ -235,7 +181,9 @@ public class WitherEnergyStorage implements IWitherEnergyStorage, IWitherCapabil
         public int receiveEnergy(int maxReceive, boolean simulate)
         {
             if (!canReceive())
+            {
                 return 0;
+            }
             return wrapped.receiveEnergy(maxReceive, simulate);
         }
 
@@ -243,32 +191,33 @@ public class WitherEnergyStorage implements IWitherEnergyStorage, IWitherCapabil
         public int extractEnergy(int maxExtract, boolean simulate)
         {
             if (!canExtract())
+            {
                 return 0;
+            }
             return wrapped.extractEnergy(maxExtract, simulate);
         }
 
         @Override
         public boolean canExtract()
         {
-            if (wrapped.getIOMode().respectIOConfig() && !wrapped.getConfig().getMode(side).canOutput())
+            if (wrapped.getIOMode().respectIOConfig())
+            {
                 return false;
+            }
             return wrapped.canExtract();
         }
-
+        
         @Override
         public boolean canReceive()
         {
-            if (wrapped.getIOMode().respectIOConfig() && !wrapped.getConfig().getMode(side).canInput())
+            if (wrapped.getIOMode().respectIOConfig())
+            {
                 return false;
+            }
             return wrapped.canReceive();
         }
     }
-    
-    /*
-     * 
-     * NEW
-     * 
-     */
+	
     public void produceEnergy(long energy)
     {
         this.energyStored += energy;

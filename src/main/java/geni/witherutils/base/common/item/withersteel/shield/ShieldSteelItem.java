@@ -1,17 +1,9 @@
 package geni.witherutils.base.common.item.withersteel.shield;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import javax.annotation.Nonnull;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-
 import geni.witherutils.base.common.base.WitherItem;
-import geni.witherutils.base.common.init.WUTItems;
 import geni.witherutils.base.common.init.WUTSounds;
-import geni.witherutils.base.common.item.withersteel.IWitherSteelItem;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -20,31 +12,28 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.common.extensions.IForgeItem;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
-public class ShieldSteelItem extends WitherItem implements IWitherSteelItem, IForgeItem {
+public class ShieldSteelItem extends WitherItem {
 	
 	private final Enum<ShieldType> type;
 	
 	public ShieldSteelItem(Enum<ShieldType> type)
 	{
-		super(new Item.Properties().stacksTo(1).fireResistant().defaultDurability(1024));
+		super(new Item.Properties().stacksTo(1).fireResistant().durability(1024));
 		this.type = type;
         if(FMLEnvironment.dist.isClient())
         {
@@ -55,14 +44,14 @@ public class ShieldSteelItem extends WitherItem implements IWitherSteelItem, IFo
     @OnlyIn(Dist.CLIENT)
     public void registerShieldProperty()
     {
-    	ItemProperties.register(this, new ResourceLocation("blocking"), (stack, world, entity, i) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
+    	ItemProperties.register(this, ResourceLocation.withDefaultNamespace("blocking"), (stack, world, entity, i) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
     }
     
-	@Override
-	public int getUseDuration(ItemStack stack)
-	{
+    @Override
+    public int getUseDuration(ItemStack pStack, LivingEntity pEntity)
+    {
 		return 72000;
-	}
+    }
 
     @Override
     public boolean isBarVisible(ItemStack pStack)
@@ -92,29 +81,29 @@ public class ShieldSteelItem extends WitherItem implements IWitherSteelItem, IFo
     }
     public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair)
     {
-        return repair.getItem() == WUTItems.WITHERSTEEL_INGOT.get();
+        return repair.getItem() == Items.IRON_INGOT;
     }
-
-	@Override
-    @Nonnull
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot, ItemStack stack)
-    {
-        Multimap<Attribute, AttributeModifier> multimap = Multimaps.newSetMultimap(new HashMap<>(), HashSet::new);
-        if (equipmentSlot == EquipmentSlot.MAINHAND || equipmentSlot == EquipmentSlot.OFFHAND)
-        {
-        	if(type == ShieldType.BASIC)
-        	{
-            	multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("Armor Toughness", 2.0D, Operation.ADDITION));
-            	multimap.put(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier("Knockback Resistance", 0.2D, Operation.ADDITION));
-        	}
-        	if(type == ShieldType.ADVANCED)
-        	{
-            	multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("Armor Toughness", 6.0D, Operation.ADDITION));
-            	multimap.put(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier("Knockback Resistance", 0.4D, Operation.ADDITION));
-        	}
-        }
-        return multimap;
-    }
+    
+//	@Override
+//    @Nonnull
+//    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot, ItemStack stack)
+//    {
+//        Multimap<Attribute, AttributeModifier> multimap = Multimaps.newSetMultimap(new HashMap<>(), HashSet::new);
+//        if (equipmentSlot == EquipmentSlot.MAINHAND || equipmentSlot == EquipmentSlot.OFFHAND)
+//        {
+//        	if(type == ShieldType.BASIC)
+//        	{
+//            	multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("Armor Toughness", 2.0D, Operation.ADDITION));
+//            	multimap.put(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier("Knockback Resistance", 0.2D, Operation.ADDITION));
+//        	}
+//        	if(type == ShieldType.ADVANCED)
+//        	{
+//            	multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("Armor Toughness", 6.0D, Operation.ADDITION));
+//            	multimap.put(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier("Knockback Resistance", 0.4D, Operation.ADDITION));
+//        	}
+//        }
+//        return multimap;
+//    }
     
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity)
@@ -132,13 +121,24 @@ public class ShieldSteelItem extends WitherItem implements IWitherSteelItem, IFo
 		ItemStack itemstack = player.getItemInHand(hand);
 		player.startUsingItem(hand);
 		world.playSound((Player)null, player.getX(), player.getY(), player.getZ(), WUTSounds.PLACEBOOMTWO.get(), SoundSource.NEUTRAL, 0.75F, 0.5F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
+
+//        if (!world.isClientSide)
+//        {
+//        	BoomerangEntity entity = new BoomerangEntity(world, player);
+//            entity.setItem(itemstack);
+//            entity.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+//            world.addFreshEntity(entity);
+//        }
+
 		return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemstack);
 	}
+	
 	@Override
-	public boolean canPerformAction(ItemStack stack, ToolAction toolAction)
+	public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility)
 	{
-		return ToolActions.DEFAULT_SHIELD_ACTIONS.contains(toolAction);
+		return ItemAbility.getActions().contains(ItemAbility.get("shield_block"));
 	}
+	
 	@Nonnull
 	@Override
 	public UseAnim getUseAnimation(ItemStack stack)
@@ -205,4 +205,33 @@ public class ShieldSteelItem extends WitherItem implements IWitherSteelItem, IFo
     		return solarType.ordinal();
     	}
     }
+	
+	public void hitShield(ItemStack stack, Player player, DamageSource source, float amount, LivingDamageEvent event)
+	{
+	}
+	
+//	@Override
+//	public void releaseUsing(ItemStack stack, Level world, LivingEntity entity, int chargeTimer)
+//	{
+//		int charge = this.getUseDuration(stack, entity) - chargeTimer;
+//		float percentageCharged = BowItem.getPowerForTime(charge);
+//		if (percentageCharged < 0.1)
+//		{
+//			return;
+//		}
+//
+//		if (entity instanceof Player == false)
+//		{
+//			return;
+//		}
+//		
+//		Player player = (Player) entity;
+//		BoomerangEntity e = new BoomerangEntity(world, player);
+//		
+//		shootMe(world, player, e, 0, percentageCharged * 1.5F);
+//		ItemStackUtil.damageItem(player, stack);
+//		player.setItemInHand(player.getUsedItemHand(), ItemStack.EMPTY);
+//		e.setBoomerangThrown(stack.copy());
+//		e.setOwner(player);
+//	}
 }

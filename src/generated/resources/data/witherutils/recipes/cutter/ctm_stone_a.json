@@ -1,7 +1,0 @@
-{
-  "type": "witherutils:cutter",
-  "ingredient": {
-    "item": "minecraft:stone"
-  },
-  "result": "witherutils:ctm_stone_a"
-}

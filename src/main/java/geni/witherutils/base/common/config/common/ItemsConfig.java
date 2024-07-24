@@ -1,25 +1,25 @@
 package geni.witherutils.base.common.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ItemsConfig {
 
-	public static ForgeConfigSpec.ConfigValue<Integer> WANDENERGY;
-	public static ForgeConfigSpec.ConfigValue<Integer> WANDENERGYUSE;
-	public static ForgeConfigSpec.ConfigValue<Integer> WANDPORTDELAY;
-	public static ForgeConfigSpec.ConfigValue<Integer> SHIELDENERGY;
-	public static ForgeConfigSpec.ConfigValue<Integer> SHIELDENERGYUSE;
-	public static ForgeConfigSpec.ConfigValue<Integer> SWORDENERGY;
-	public static ForgeConfigSpec.ConfigValue<Integer> SWORDENERGYUSE;
-	public static ForgeConfigSpec.ConfigValue<Boolean> SPAWNWITHERWORMS;
-	public static ForgeConfigSpec.ConfigValue<Boolean> ANVILFASTHITCOUNTER;
-	public static ForgeConfigSpec.ConfigValue<Double> ANVILFOODEXHAUSTION;
-	public static ForgeConfigSpec.ConfigValue<Boolean> ANVILCOOLDOWN;
+	public static ModConfigSpec.ConfigValue<Integer> WANDENERGY;
+	public static ModConfigSpec.ConfigValue<Integer> WANDENERGYUSE;
+	public static ModConfigSpec.ConfigValue<Integer> WANDPORTDELAY;
+	public static ModConfigSpec.ConfigValue<Integer> SHIELDENERGY;
+	public static ModConfigSpec.ConfigValue<Integer> SHIELDENERGYUSE;
+	public static ModConfigSpec.ConfigValue<Integer> SWORDENERGY;
+	public static ModConfigSpec.ConfigValue<Integer> SWORDENERGYUSE;
+	public static ModConfigSpec.ConfigValue<Boolean> SPAWNWITHERWORMS;
+	public static ModConfigSpec.ConfigValue<Boolean> ANVILFASTHITCOUNTER;
+	public static ModConfigSpec.ConfigValue<Double> ANVILFOODEXHAUSTION;
+	public static ModConfigSpec.ConfigValue<Boolean> ANVILCOOLDOWN;
 	
-    public ItemsConfig(ForgeConfigSpec.Builder builder)
+    public ItemsConfig(ModConfigSpec.Builder builder)
     {
     	builder.push("items");
-    	
+
 	    	builder.push("wand");
 	    	
 				builder.push("wandEnergyCapacity");

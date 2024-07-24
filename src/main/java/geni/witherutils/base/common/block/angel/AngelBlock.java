@@ -10,10 +10,10 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
@@ -33,20 +33,42 @@ public class AngelBlock extends WitherAbstractBlock implements Fallable {
 	}
 
 	@Override
+	public AngelBlockItem getBlockItem(Item.Properties properties)
+	{
+		return new AngelBlockItem(this, properties.stacksTo(12));
+	}
+
+	@Override
 	public List<ItemStack> getDrops(BlockState state, Builder builder)
 	{
 		List<ItemStack> dropsOriginal = new ArrayList<>();
-		dropsOriginal.add(new ItemStack(WUTBlocks.CASE_BIG.get(), 1));
+		
+//		Collection<RecipeHolder<?>> list = builder.getLevel().getServer().getRecipeManager().getRecipes();
+//		for(RecipeHolder<?> recipe : list)
+//		{
+//			if(recipe.value().getType() == RecipeType.CRAFTING)
+//			{
+//				if(new ItemStack(state.getBlock()).getItem() == recipe.value().getResultItem(builder.getLevel().registryAccess()).getItem() &&
+//						ItemStack.matches(new ItemStack(state.getBlock()), recipe.value().getResultItem(builder.getLevel().registryAccess())))
+//				{
+//					System.out.println("");
+//					dropsOriginal = recipe.value().getIngredients().stream().flatMap(ingredient -> Arrays.stream(ingredient.getItems()).filter(stack ->
+//					!stack.hasCraftingRemainingItem()).findAny().map(Stream::of).orElseGet(Stream::empty)).collect(Collectors.toList());
+//				}
+//			}
+//		}
+
+		dropsOriginal.add(new ItemStack(WUTBlocks.CASE.get(), 1));
 		dropsOriginal.add(new ItemStack(Items.GOLD_NUGGET, 4));
 		dropsOriginal.add(new ItemStack(Items.FEATHER, 4));
 		return dropsOriginal;
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+	public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit)
 	{
 		world.scheduleTick(pos, this, 2);
-		return super.use(state, world, pos, player, hand, hit);
+		return super.useWithoutItem(state, world, pos, player, hit);
 	}
 
 	@Override

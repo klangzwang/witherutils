@@ -2,19 +2,18 @@ package geni.witherutils.base.common.block.angel;
 
 import javax.annotation.Nonnull;
 
+import geni.witherutils.core.common.item.ItemBlock;
 import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
-public class AngelBlockItem extends BlockItem {
+public class AngelBlockItem extends ItemBlock<Block> {
 
 	public AngelBlockItem(Block blockIn, Properties builder)
 	{
@@ -40,7 +39,7 @@ public class AngelBlockItem extends BlockItem {
 			level.setBlock(pos, getBlock().defaultBlockState(), 2);
 	        if(!player.isCreative())
 	        	itemstack.shrink(1);
-	        SoundUtil.playSoundFromServer((ServerPlayer) player, SoundEvents.BONE_BLOCK_PLACE, 1.0f, 1.0f);
+	        SoundUtil.playSoundDistrib(level, pos, SoundEvents.BONE_BLOCK_PLACE, 1.0f, 1.0f, false, true);
 		}
 		return InteractionResultHolder.success(itemstack);
 	}

@@ -1,6 +1,0 @@
-{
-	"loader": "forge:obj",
-	"flip_v": true,
-	"emissive_ambient": false,
-	"model" : "witherutils:models/wither/sphere/spherehemis.obj"
-}

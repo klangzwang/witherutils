@@ -1,8 +1,10 @@
 package geni.witherutils.core.common.util;
 
+import geni.witherutils.base.common.config.client.EffectsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -12,9 +14,58 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.phys.Vec3;
 
 public class SoundUtil {
+
+	public static void playSoundDistrib(LevelAccessor levelacc, BlockPos pos, SoundEvent soundIn, float volume, float pitch)
+	{
+		playSoundDistrib(levelacc, pos, soundIn, volume, pitch, false, false);
+	}
+	public static void playSoundDistrib(LevelAccessor levelacc, BlockPos pos, SoundEvent soundIn, float volume, float pitch, boolean randomvolume, boolean randompitch)
+	{
+		playSoundDistrib(levelacc, pos, soundIn, volume, pitch, randompitch, randompitch, 0);
+	}
+    @SuppressWarnings("resource")
+	public static void playSoundDistrib(LevelAccessor levelacc, BlockPos pos, SoundEvent soundIn, float volume, float pitch, boolean randomvolume, boolean randompitch, int distanceTo)
+    {
+		if (!EffectsConfig.CAN_SOUNDS.get())
+			return;
+    	
+		if (levelacc instanceof Level level)
+		{
+	    	float vol = randomvolume ? volume * ((level.random.nextFloat() - level.random.nextFloat()) * 0.7F + 1.8F) : volume;
+	    	float pit = randompitch ? pitch * ((level.random.nextFloat() - level.random.nextFloat()) * 0.7F + 1.8F) : pitch;
+
+	    	if(distanceTo > 0)
+	    	{
+	        	float distance = (float) Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(pos.getX(), pos.getY(), pos.getZ());
+	            float filledDistance = distance / (float) distanceTo;
+	        	float fader = Math.min(filledDistance, 1.0f);
+	        	if(distanceTo <= 30)
+	        	{
+	        		vol -= fader;
+	        	}
+	    	}
+
+	    	if(!level.isClientSide)
+	    	{
+		        level.playSound(null, pos, soundIn, SoundSource.BLOCKS, vol, pit);
+//	        	if(level instanceof ServerLevel serverLevel)
+//	        	{
+//	                for (ServerPlayer sp : serverLevel.players())
+//	                {
+//	                	sp.connection.send(new ClientboundSoundPacket(Holder.direct(soundIn), SoundSource.BLOCKS, pos.getX(), pos.getY(), pos.getZ(), pit, vol, 0));
+//	                }
+//	        	}
+	    	}
+	    	else
+	    	{
+		        level.playLocalSound(pos, soundIn, SoundSource.BLOCKS, vol, pit, false);
+	    	}
+		}
+    }
 
     public static void playSound(Level world, BlockPos pos, SoundEvent soundIn)
     {
@@ -76,7 +127,7 @@ public class SoundUtil {
     }
     public static void playSoundFromServerById(ServerLevel world, BlockPos pos, String sid)
     {
-        SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(sid));
+        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace(sid));
         if (sound != null)
         {
             for (ServerPlayer sp : world.players())
@@ -87,7 +138,7 @@ public class SoundUtil {
     }
     public static void playSoundById(Player player, String sid)
     {
-        SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(sid));
+        SoundEvent sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.withDefaultNamespace(sid));
         if (sound != null && player.level().isClientSide)
         {
             SoundUtil.playSound(player, sound);
@@ -115,6 +166,17 @@ public class SoundUtil {
             {
                 playSoundFromServer(sp, pos, soundIn, volume, pitch);
             }
+    	}
+    }
+    
+    public static void playDistanceEntitySound(Entity entity, Minecraft mc, Level level, Vec3 pos, SoundEvent nearSoundIn, int distanceTo)
+    {
+    	float distance = (float) mc.gameRenderer.getMainCamera().getPosition().distanceToSqr(pos.x, pos.y, pos.z);
+        float filledDistance = distance / (float) distanceTo;
+    	float fader = Math.min(filledDistance, 1.0f);
+    	if(distanceTo <= 30)
+    	{
+    		level.playSound(entity, new BlockPos((int) pos.x, (int) pos.y, (int) pos.z), nearSoundIn, SoundSource.HOSTILE, 0.8f - fader, 1F);
     	}
     }
 }

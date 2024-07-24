@@ -1,8 +1,6 @@
 {
-  "pack": {
-    "description": {
-      "text": "witherutils resources"
-    },
-    "pack_format": 15
-  }
+    "pack": {
+        "description": "WitherUtils resource pack.",
+        "pack_format": 8
+    }
 }

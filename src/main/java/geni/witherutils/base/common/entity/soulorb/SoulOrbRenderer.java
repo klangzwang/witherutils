@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
-import geni.witherutils.WitherUtils;
+import geni.witherutils.api.WitherUtilsRegistry;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -16,13 +16,13 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SoulOrbRenderer extends EntityRenderer<SoulOrb> {
 
-	private static final ResourceLocation SOULORB = new ResourceLocation(WitherUtils.MODID, "textures/model/entity/soulorb.png");
+	private static final ResourceLocation SOULORB = WitherUtilsRegistry.loc("textures/block/model/entity/soulorb.png");
 	private static final RenderType RENDER_TYPE = RenderType.itemEntityTranslucentCull(SOULORB);
 
 	public SoulOrbRenderer(EntityRendererProvider.Context context)
@@ -79,7 +79,7 @@ public class SoulOrbRenderer extends EntityRenderer<SoulOrb> {
 
 	private static void vertex(VertexConsumer vertexconsumer, Matrix4f matrix4f, Matrix3f matrix3f, float x, float y, int r, int g, int b, float u, float v, int lightcolor)
 	{
-		vertexconsumer.vertex(matrix4f, x, y, 0.0F).color(r, g, b, 255).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(lightcolor).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+		vertexconsumer.addVertex(matrix4f, x, y, 0.0F).setColor(r, g, b, 255).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(lightcolor).setNormal(0.0F, 1.0F, 0.0F);
 	}
 
 	public ResourceLocation getTextureLocation(SoulOrb p_114597_)

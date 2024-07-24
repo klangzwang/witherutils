@@ -1,36 +1,49 @@
 package geni.witherutils.core.common.blockentity;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Objects;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import geni.witherutils.api.UseOnly;
-import geni.witherutils.api.capability.IWitherCapabilityProvider;
-import geni.witherutils.core.common.sync.EnderDataSlot;
-import geni.witherutils.core.common.sync.SyncMode;
+import geni.witherutils.core.common.network.ClientboundDataSlotChange;
+import geni.witherutils.core.common.network.NetworkDataSlot;
+import geni.witherutils.core.common.network.ServerboundCDataSlotUpdate;
+import io.netty.buffer.Unpooled;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -38,17 +51,28 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.LogicalSide;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class WitherBlockEntity extends BlockEntity implements Container {
 	
-    private final List<UUID> lastSyncedToPlayers = new ArrayList<>();
-    private final List<EnderDataSlot<?>> dataSlots = new ArrayList<>();
-    private final List<EnderDataSlot<?>> clientDecidingDataSlots = new ArrayList<>();
-    private final Map<Capability<?>, IWitherCapabilityProvider<?>> capabilityProviders = new HashMap<>();
+    public static final String DATA = "Data";
+    public static final String INDEX = "Index";
+    
+    private final List<NetworkDataSlot<?>> dataSlots = new ArrayList<>();
+    private final List<Runnable> afterDataSync = new ArrayList<>();
 
+    private final Map<BlockCapability<?, ?>, EnumMap<Direction, BlockCapabilityCache<?, ?>>> selfCapabilities = new HashMap<>();
+    private final Map<BlockCapability<?, ?>, EnumMap<Direction, BlockCapabilityCache<?, ?>>> neighbourCapabilities = new HashMap<>();
+    
     public WitherBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState)
     {
         super(type, worldPosition, blockState);
@@ -65,192 +89,159 @@ public class WitherBlockEntity extends BlockEntity implements Container {
             blockEntity.serverTick();
         }
     }
+
     public void serverTick()
     {
         if (level != null && !level.isClientSide)
         {
             sync();
-            setChanged();
+            level.blockEntityChanged(worldPosition);
         }
     }
     public void clientTick()
     {
     }
-    public boolean isClientSide()
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries)
     {
-        if (level != null)
-            return level.isClientSide;
-        return false;
+        ListTag dataList = new ListTag();
+        for (int i = 0; i < dataSlots.size(); i++)
+        {
+            var slot = dataSlots.get(i);
+            var nbt = slot.save(registries, true);
+
+            CompoundTag slotTag = new CompoundTag();
+            slotTag.putInt(INDEX, i);
+            slotTag.put(DATA, nbt);
+
+            dataList.add(slotTag);
+        }
+
+        CompoundTag data = new CompoundTag();
+        data.put(DATA, dataList);
+        return data;
     }
 
-    @Nullable
     @Override
-    public ClientboundBlockEntityDataPacket getUpdatePacket()
+    public void handleUpdateTag(CompoundTag syncData, HolderLookup.Provider lookupProvider)
     {
-        return createUpdatePacket(false, SyncMode.WORLD);
-    }
-    
-    @Nullable
-    public ClientboundBlockEntityDataPacket createUpdatePacket(boolean fullUpdate, SyncMode mode)
-    {
-        CompoundTag nbt = new CompoundTag();
-        ListTag listNBT = new ListTag();
-        for (int i = 0; i < this.dataSlots.size(); i++)
+        if (syncData.contains(DATA, Tag.TAG_LIST))
         {
-            EnderDataSlot<?> dataSlot = this.dataSlots.get(i);
-            if (dataSlot.getSyncMode() == mode)
+            ListTag dataList = syncData.getList(DATA, Tag.TAG_COMPOUND);
+
+            for (Tag dataEntry : dataList)
             {
-                Optional<CompoundTag> optionalNBT = fullUpdate ? Optional.of(dataSlot.toFullNBT()) : dataSlot.toOptionalNBT();
-                if (optionalNBT.isPresent())
+                if (dataEntry instanceof CompoundTag slotData)
                 {
-                    CompoundTag elementNBT = optionalNBT.get();
-                    elementNBT.putInt("dataSlotIndex", i);
-                    listNBT.add(elementNBT);
+                    int slotIdx = slotData.getInt(INDEX);
+                    dataSlots.get(slotIdx).parse(lookupProvider, Objects.requireNonNull(slotData.get(DATA)));
                 }
             }
-        }
 
-        if (listNBT.isEmpty())
-            return null;
-
-        nbt.put("data", listNBT);
-        return new ClientboundBlockEntityDataPacket(getBlockPos(), getType(), nbt);
-    }
-
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt)
-    {
-        CompoundTag nbt = pkt.getTag();
-        if (nbt != null && nbt.contains("data", Tag.TAG_LIST)) {
-            ListTag listNBT = nbt.getList("data", Tag.TAG_COMPOUND);
-            for (Tag tag : listNBT)
+            for (Runnable task : afterDataSync)
             {
-                CompoundTag elementNBT = (CompoundTag) tag;
-                int dataSlotIndex = elementNBT.getInt("dataSlotIndex");
-                dataSlots.get(dataSlotIndex).handleNBT(elementNBT);
+                task.run();
             }
         }
     }
 
-    public void addDataSlot(EnderDataSlot<?> slot)
+	private byte @Nullable [] createBufferSlotUpdate()
+    {
+	    @SuppressWarnings("deprecation")
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), level.registryAccess());
+        int amount = 0;
+        for (int i = 0; i < dataSlots.size(); i++)
+        {
+            var networkDataSlot = dataSlots.get(i);
+            if (networkDataSlot.doesNeedUpdate())
+            {
+                amount ++;
+                buf.writeInt(i);
+                networkDataSlot.write(buf);
+            }
+        }
+
+        if (amount == 0)
+        {
+            return null;
+        }
+
+        FriendlyByteBuf result = new FriendlyByteBuf(Unpooled.buffer());
+        result.writeInt(amount);
+        result.writeBytes(buf.copy());
+        return result.array();
+    }
+
+    public <T extends NetworkDataSlot<?>> T addDataSlot(T slot)
     {
         dataSlots.add(slot);
-    }
-    public void addClientDecidingDataSlot(EnderDataSlot<?> slot)
-    {
-        clientDecidingDataSlots.add(slot);
-    }
-    public void add2WayDataSlot(EnderDataSlot<?> slot)
-    {
-        addDataSlot(slot);
-        addClientDecidingDataSlot(slot);
+        return slot;
     }
 
-    @UseOnly(LogicalSide.SERVER)
-    private void sync()
+    public void addAfterSyncRunnable(Runnable runnable)
     {
-        ClientboundBlockEntityDataPacket fullUpdate = createUpdatePacket(true, SyncMode.WORLD);
-        ClientboundBlockEntityDataPacket partialUpdate = getUpdatePacket();
-
-        List<UUID> currentlyTracking = new ArrayList<>();
-
-        getTrackingPlayers().forEach(serverPlayer -> {
-            currentlyTracking.add(serverPlayer.getUUID());
-            if (lastSyncedToPlayers.contains(serverPlayer.getUUID()))
-            {
-                sendPacket(serverPlayer, partialUpdate);
-            }
-            else
-            {
-                sendPacket(serverPlayer, fullUpdate);
-            }
-        });
-        lastSyncedToPlayers.clear();
-        lastSyncedToPlayers.addAll(currentlyTracking);
+        afterDataSync.add(runnable);
     }
 
-    public void sendPacket(ServerPlayer player, @Nullable Packet<?> packet)
+	@UseOnly(LogicalSide.CLIENT)
+    public <T> void clientUpdateSlot(@Nullable NetworkDataSlot<T> slot, T value)
     {
-        if (packet != null)
-            player.connection.send(packet);
-    }
-
-    @SuppressWarnings("resource")
-    @UseOnly(LogicalSide.SERVER)
-    private List<ServerPlayer> getTrackingPlayers()
-    {
-        return ((ServerChunkCache)level.getChunkSource()).chunkMap.getPlayers(new ChunkPos(worldPosition), false);
-    }
-
-    public List<EnderDataSlot<?>> getDataSlots()
-    {
-        return dataSlots;
-    }
-
-    public List<EnderDataSlot<?>> getClientDecidingDataSlots()
-    {
-        return clientDecidingDataSlots;
-    }
-
-    public Map<Capability<?>, IWitherCapabilityProvider<?>> getCapabilityProviders()
-    {
-        return capabilityProviders;
-    }
-    public void addCapabilityProvider(IWitherCapabilityProvider<?> provider)
-    {
-        capabilityProviders.put(provider.getCapabilityType(), provider);
-    }
-    public void invalidateCaps(@Nullable Direction side)
-    {
-        for (IWitherCapabilityProvider<?> capProvider : capabilityProviders.values())
+        if (slot == null)
         {
-            capProvider.invalidateCaps();
+            return;
+        }
+        if (dataSlots.contains(slot))
+        {
+            @SuppressWarnings("deprecation")
+            RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), level.registryAccess());
+            buf.writeInt(dataSlots.indexOf(slot));
+            slot.write(buf, value);
+            PacketDistributor.sendToServer(new ClientboundDataSlotChange(getBlockPos(), buf.array()));
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), Block.UPDATE_NEIGHBORS);
         }
     }
 
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side)
-    {
-        if (capabilityProviders.containsKey(cap))
+	@UseOnly(LogicalSide.SERVER)
+    public void sync()
+	{
+        var syncData = createBufferSlotUpdate();
+        if (syncData != null && level instanceof ServerLevel serverLevel)
         {
-            return capabilityProviders.get(cap).getCapability(side).cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    @Override
-    public void invalidateCaps()
-    {
-        super.invalidateCaps();
-        for (IWitherCapabilityProvider<?> provider : capabilityProviders.values())
-        {
-            provider.invalidateCaps();
+            PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(getBlockPos()),
+                new ServerboundCDataSlotUpdate(getBlockPos(), syncData));
         }
     }
 
-    public void onNeighborBlockChange(BlockState state, Level level, BlockPos pos, Block block, BlockPos newpos, boolean value)
-    {
+	@UseOnly(LogicalSide.CLIENT)
+    public void clientHandleBufferSync(RegistryFriendlyByteBuf buf)
+	{
+        for (int amount = buf.readInt(); amount > 0; amount--)
+        {
+            int index = buf.readInt();
+            dataSlots.get(index).read(buf);
+        }
+        for (Runnable task : afterDataSync)
+        {
+            task.run();
+        }
     }
-    public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
-    {
+
+	@UseOnly(LogicalSide.SERVER)
+    public void serverHandleBufferChange(RegistryFriendlyByteBuf buf)
+	{
+        int index;
+        try
+        {
+            index = buf.readInt();
+        }
+        catch (Exception e)
+        {
+            throw new IllegalStateException("Invalid buffer was passed over the network to the server.");
+        }
+        dataSlots.get(index).read(buf);
     }
-    public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate)
-    {
-    }
-    public void onRemoved(Level level, BlockState state, BlockState newstate, boolean isMoving)
-    {
-    }
-    public void rotateBlock(Rotation axis)
-    {
-    }
-    public void onAdded(Level world, BlockState state, BlockState oldState, boolean isMoving)
-    {
-    }
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
-    {
-        return InteractionResult.PASS;
-    }
-    
+
     public Direction getCurrentFacing()
     {
         if(this.getBlockState().hasProperty(BlockStateProperties.FACING))
@@ -261,9 +252,53 @@ public class WitherBlockEntity extends BlockEntity implements Container {
         {
             return this.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
         }
-        return null;
+        return Direction.SOUTH;
     }
+    
+    /*
+     * 
+     * RENDERING
+     * 
+     */
+	@SuppressWarnings("deprecation")
+	@OnlyIn(Dist.CLIENT)
+    public void renderBakedModel(final BlockGetter world, final MultiBufferSource renderer, final BlockRenderDispatcher blockRenderer, final BakedModel model, PoseStack matrixstack)
+    {
+    	matrixstack.translate(0, 1, 0);
+    	VertexConsumer vconsumer = renderer.getBuffer(RenderType.solid());
+    	int light = LevelRenderer.getLightColor(level, worldPosition.above());
+        blockRenderer.getModelRenderer().renderModel(matrixstack.last(), vconsumer, world.getBlockState(worldPosition), model, 0f, 0f, 0f, light, OverlayTexture.NO_OVERLAY);
+    }
+	
+    /**
+     * 
+     * BLOCK
+     * 
+     */
+    public void onNeighborBlockChange(BlockState state, LevelReader level, BlockPos pos, Block block, BlockPos newpos, boolean value) {}
+    public void onBlockPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {}
+    public void onReplaced(Level world, BlockPos pos, BlockState state, BlockState newstate) {}
+    public void onRemoved(Level level, BlockState state, BlockState newstate, boolean isMoving) {}
+    public void rotateBlock(Rotation axis) {}
+    public void onAdded(Level world, BlockState state, BlockState oldState, boolean isMoving) {}
+    public InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHitResult) { return InteractionResult.PASS; }
+    public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
+    
+    public void popRecipeExperience(ServerPlayer serverplayer, float count) {}
 
+    public boolean stillValid(Player pPlayer)
+    {
+        if (this.level == null)
+        {
+            return false;
+        }
+        if (this.level.getBlockEntity(this.worldPosition) != this)
+        {
+            return false;
+        }
+        return pPlayer.canInteractWithBlock(this.worldPosition, 1.5);
+    }
+    
     /**
      * 
      * RECIPE
@@ -310,22 +345,119 @@ public class WitherBlockEntity extends BlockEntity implements Container {
     {
     }
     
-    public void popExperience(ServerPlayer serverplayer, int count) {}
-    
-    public boolean stillValid(Player pPlayer)
+    /**
+     * 
+     * CAPABILITY
+     * 
+     */
+    @SuppressWarnings("unchecked")
+	@Nullable
+    protected <T> T getSelfCapability(BlockCapability<T, Direction> capability, Direction side)
     {
-        if (this.level.getBlockEntity(this.worldPosition) != this)
-            return false;
-        return pPlayer.distanceToSqr(this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 0.5D, this.worldPosition.getZ() + 0.5D) <= 64.0D;
+        if (level == null)
+        {
+            return null;
+        }
+
+        if (!selfCapabilities.containsKey(capability))
+        {
+            selfCapabilities.put(capability, new EnumMap<>(Direction.class));
+            for (Direction direction : Direction.values())
+            {
+                populateSelfCachesFor(direction, capability);
+            }
+        }
+
+        if (!selfCapabilities.get(capability).containsKey(side))
+        {
+            return null;
+        }
+
+        return (T) selfCapabilities.get(capability).get(side).getCapability();
+    }
+
+    private void populateSelfCachesFor(Direction direction, BlockCapability<?, Direction> capability)
+    {
+        if (level instanceof ServerLevel serverLevel)
+        {
+            selfCapabilities.get(capability).put(direction, BlockCapabilityCache.create(capability, serverLevel, getBlockPos(), direction));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+	@Nullable
+    protected <T> T getNeighbouringCapability(BlockCapability<T, Direction> capability, Direction side)
+    {
+        if (level == null)
+        {
+            return null;
+        }
+
+        if (!neighbourCapabilities.containsKey(capability))
+        {
+            neighbourCapabilities.put(capability, new EnumMap<>(Direction.class));
+            for (Direction direction : Direction.values())
+            {
+                populateNeighbourCachesFor(direction, capability);
+            }
+        }
+        if (!neighbourCapabilities.get(capability).containsKey(side))
+        {
+            return null;
+        }
+        return (T) neighbourCapabilities.get(capability).get(side).getCapability();
+    }
+
+    private void populateNeighbourCachesFor(Direction direction, BlockCapability<?, Direction> capability)
+    {
+        if (level instanceof ServerLevel serverLevel)
+        {
+            BlockPos neighbourPos = getBlockPos().relative(direction);
+            neighbourCapabilities.get(capability).put(direction, BlockCapabilityCache.create(capability, serverLevel, neighbourPos, direction.getOpposite()));
+        }
     }
     
-    @Override
-    public CompoundTag getUpdateTag()
-    {
-        CompoundTag syncData = super.getUpdateTag();
-        this.saveAdditional(syncData);
-        return syncData;
+    public boolean hasItemCapability() {
+        return true;
     }
-    
-    public void setGhostSlotContents(int slot, ItemStack stack) {}
+
+    public boolean hasFluidCapability() {
+        return false;
+    }
+
+    public boolean hasEnergyCapability() {
+        return false;
+    }
+
+    public final IItemHandler getItemHandler() {
+        return getItemHandler(null);
+    }
+
+    public final IFluidHandler getFluidHandler() {
+        return getFluidHandler(null);
+    }
+
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
+        return null;
+    }
+
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        return null;
+    }
+
+    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+        return null;
+    }
+
+    public BlockCapabilityCache<IItemHandler,Direction> createItemHandlerCache(Direction dir) {
+        return getLevel() instanceof ServerLevel serverLevel ?
+                BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
+                null;
+    }
+
+    public BlockCapabilityCache<IFluidHandler,Direction> createFluidHandlerCache(Direction dir) {
+        return getLevel() instanceof ServerLevel serverLevel ?
+                BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
+                null;
+    }
 }

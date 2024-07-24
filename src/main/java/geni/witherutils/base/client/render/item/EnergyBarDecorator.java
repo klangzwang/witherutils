@@ -1,30 +1,29 @@
 package geni.witherutils.base.client.render.item;
 
-import geni.witherutils.core.common.util.EnergyUtil;
+import geni.witherutils.base.common.base.WitherItemEnergy;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.IItemDecorator;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.client.IItemDecorator;
 
 public class EnergyBarDecorator implements IItemDecorator {
 	
     public static final EnergyBarDecorator INSTANCE = new EnergyBarDecorator();
-    
-    public static final int BAR_COLOR = 0x00FFFFFF;
+    public static final int BAR_COLOR = 0x00B168E4;
 
     @Override
     public boolean render(GuiGraphics guiGraphics, Font font, ItemStack stack, int xOffset, int yOffset)
     {
-        if(EnergyUtil.getMaxEnergyStored(stack) <= 0)
+        int maxEnergyStored = WitherItemEnergy.getMaxEnergyStored(stack);
+        if (maxEnergyStored <= 0)
         {
             return false;
         }
-        float fillRatio = stack
-            .getCapability(ForgeCapabilities.ENERGY)
-            .map(energyStorage -> 1.0f - (float) energyStorage.getEnergyStored() / (float) energyStorage.getMaxEnergyStored())
-            .orElse(0f);
+        int energyStored = WitherItemEnergy.getEnergyStored(stack);
+        float fillRatio = energyStored / (float)maxEnergyStored;
         ItemBarRenderer.renderBar(guiGraphics, fillRatio, xOffset, yOffset, 0, BAR_COLOR);
         return false;
     }
 }
+
+

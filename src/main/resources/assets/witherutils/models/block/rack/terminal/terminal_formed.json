@@ -1,7 +1,0 @@
-{
-  "parent": "witherutils:block/rack/terminal/terminal",
-  "textures": {
-    "north":  "witherutils:block/rack/terminal_formed",
-    "south":  "witherutils:block/rack/terminal_formed"
-  }
-}

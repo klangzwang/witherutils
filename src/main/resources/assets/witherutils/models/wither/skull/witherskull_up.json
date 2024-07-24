@@ -1,0 +1,32 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"5": "witherutils:block/skull/witherskull"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [8, 8, 16, 16], "texture": "#5"},
+				"east": {"uv": [0, 8, 8, 16], "texture": "#5"},
+				"south": {"uv": [0, 0, 8, 8], "texture": "#5"},
+				"west": {"uv": [8, 8, 0, 16], "texture": "#5"},
+				"up": {"uv": [8, 0, 16, 8], "texture": "#5"}
+			}
+		},
+		{
+			"name": "cube inverted",
+			"from": [16, 16, 16],
+			"to": [0, 0, 0],
+			"faces": {
+				"north": {"uv": [0, 8, 8, 0], "texture": "#5"},
+				"east": {"uv": [8, 16, 0, 8], "texture": "#5"},
+				"south": {"uv": [8, 16, 16, 8], "texture": "#5"},
+				"west": {"uv": [0, 16, 8, 8], "texture": "#5"},
+				"down": {"uv": [16, 0, 8, 8], "texture": "#5"}
+			}
+		}
+	]
+}

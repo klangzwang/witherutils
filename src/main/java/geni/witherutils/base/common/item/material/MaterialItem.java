@@ -2,10 +2,10 @@ package geni.witherutils.base.common.item.material;
 
 import java.util.function.Consumer;
 
-import geni.witherutils.api.item.IRotatingItem;
 import geni.witherutils.base.common.base.WitherItem;
+import geni.witherutils.core.common.item.IRotatingItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class MaterialItem extends WitherItem implements IRotatingItem {
 
@@ -26,7 +26,7 @@ public class MaterialItem extends WitherItem implements IRotatingItem {
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer)
     {
-        setupBEWLR(consumer);
+    	setupBEWLR(consumer);
     }
     @Override
     public float getTicksPerRotation()

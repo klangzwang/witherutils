@@ -2,7 +2,7 @@ package geni.witherutils.core.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import geni.witherutils.WitherUtils;
+import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.core.common.math.Vector2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -49,13 +49,13 @@ public class SetupScreen extends Screen {
         Minecraft mc = Minecraft.getInstance();
         gui.pose().pushPose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WitherUtils.loc("textures/gui/bareffect.png"));
+        RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/bareffect.png"));
         float time = mc.level.getGameTime() + partialTicks;
         double offset = Math.sin(time * 1.0D / 4.0D) / 10.0D;
         if (redstone == true)
             offset = Math.sin(time * 1.0D / 12.0D) / 10.0D;
         gui.pose().translate(0.0D + offset * 100, 0.0D, 0.0D);
-        gui.blit(WitherUtils.loc("textures/gui/bareffect.png"), this.leftPos + 120, this.topPos + 7, 0, 0, 32, 16, 32, 16);
+        gui.blit(WitherUtilsRegistry.loc("textures/gui/bareffect.png"), this.leftPos + 120, this.topPos + 7, 0, 0, 32, 16, 32, 16);
         gui.pose().popPose();
         gui.drawString(this.font, new String(getBarName()), this.leftPos + 8, this.topPos + 6, 16777215);
     }
@@ -84,7 +84,7 @@ public class SetupScreen extends Screen {
     
     public ResourceLocation getBackgroundImage()
     {
-        return WitherUtils.loc("textures/gui/setup.png");
+        return WitherUtilsRegistry.loc("textures/gui/setup.png");
     }
 
     protected Vector2i getBackgroundImageSize()

@@ -1,22 +1,23 @@
 package geni.witherutils.core.common.helper;
 
-import com.google.common.base.Functions;
-import com.google.common.collect.Maps;
-import com.mojang.math.Axis;
-
-import geni.witherutils.core.common.util.McTimerUtil;
-import net.minecraft.core.Direction;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.google.common.base.Functions;
+import com.google.common.collect.Maps;
+import com.mojang.math.Axis;
+
+import geni.witherutils.core.common.util.McTimerUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Direction;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class RotHelper {
 
@@ -78,7 +79,7 @@ public class RotHelper {
     @SuppressWarnings("unused")
 	private static float getRotorAngle(final RotHelper bearing, float speeding)
     {
-        final long elapsedTime = System.currentTimeMillis() - (long) McTimerUtil.renderPartialTickTime;
+        final long elapsedTime = System.currentTimeMillis() - (long) McTimerUtil.getFps(Minecraft.getInstance());
         final float speed = speeding / 10.0f;
         float angle = bearing.getRotorAngle();
         if (speed > 0.001f)

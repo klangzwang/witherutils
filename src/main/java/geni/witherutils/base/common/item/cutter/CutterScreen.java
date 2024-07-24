@@ -1,8 +1,9 @@
 package geni.witherutils.base.common.item.cutter;
 
 import java.awt.Color;
+import java.util.List;
 
-import geni.witherutils.WitherUtils;
+import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.core.client.gui.screen.WUTScreen;
 import geni.witherutils.core.common.math.Vector2i;
 import net.minecraft.ChatFormatting;
@@ -16,6 +17,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 public class CutterScreen extends WUTScreen<CutterContainer> {
 
@@ -28,17 +30,7 @@ public class CutterScreen extends WUTScreen<CutterContainer> {
 	{
 		super(screenContainer, inv, titleIn);
 		screenContainer.registerUpdateListener(this::containerChanged);
-		--this.titleLabelY;
-	}
-
-	private void containerChanged()
-	{
-		this.displayRecipes = this.menu.hasInputItem();
-		if (!this.displayRecipes)
-		{
-			this.scrollOffs = 0.0F;
-			this.startIndex = 0;
-		}
+		this.titleLabelY--;
 	}
 	
     @Override
@@ -51,7 +43,7 @@ public class CutterScreen extends WUTScreen<CutterContainer> {
 	@Override
 	public void render(GuiGraphics gg, int mouseX, int mouseY, float partialTicks)
 	{
-        this.renderBackground(gg);
+        this.renderBackground(gg, mouseX, mouseY, partialTicks);
         super.render(gg, mouseX, mouseY, partialTicks);
         this.renderTooltip(gg, mouseX, mouseY);
 		
@@ -64,7 +56,7 @@ public class CutterScreen extends WUTScreen<CutterContainer> {
 		if(menu.inputSlot.hasItem())
 		{
 			menu.findMatchingCutterRecipe(menu.container);
-			this.renderRecipes(gg, x, y, this.menu.recipeList.size());
+			this.renderRecipes(gg, x, y, this.menu.getRecipes().size());
 		}
 
 		int startX = (this.width - this.imageWidth) / 2;
@@ -99,19 +91,18 @@ public class CutterScreen extends WUTScreen<CutterContainer> {
 		}
 	}
 
-	private void renderRecipes(GuiGraphics gg, int x, int y, int index)
+	private void renderRecipes(GuiGraphics pGuiGraphics, int pX, int pY, int pStartIndex)
 	{
-		int left = this.leftPos + 15;
-		int top = this.topPos + 30;
+        List<RecipeHolder<CutterRecipe>> list = this.menu.getRecipes();
 
-		for(int i = 0; i < index; i++)
-		{
-			int j = i - this.startIndex;
-			int k = left + j % 8 * 18;
-			int l = j / 8;
-			int i1 = top + l * 18 + 2;
-			gg.renderItem(this.menu.recipeList.get(i).getResultItem(this.minecraft.level.registryAccess()), k, i1);
-		}
+        for (int i = this.startIndex; i < pStartIndex && i < this.menu.getNumRecipes(); i++)
+        {
+            int j = i - this.startIndex;
+            int k = pX + j % 4 * 16;
+            int l = j / 4;
+            int i1 = pY + l * 18 + 2;
+            pGuiGraphics.renderItem(list.get(i).value().getResultItem(this.minecraft.level.registryAccess()), k, i1);
+        }
 	}
 
 	@SuppressWarnings("unused")
@@ -125,7 +116,7 @@ public class CutterScreen extends WUTScreen<CutterContainer> {
 			int j = this.topPos + 30;
 			int k = this.startIndex + 18;
 
-			for(int l = this.startIndex; l < menu.recipeList.size(); ++l)
+			for(int l = this.startIndex; l < k; l++)
 			{
 				int i1 = l - this.startIndex;
 				double d0 = mouseX - (double) (i + i1 % 8 * 18);
@@ -168,28 +159,38 @@ public class CutterScreen extends WUTScreen<CutterContainer> {
 		}
 	}
 	
-	@Override
-	public boolean mouseScrolled(double p_99314_, double p_99315_, double p_99316_)
-	{
-		if(this.isScrollBarActive())
-		{
-			int i = this.getOffscreenRows();
-			float f = (float) p_99316_ / (float) i;
-			this.scrollOffs = Mth.clamp(this.scrollOffs - f, 0.0F, 1.0F);
-			this.startIndex = (int) ((double) (this.scrollOffs * (float) i) + 0.5D) * 4;
-		}
-		return true;
-	}
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pScrollX, double pScrollY)
+    {
+        if (this.isScrollBarActive())
+        {
+            int i = this.getOffscreenRows();
+            float f = (float)pScrollY / (float)i;
+            this.scrollOffs = Mth.clamp(this.scrollOffs - f, 0.0F, 1.0F);
+            this.startIndex = (int)((double)(this.scrollOffs * (float)i) + 0.5) * 4;
+        }
+        return true;
+    }
+    
+    private boolean isScrollBarActive()
+    {
+        return this.displayRecipes && this.menu.getNumRecipes() > 12;
+    }
 	
-	private boolean isScrollBarActive()
-	{
-		return this.displayRecipes;
-	}
-	
-	protected int getOffscreenRows()
-	{
-		return (this.menu.recipeList.size() + 4 - 1) / 4 - 3;
-	}
+    protected int getOffscreenRows()
+    {
+        return (this.menu.getNumRecipes() + 4 - 1) / 4 - 3;
+    }
+    
+    private void containerChanged()
+    {
+        this.displayRecipes = this.menu.hasInputItem();
+        if (!this.displayRecipes)
+        {
+            this.scrollOffs = 0.0F;
+            this.startIndex = 0;
+        }
+    }
 
     @Override
     protected String getBarName()
@@ -200,7 +201,7 @@ public class CutterScreen extends WUTScreen<CutterContainer> {
     @Override
     public ResourceLocation getBackgroundImage()
     {
-        return WitherUtils.loc("textures/gui/cutter.png");
+        return WitherUtilsRegistry.loc("textures/gui/cutter.png");
     }
 
     @Override

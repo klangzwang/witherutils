@@ -8,152 +8,149 @@
 
 package geni.witherutils.core.common.helper;
 
+import java.util.regex.Pattern;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-
-import java.util.regex.Pattern;
 
 public class ItemNBTHelper
 {
 	public static boolean hasTag(ItemStack stack)
 	{
-		return stack.hasTag();
+		return stack.getTags() != null;
 	}
 
-	public static boolean hasKey(ItemStack stack, String key)
-	{
-		return hasTag(stack)&&stack.getOrCreateTag().contains(key);
-	}
-
-	public static boolean hasKey(ItemStack stack, String key, int type)
-	{
-		return hasTag(stack)&&stack.getOrCreateTag().contains(key, type);
-	}
-
+//	public static boolean hasKey(ItemStack stack, String key)
+//	{
+//		return hasTag(stack) && stack.getOrCreateTag().contains(key);
+//	}
+//
+//	public static boolean hasKey(ItemStack stack, String key, int type)
+//	{
+//		return hasTag(stack)&&stack.getOrCreateTag().contains(key, type);
+//	}
+//
 //	public static void remove(ItemStack stack, String key)
 //	{
 //		ItemUtils.removeTag(stack, key);
 //	}
-
-	public static void putInt(ItemStack stack, String key, int val)
-	{
-		stack.getOrCreateTag().putInt(key, val);
-	}
+//
+//	public static void putInt(ItemStack stack, String key, int val)
+//	{
+//		stack.getOrCreateTag().putInt(key, val);
+//	}
 
 	public static void modifyInt(CompoundTag tagCompound, String key, int mod)
 	{
 		tagCompound.putInt(key, tagCompound.getInt(key)+mod);
 	}
 
-	public static int getInt(ItemStack stack, String key)
-	{
-		return hasTag(stack)?stack.getOrCreateTag().getInt(key): 0;
-	}
-
-	public static void putString(ItemStack stack, String key, String val)
-	{
-		stack.getOrCreateTag().putString(key, val);
-	}
-
-	public static String getString(ItemStack stack, String key)
-	{
-		return hasTag(stack)?stack.getOrCreateTag().getString(key): "";
-	}
-
-	public static void putLong(ItemStack stack, String key, long val)
-	{
-		stack.getOrCreateTag().putLong(key, val);
-	}
-
-	public static long getLong(ItemStack stack, String key)
-	{
-		return hasTag(stack)?stack.getOrCreateTag().getLong(key): 0;
-	}
-
-	public static void putIntArray(ItemStack stack, String key, int[] val)
-	{
-		stack.getOrCreateTag().putIntArray(key, val);
-	}
-
-	public static int[] getIntArray(ItemStack stack, String key)
-	{
-		return hasTag(stack)?stack.getOrCreateTag().getIntArray(key): new int[0];
-	}
-
-	public static void putFloat(ItemStack stack, String key, float val)
-	{
-		stack.getOrCreateTag().putFloat(key, val);
-	}
-
-	public static void modifyFloat(CompoundTag tagCompound, String key, float mod)
-	{
-		tagCompound.putFloat(key, tagCompound.getFloat(key)+mod);
-	}
-
-	public static float getFloat(ItemStack stack, String key)
-	{
-		return hasTag(stack)?stack.getOrCreateTag().getFloat(key): 0;
-	}
-
-	public static void putBoolean(ItemStack stack, String key, boolean val)
-	{
-		stack.getOrCreateTag().putBoolean(key, val);
-	}
-
-	public static boolean getBoolean(ItemStack stack, String key)
-	{
-		return hasTag(stack)&&stack.getOrCreateTag().getBoolean(key);
-	}
-
-	public static void setTagCompound(ItemStack stack, String key, CompoundTag val)
-	{
-		stack.getOrCreateTag().put(key, val);
-	}
-
-	public static CompoundTag getTagCompound(ItemStack stack, String key)
-	{
-		return hasTag(stack)?stack.getOrCreateTag().getCompound(key): new CompoundTag();
-	}
-
-	public static void setFluidStack(ItemStack stack, String key, FluidStack val)
-	{
-		if(val!=null&&val.getFluid()!=null)
-			setTagCompound(stack, key, val.writeToNBT(new CompoundTag()));
-	}
-
-	public static FluidStack getFluidStack(ItemStack stack, String key)
-	{
-		if(hasTag(stack))
-			return FluidStack.loadFluidStackFromNBT(getTagCompound(stack, key));
-		return null;
-	}
-
-	public static void setItemStack(ItemStack stack, String key, ItemStack val)
-	{
-		stack.getOrCreateTag().put(key, val.save(new CompoundTag()));
-	}
-
-	public static ItemStack getItemStack(ItemStack stack, String key)
-	{
-		if(hasTag(stack)&&stack.getOrCreateTag().contains(key))
-			return ItemStack.of(getTagCompound(stack, key));
-		return ItemStack.EMPTY;
-	}
-
-	public static void setLore(ItemStack stack, Component... lore)
-	{
-		CompoundTag displayTag = getTagCompound(stack, "display");
-		ListTag list = new ListTag();
-		for(Component s : lore)
-			list.add(StringTag.valueOf(Component.Serializer.toJson(s)));
-		displayTag.put("Lore", list);
-		setTagCompound(stack, "display", displayTag);
-	}
+//	public static int getInt(ItemStack stack, String key)
+//	{
+//		return hasTag(stack)?stack.getOrCreateTag().getInt(key): 0;
+//	}
+//
+//	public static void putString(ItemStack stack, String key, String val)
+//	{
+//		stack.getOrCreateTag().putString(key, val);
+//	}
+//
+//	public static String getString(ItemStack stack, String key)
+//	{
+//		return hasTag(stack)?stack.getOrCreateTag().getString(key): "";
+//	}
+//
+//	public static void putLong(ItemStack stack, String key, long val)
+//	{
+//		stack.getOrCreateTag().putLong(key, val);
+//	}
+//
+//	public static long getLong(ItemStack stack, String key)
+//	{
+//		return hasTag(stack)?stack.getOrCreateTag().getLong(key): 0;
+//	}
+//
+//	public static void putIntArray(ItemStack stack, String key, int[] val)
+//	{
+//		stack.getOrCreateTag().putIntArray(key, val);
+//	}
+//
+//	public static int[] getIntArray(ItemStack stack, String key)
+//	{
+//		return hasTag(stack)?stack.getOrCreateTag().getIntArray(key): new int[0];
+//	}
+//
+//	public static void putFloat(ItemStack stack, String key, float val)
+//	{
+//		stack.getOrCreateTag().putFloat(key, val);
+//	}
+//
+//	public static void modifyFloat(CompoundTag tagCompound, String key, float mod)
+//	{
+//		tagCompound.putFloat(key, tagCompound.getFloat(key)+mod);
+//	}
+//
+//	public static float getFloat(ItemStack stack, String key)
+//	{
+//		return hasTag(stack)?stack.getOrCreateTag().getFloat(key): 0;
+//	}
+//
+//	public static void putBoolean(ItemStack stack, String key, boolean val)
+//	{
+//		stack.getOrCreateTag().putBoolean(key, val);
+//	}
+//
+//	public static boolean getBoolean(ItemStack stack, String key)
+//	{
+//		return hasTag(stack)&&stack.getOrCreateTag().getBoolean(key);
+//	}
+//
+//	public static void setTagCompound(ItemStack stack, String key, CompoundTag val)
+//	{
+//		stack.getOrCreateTag().put(key, val);
+//	}
+//
+//	public static CompoundTag getTagCompound(ItemStack stack, String key)
+//	{
+//		return hasTag(stack)?stack.getOrCreateTag().getCompound(key): new CompoundTag();
+//	}
+//
+//	public static void setFluidStack(ItemStack stack, String key, FluidStack val)
+//	{
+//		if(val!=null&&val.getFluid()!=null)
+//			setTagCompound(stack, key, val.writeToNBT(new CompoundTag()));
+//	}
+//
+//	public static FluidStack getFluidStack(ItemStack stack, String key)
+//	{
+//		if(hasTag(stack))
+//			return FluidStack.loadFluidStackFromNBT(getTagCompound(stack, key));
+//		return null;
+//	}
+//
+//	public static void setItemStack(ItemStack stack, String key, ItemStack val)
+//	{
+//		stack.getOrCreateTag().put(key, val.save(new CompoundTag()));
+//	}
+//
+//	public static ItemStack getItemStack(ItemStack stack, String key)
+//	{
+//		if(hasTag(stack)&&stack.getOrCreateTag().contains(key))
+//			return ItemStack.of(getTagCompound(stack, key));
+//		return ItemStack.EMPTY;
+//	}
+//
+//	public static void setLore(ItemStack stack, Component... lore)
+//	{
+//		CompoundTag displayTag = getTagCompound(stack, "display");
+//		ListTag list = new ListTag();
+//		for(Component s : lore)
+//			list.add(StringTag.valueOf(Component.Serializer.toJson(s)));
+//		displayTag.put("Lore", list);
+//		setTagCompound(stack, "display", displayTag);
+//	}
 
 	public static CompoundTag combineTags(CompoundTag target, CompoundTag add, Pattern pattern)
 	{

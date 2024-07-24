@@ -4,18 +4,13 @@ import java.util.Optional;
 
 import com.mojang.datafixers.util.Either;
 
-import geni.witherutils.WitherUtils;
-import geni.witherutils.api.io.ISideConfig;
-import geni.witherutils.base.common.base.IWrenchable;
+import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.base.common.base.WitherItem;
-import geni.witherutils.base.common.init.WUTCapabilities;
 import geni.witherutils.base.common.init.WUTItems;
 import geni.witherutils.core.common.network.CoreNetwork;
 import geni.witherutils.core.common.network.PacketRotateBlock;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -26,15 +21,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class WrenchItem extends WitherItem {
 	
@@ -50,7 +43,7 @@ public class WrenchItem extends WitherItem {
     @OnlyIn(Dist.CLIENT)
     public void registerProperty()
     {
-        ItemProperties.register(this, WitherUtils.loc("using"), (stack, world, entity, i) -> {
+        ItemProperties.register(this, WitherUtilsRegistry.loc("using"), (stack, world, entity, i) -> {
             return entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F;
         });
     }
@@ -78,7 +71,7 @@ public class WrenchItem extends WitherItem {
         context.getPlayer().isUsingItem();
         if (context.getLevel().isClientSide)
         {
-            CoreNetwork.sendToServer(new PacketRotateBlock(context.getClickedPos(), context.getClickedFace(), context.getHand()));
+            CoreNetwork.sendToServer(new PacketRotateBlock(context.getClickedPos(), context.getClickedFace()));
             context.getPlayer().playSound(SoundEvents.BLAZE_HURT, 0.1F + context.getLevel().random.nextFloat() * 0.1F, 0.6F + context.getLevel().random.nextFloat() * 0.2F);
             context.getPlayer().swing(context.getHand());
         }
@@ -95,11 +88,6 @@ public class WrenchItem extends WitherItem {
 	{
 		return false;
 	}
-	
-    public CompoundTag getWrenchNBT(ItemStack stack)
-    {
-        return stack.getOrCreateTagElement("wrench");
-    }
     
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged)
@@ -113,26 +101,6 @@ public class WrenchItem extends WitherItem {
         Level level = pContext.getLevel();
         if (level.isClientSide())
             return InteractionResult.SUCCESS;
-
-        BlockPos pos = pContext.getClickedPos();
-
-        if(level.getBlockEntity(pos) instanceof IWrenchable wrenchable)
-        {
-            return wrenchable.onWrenched(pContext);
-        }
-        
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be != null)
-        {
-            LazyOptional<ISideConfig> optSideConfig = be.getCapability(WUTCapabilities.SIDECONFIG, pContext.getClickedFace());
-            if (optSideConfig.isPresent())
-            {
-                if (level.isClientSide())
-                    return InteractionResult.sidedSuccess(true);
-                optSideConfig.ifPresent(ISideConfig::cycleMode);
-                return InteractionResult.SUCCESS;
-            }
-        }
 
         BlockState state = level.getBlockState(pContext.getClickedPos());
         Optional<Either<DirectionProperty, EnumProperty<Direction.Axis>>> property = getRotationProperty(state);
@@ -180,7 +148,6 @@ public class WrenchItem extends WitherItem {
         throw new IllegalArgumentException("At least one Optional should be set");
     }
 
-    @SuppressWarnings("deprecation")
     private static <T extends Comparable<T>> BlockState handleProperty(UseOnContext pContext, BlockState state, Property<T> property)
     {
         int noValidStateIndex = 0;
@@ -189,7 +156,7 @@ public class WrenchItem extends WitherItem {
             state = getNextBlockState(state, property);
             noValidStateIndex++;
         }
-        while (noValidStateIndex != property.getPossibleValues().size() && !state.getBlock().canSurvive(state, pContext.getLevel(), pContext.getClickedPos()));
+        while (noValidStateIndex != property.getPossibleValues().size() && !state.canSurvive(pContext.getLevel(), pContext.getClickedPos()));
         return state;
     }
 

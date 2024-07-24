@@ -1,28 +1,28 @@
 package geni.witherutils.base.common.config.common;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class WitherSteelConfig {
     
-    public final ForgeConfigSpec.ConfigValue<Integer> witherSteelSwordPowerUsePerHit;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelSwordDamageBonusEmpowered0;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelSwordDamageBonusEmpowered1;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelSwordDamageBonusEmpowered2;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelSwordDamageBonusEmpowered3;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelSwordSpeedBonusEmpowered0;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelSwordSpeedBonusEmpowered1;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelSwordSpeedBonusEmpowered2;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelSwordSpeedBonusEmpowered3;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelArmorToughnessBonusEmpowered0;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelArmorToughnessBonusEmpowered1;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelArmorToughnessBonusEmpowered2;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelArmorToughnessBonusEmpowered3;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelKnockbackBonusEmpowered0;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelKnockbackBonusEmpowered1;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelKnockbackBonusEmpowered2;
-    public final ForgeConfigSpec.ConfigValue<Double> witherSteelKnockbackBonusEmpowered3;
+    public final ModConfigSpec.ConfigValue<Integer> witherSteelSwordPowerUsePerHit;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelSwordDamageBonusEmpowered0;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelSwordDamageBonusEmpowered1;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelSwordDamageBonusEmpowered2;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelSwordDamageBonusEmpowered3;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelSwordSpeedBonusEmpowered0;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelSwordSpeedBonusEmpowered1;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelSwordSpeedBonusEmpowered2;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelSwordSpeedBonusEmpowered3;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelArmorToughnessBonusEmpowered0;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelArmorToughnessBonusEmpowered1;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelArmorToughnessBonusEmpowered2;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelArmorToughnessBonusEmpowered3;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelKnockbackBonusEmpowered0;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelKnockbackBonusEmpowered1;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelKnockbackBonusEmpowered2;
+    public final ModConfigSpec.ConfigValue<Double> witherSteelKnockbackBonusEmpowered3;
     
-    public WitherSteelConfig(ForgeConfigSpec.Builder builder)
+    public WitherSteelConfig(ModConfigSpec.Builder builder)
     {
     	builder.push("withersteel");
     	

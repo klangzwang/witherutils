@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
 import geni.witherutils.base.common.init.WUTBlocks;
-import geni.witherutils.base.common.init.WUTEnchants;
 import geni.witherutils.base.common.init.WUTItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -52,12 +51,12 @@ public class ArmorHelmetLayer extends RenderLayer {
         {
             if(entity instanceof Player)
             {
-            	Player player = (Player) entity;
-            	if(player.getItemBySlot(EquipmentSlot.HEAD).getItem() == WUTItems.STEELARMOR_HELMET.get())
-            	{
-        			if(EnchantmentHelper.getEnchantments(player.getItemBySlot(EquipmentSlot.HEAD)).get(WUTEnchants.SOLAR_POWER.get()) != null)
-        				Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(WUTBlocks.SOLARBASIC.get()), ItemDisplayContext.HEAD, packedLightIn, OverlayTexture.NO_OVERLAY, matrix, buffer, player.level(), 0);
-            	}
+//            	Player player = (Player) entity;
+//            	if(player.getItemBySlot(EquipmentSlot.HEAD).getItem() == WUTItems.STEELARMOR_HELMET.get())
+//            	{
+//        			if(EnchantmentHelper.getEnchantments(player.getItemBySlot(EquipmentSlot.HEAD)).get(WUTEnchants.SOLAR_POWER.get()) != null)
+//        				Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(WUTBlocks.SOLARBASIC.get()), ItemDisplayContext.HEAD, packedLightIn, OverlayTexture.NO_OVERLAY, matrix, buffer, player.level(), 0);
+//            	}
             }
         }
         matrix.popPose();

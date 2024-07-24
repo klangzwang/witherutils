@@ -38,14 +38,6 @@ public class SoulOrbProjectile extends ThrowableItemProjectile {
 	@Override
 	public void handleEntityEvent(byte p_37402_)
 	{
-//		for (int i = 0; i < 8; ++i)
-//		{
-//			this.level().addParticle(ParticleTypes.CLOUD,
-//					this.getX(),
-//					this.getY(),
-//					this.getZ(),
-//					0.0D, 0.0D, 0.0D);
-//		}
 	}
 	
 	@Override

@@ -16,12 +16,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 public class WUTFakePlayer extends FakePlayer {
 
@@ -53,7 +51,7 @@ public class WUTFakePlayer extends FakePlayer {
         if (INSTANCE == null)
         {
             INSTANCE = new WUTFakePlayer(world, GAME_PROFILE);
-            INSTANCE.connection = new FakeNetHandler(world.getServer(), INSTANCE);
+            INSTANCE.connection = new FakeNetHandler(world.getServer(), null, INSTANCE, null);
         }
         INSTANCE.setLevel(world);
         INSTANCE.setPos(x,y,z);
@@ -69,14 +67,6 @@ public class WUTFakePlayer extends FakePlayer {
             blockPos.set(Math.floor(x), Math.floor(y), Math.floor(z));
         }
     }
-    @Override
-    public float getEyeHeight(Pose pose)
-    {
-        return 0;
-    }
-
-    @Override
-    public void initMenu(AbstractContainerMenu p_143400_) {}
 
     @Override
     public OptionalInt openMenu(MenuProvider p_9033_)

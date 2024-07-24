@@ -207,7 +207,8 @@ public class GifDecoder {
         return this.status;
     }
 
-    public int read(String name) {
+    @SuppressWarnings("deprecation")
+	public int read(String name) {
         this.status = 0;
         try {
             name = name.trim().toLowerCase();

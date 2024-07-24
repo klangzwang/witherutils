@@ -1,4 +1,29 @@
 {
+	"dryhead_death":
+	{
+		"category": "block",
+		"sounds": [ "witherutils:dryhead_death" ]
+	},
+	"dryhead_incoming":
+	{
+		"category": "block",
+		"sounds": [ "witherutils:dryhead_incoming" ]
+	},
+	"laser0":
+	{
+		"category": "block",
+		"sounds": [ "witherutils:laser0" ]
+	},
+	"laser1":
+	{
+		"category": "block",
+		"sounds": [ "witherutils:laser1" ]
+	},	
+	"laser2":
+	{
+		"category": "block",
+		"sounds": [ "witherutils:laser2" ]
+	},	
 	"engineloop":
 	{
 		"category": "block",

@@ -2,16 +2,12 @@ package geni.witherutils.base.common.entity.soulorb;
 
 import java.util.EnumSet;
 
-import javax.annotation.Nonnull;
-
 import geni.witherutils.base.common.init.WUTEntities;
 import geni.witherutils.base.common.init.WUTItems;
 import geni.witherutils.base.common.init.WUTParticles;
 import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -23,7 +19,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.FlyingMob;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
@@ -33,10 +28,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.levelgen.Heightmap.Types;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 
 public class SoulOrb extends FlyingMob {
 
@@ -79,11 +73,11 @@ public class SoulOrb extends FlyingMob {
 		this.goalSelector.addGoal(5, new SoulOrb.RandomFloatAroundGoal(this));
 	}
 
-    @SuppressWarnings("deprecation")
-	public static void init()
+	public static void init(RegisterSpawnPlacementsEvent event)
     {
-        SpawnPlacements.register(WUTEntities.SOULORB.get(), SpawnPlacements.Type.NO_RESTRICTIONS, Types.MOTION_BLOCKING_NO_LEAVES, SoulOrb::checkSoulOrbSpawnRules);
+		event.register(WUTEntities.SOULORB.get(), SoulOrb::checkSoulOrbSpawnRules);
     }
+	
     public static boolean checkSoulOrbSpawnRules(EntityType<SoulOrb> soulorb, LevelAccessor level, MobSpawnType type, BlockPos pos, RandomSource random)
     {
         return SoulOrb.checkMobSpawnRules(soulorb, level, type, pos, random);
@@ -100,7 +94,7 @@ public class SoulOrb extends FlyingMob {
 	
 	public static void fxthis(ServerLevel level, BlockPos pos)
 	{
-		SoundUtil.playSoundFromServer(level, pos, SoundEvents.SOUL_ESCAPE);
+		SoundUtil.playSoundDistrib(level, pos, SoundEvents.SOUL_ESCAPE.value(), 1, 1, false, true);
 	}
 	
 	@Override
@@ -152,8 +146,11 @@ public class SoulOrb extends FlyingMob {
 		}
 
 		++this.age;
-		if(this.age >= 6000)
+		if(this.age >= 400)
 		{
+			ItemEntity entityitem = new ItemEntity(level(), position().x, position().y, position().z, new ItemStack(WUTItems.SOULORB.get()));
+            entityitem.setNoPickUpDelay();
+            level().addFreshEntity(entityitem);
 			this.discard();
 		}
 	}
@@ -161,13 +158,13 @@ public class SoulOrb extends FlyingMob {
     @Override
 	public void playerTouch(Player player)
 	{
-		if(!level().isClientSide() && player.distanceToSqr(this) < 3.2F)
-		{
-			ItemEntity entityitem = new ItemEntity(level(), player.getX(), player.getY(), player.getZ(), new ItemStack(WUTItems.SOULORB.get()));
-            entityitem.setNoPickUpDelay();
-            level().addFreshEntity(entityitem);
-            this.discard();
-		}
+//		if(!level().isClientSide() && player.distanceToSqr(this) < 3.2F)
+//		{
+//			ItemEntity entityitem = new ItemEntity(level(), player.getX(), player.getY(), player.getZ(), new ItemStack(WUTItems.SOULORB.get()));
+//            entityitem.setNoPickUpDelay();
+//            level().addFreshEntity(entityitem);
+//            this.discard();
+//		}
 	}
 
 	public int getIcon()
@@ -218,13 +215,6 @@ public class SoulOrb extends FlyingMob {
 	{
 	      this.age = tag.getShort("Age");
 	      this.value = tag.getShort("Value");
-	}
-	
-	@Nonnull
-	@Override
-	public Packet<ClientGamePacketListener> getAddEntityPacket()
-	{
-		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 	
 	static class SoulOrbMoveControl extends MoveControl

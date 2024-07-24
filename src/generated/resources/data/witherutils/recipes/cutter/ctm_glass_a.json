@@ -1,7 +1,0 @@
-{
-  "type": "witherutils:cutter",
-  "ingredient": {
-    "item": "minecraft:black_stained_glass"
-  },
-  "result": "witherutils:ctm_glass_a"
-}

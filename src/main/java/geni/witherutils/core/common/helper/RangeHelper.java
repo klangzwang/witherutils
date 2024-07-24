@@ -1,12 +1,12 @@
 package geni.witherutils.core.common.helper;
 
+import java.util.function.BiFunction;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import java.util.function.BiFunction;
 
 public class RangeHelper {
 

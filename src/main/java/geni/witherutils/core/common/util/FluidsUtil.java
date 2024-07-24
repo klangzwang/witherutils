@@ -17,13 +17,13 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class FluidsUtil {
 
@@ -70,30 +70,30 @@ public class FluidsUtil {
 		FluidState fluidState = level.getFluidState(posTarget);
 		if (targetState.hasProperty(BlockStateProperties.WATERLOGGED)
 				&& targetState.getValue(BlockStateProperties.WATERLOGGED) == true) {
-			int simFill = tank.fill(new FluidStack(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME),
+			int simFill = tank.fill(new FluidStack(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME).getFluid(),
 					FluidType.BUCKET_VOLUME), FluidAction.SIMULATE);
 			if (simFill == FluidType.BUCKET_VOLUME && level.setBlockAndUpdate(posTarget,
 					targetState.setValue(BlockStateProperties.WATERLOGGED, false))) {
 				tank.fill(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME), FluidAction.EXECUTE);
 			}
 		} else if (targetState.getBlock() == Blocks.WATER_CAULDRON) {
-			int simFill = tank.fill(new FluidStack(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME),
+			int simFill = tank.fill(new FluidStack(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME).getFluid(),
 					FluidType.BUCKET_VOLUME), FluidAction.SIMULATE);
 			if (simFill == FluidType.BUCKET_VOLUME
 					&& level.setBlockAndUpdate(posTarget, Blocks.CAULDRON.defaultBlockState())) {
-				tank.fill(new FluidStack(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME),
+				tank.fill(new FluidStack(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME).getFluid(),
 						FluidType.BUCKET_VOLUME), FluidAction.EXECUTE);
 			}
 		} else if (targetState.getBlock() == Blocks.LAVA_CAULDRON) {
-			int simFill = tank.fill(new FluidStack(new FluidStack(Fluids.LAVA, FluidType.BUCKET_VOLUME),
+			int simFill = tank.fill(new FluidStack(new FluidStack(Fluids.LAVA, FluidType.BUCKET_VOLUME).getFluid(),
 					FluidType.BUCKET_VOLUME), FluidAction.SIMULATE);
 			if (simFill == FluidType.BUCKET_VOLUME
 					&& level.setBlockAndUpdate(posTarget, Blocks.CAULDRON.defaultBlockState())) {
-				tank.fill(new FluidStack(new FluidStack(Fluids.LAVA, FluidType.BUCKET_VOLUME),
+				tank.fill(new FluidStack(new FluidStack(Fluids.LAVA, FluidType.BUCKET_VOLUME).getFluid(),
 						FluidType.BUCKET_VOLUME), FluidAction.EXECUTE);
 			}
 		} else if (fluidState != null && fluidState.isSource() && fluidState.getType() != null) { // from ze world
-			int simFill = tank.fill(new FluidStack(new FluidStack(fluidState.getType(), FluidType.BUCKET_VOLUME),
+			int simFill = tank.fill(new FluidStack(new FluidStack(fluidState.getType(), FluidType.BUCKET_VOLUME).getFluid(),
 					FluidType.BUCKET_VOLUME), FluidAction.SIMULATE);
 			if (simFill == FluidType.BUCKET_VOLUME
 					&& level.setBlockAndUpdate(posTarget, Blocks.AIR.defaultBlockState())) {
@@ -111,7 +111,8 @@ public class FluidsUtil {
         return fluid.getAmount() + "mb " + fluid.getFluid().toString();
     }
     
-    public static List<FluidStack> mergeSameFluids(List<FluidStack> fluids)
+    @SuppressWarnings("removal")
+	public static List<FluidStack> mergeSameFluids(List<FluidStack> fluids)
     {
         List<FluidStack> stacks = new ArrayList<>();
         fluids.forEach(toAdd -> {
@@ -131,7 +132,8 @@ public class FluidsUtil {
         return stacks;
     }
 
-    public static boolean areFluidStackEqual(FluidStack a, FluidStack b)
+    @SuppressWarnings("removal")
+	public static boolean areFluidStackEqual(FluidStack a, FluidStack b)
     {
         return (a == null && b == null) || (a != null && a.isFluidEqual(b) && a.getAmount() == b.getAmount());
     }
@@ -151,7 +153,8 @@ public class FluidsUtil {
         return move(from, to, Integer.MAX_VALUE);
     }
 
-    @Nullable
+    @SuppressWarnings("removal")
+	@Nullable
     public static FluidStack move(IFluidHandler from, IFluidHandler to, int max)
     {
         if (from == null || to == null)
@@ -169,7 +172,7 @@ public class FluidsUtil {
         {
             return null;
         }
-        FluidStack toDrain = new FluidStack(toDrainPotential, accepted);
+        FluidStack toDrain = new FluidStack(toDrainPotential.getFluid(), accepted);
         if (accepted < toDrainPotential.getAmount())
         {
             toDrainPotential = from.drain(toDrain, FluidAction.EXECUTE);
@@ -194,7 +197,7 @@ public class FluidsUtil {
             String detail = "(actually accepted = " + actuallyAccepted + ", accepted = " + accepted + ")";
             throw new IllegalStateException("Mismatched IFluidHandler implementations!\n" + detail);
         }
-        return new FluidStack(drained, accepted);
+        return new FluidStack(drained.getFluid(), accepted);
     }
 
     @SuppressWarnings("unused")
@@ -210,13 +213,13 @@ public class FluidsUtil {
         IFluidHandlerItem flItem;
         if (replace && single)
         {
-            flItem = (IFluidHandlerItem) FluidUtil.getFluidHandler(held);
+            flItem = (IFluidHandlerItem) FluidUtil.getFluidHandler(held).get();
         }
         else
         {
             ItemStack copy = held.copy();
             copy.setCount(1);
-            flItem = (IFluidHandlerItem) FluidUtil.getFluidHandler(copy);
+            flItem = (IFluidHandlerItem) FluidUtil.getFluidHandler(copy).get();
         }
         if (flItem == null)
         {

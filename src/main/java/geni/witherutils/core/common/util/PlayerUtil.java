@@ -14,8 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.UsernameCache;
+import net.neoforged.neoforge.common.UsernameCache;
 
 public class PlayerUtil {
 
@@ -47,7 +46,7 @@ public class PlayerUtil {
 	}
 	public static void setPlayerReach(Player player, int currentReach)
 	{
-		player.getAttribute(ForgeMod.ENTITY_REACH.get()).setBaseValue(currentReach);
+//		player.getAttribute(NeoForgeMod.NAMETAG_DISTANCE.getKey()).setBaseValue(currentReach);
 	}
 	public static double getExpTotal(Player player)
 	{
@@ -122,7 +121,7 @@ public class PlayerUtil {
 	}
 	public static boolean canBlockDamageSource(LivingEntity entity, DamageSource damageSourceIn)
 	{
-		if(!damageSourceIn.isIndirect() && entity.isBlocking())
+		if(damageSourceIn.isDirect() && entity.isBlocking())
 		{
 			Vec3 vec3d = damageSourceIn.getSourcePosition();
 			if(vec3d!=null)

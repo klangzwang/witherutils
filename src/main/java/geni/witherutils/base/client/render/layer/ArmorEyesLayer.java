@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 @SuppressWarnings({ "unused", "unchecked", "rawtypes" })
 public class ArmorEyesLayer extends RenderLayer {
 
-	private static final RenderType WITHERMONK_EYES = RenderType.eyes(new ResourceLocation("witherutils:textures/model/armor/withersteel_armor_eyes.png"));
+	private static final RenderType WITHERMONK_EYES = RenderType.eyes(ResourceLocation.withDefaultNamespace("witherutils:textures/model/armor/withersteel_armor_eyes.png"));
 	
 	private RenderLayerParent parent;
 

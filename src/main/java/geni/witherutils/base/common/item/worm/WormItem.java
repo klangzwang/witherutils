@@ -6,10 +6,9 @@ import geni.witherutils.base.common.base.WitherItem;
 import geni.witherutils.base.common.entity.worm.Worm;
 import geni.witherutils.base.common.init.WUTEntities;
 import geni.witherutils.base.common.init.WUTSounds;
+import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -51,8 +50,7 @@ public class WormItem extends WitherItem {
                     }
                 }
                 
-                level.playSound((Player)null, pos.getX(), pos.getY(), pos.getZ(), WUTSounds.WORMBIP.get(), SoundSource.BLOCKS, 2.0f, 1.0f);
-                
+                SoundUtil.playSoundDistrib(level, pos, WUTSounds.WORMBIP.get(), 2.0f, 1.0f, false, true);
                 return InteractionResult.SUCCESS;
             }
         }

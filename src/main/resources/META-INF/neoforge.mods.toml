@@ -1,0 +1,34 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+issueTrackerURL="https://github.com/klangzwang/WitherUtils/issues"
+license="LGPLv3"
+
+[[mods]]
+modId="witherutils"
+version="0.0.0"
+displayName="WitherUtils"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/witherutils"
+authors="helgenius,klangzwang"
+description='''
+When working at Technical Ideas
+'''
+
+[[dependencies.witherutils]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neo_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.witherutils]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.witherutils]]
+    modId="jei"
+    type="optional"
+    versionRange="[19.0.0,)"
+    ordering="NONE"
+    side="BOTH"

@@ -1,7 +1,0 @@
-{
-  "type": "witherutils:cutter",
-  "ingredient": {
-    "item": "minecraft:iron_block"
-  },
-  "result": "witherutils:ctm_metal_a"
-}

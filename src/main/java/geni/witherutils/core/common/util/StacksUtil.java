@@ -28,7 +28,8 @@ public class StacksUtil extends NonNullList<ItemStack> {
         return new StacksUtil();
     }
 
-    public static StacksUtil withSize(int size, ItemStack fill) {
+    @SuppressWarnings("deprecation")
+	public static StacksUtil withSize(int size, ItemStack fill) {
         Validate.notNull(fill);
         ItemStack[] objects = new ItemStack[size];
         Arrays.fill(objects, fill);
