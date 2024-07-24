@@ -1,0 +1,4 @@
+baseURL = 'https://github.com/klangzwang/WitherUtils/docs/'
+languageCode = 'en-us'
+title = 'WitherUtils Docs'
+theme="hugo-PaperMod"
