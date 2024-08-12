@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "geni.witherutils.core.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"refmap": "mixins.witherutils.refmap.json",
+	"client": [
+	],
+	"mixins": [
+		"BlockEntityTypeAccess"
+	],
+	"minVersion": "0.8"
+}

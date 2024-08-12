@@ -5,21 +5,26 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import geni.witherutils.base.common.base.WitherMachineBlockEntity;
-import geni.witherutils.base.common.block.LogicalBlockEntities;
 import geni.witherutils.base.common.block.anvil.AnvilRecipe.RecipeIn;
 import geni.witherutils.base.common.config.common.ItemsConfig;
-import geni.witherutils.base.common.init.WUTRecipes;
+import geni.witherutils.base.common.init.WUTBlockEntityTypes;
+import geni.witherutils.base.common.init.WUTComponents;
 import geni.witherutils.base.common.init.WUTItems;
+import geni.witherutils.base.common.init.WUTRecipes;
 import geni.witherutils.base.common.init.WUTSounds;
 import geni.witherutils.base.common.io.item.MachineInventory;
 import geni.witherutils.base.common.io.item.MachineInventoryLayout;
 import geni.witherutils.base.common.io.item.SingleSlotAccess;
 import geni.witherutils.base.common.item.hammer.HammerItem;
+import geni.witherutils.base.common.item.pickaxe.PickaxeHeadItem;
 import geni.witherutils.core.common.network.NetworkDataSlot;
-import geni.witherutils.core.common.util.ItemStackUtil;
+import geni.witherutils.core.common.util.ParticleUtil;
+import geni.witherutils.core.common.util.ParticleUtil.EParticlePosition;
+import geni.witherutils.core.common.util.ParticleUtil.ERandomChance;
 import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -47,7 +52,7 @@ public class AnvilBlockEntity extends WitherMachineBlockEntity {
 
 	public AnvilBlockEntity(BlockPos pos, BlockState state)
 	{
-		super(LogicalBlockEntities.ANVIL.get(), pos, state);
+		super(WUTBlockEntityTypes.ANVIL.get(), pos, state);
         addDataSlot(NetworkDataSlot.ITEM_STACK.create(() -> INPUT.getItemStack(this), f -> INPUT.setStackInSlot(this, f)));
         addDataSlot(NetworkDataSlot.INT.create(this::getHitCounter, p -> hitCounter = p));
         addDataSlot(NetworkDataSlot.FLOAT.create(this::getHotCounter, p -> hotCounter = p));
@@ -91,13 +96,13 @@ public class AnvilBlockEntity extends WitherMachineBlockEntity {
         
 //        System.out.println("SERVER: ItemStack is " + INPUT.getItemStack(getInventory()));
 //        System.out.println("SERVER: Recipe is " + currentRecipe);
-        
+
         if(hotCounter <= 0)
         	hotCounter = 0;
         else if(hotCounter >= 1)
         	hotCounter = 1;
-        
-        if(hotCounter > 0.8)
+
+        if(hotCounter > 0.9)
         	this.hotCounter -= 0.02f;
         else
         	this.hotCounter -= 0.01f;
@@ -116,52 +121,49 @@ public class AnvilBlockEntity extends WitherMachineBlockEntity {
 	@Override
 	public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult)
 	{
-        for(InteractionHand hands : InteractionHand.values())
-        {
-			ItemStack heldStack = pPlayer.getItemInHand(hands);
-			if (heldStack.getItem() instanceof HammerItem ||
-				heldStack.getItem() == WUTItems.HAMMER.get())
-			{
-				if(hotCounter < 0.6)
-					this.hotCounter += 0.06f;
-				this.hotCounter += 0.04f;
-			}
-        }
-		
-        if(currentRecipe == null || INPUT.getItemStack(getInventory()).isEmpty())
-        	return ItemInteractionResult.SUCCESS;
-		
-        if(this.hitCounter == this.currentRecipe.value().hitcounter())
-        {
-        	if(pPlayer instanceof ServerPlayer)
-        	{
-        		ServerPlayer splayer = (ServerPlayer) pPlayer;
-            	popRecipeExperience(splayer, this.currentRecipe.value().experience());
-        	}
-        	tryProcessRecipe();
-        }
-        else
-        {
-            for(InteractionHand hands : InteractionHand.values())
-            {
+		if(!pPlayer.getCooldowns().isOnCooldown(pPlayer.getItemInHand(pHand).getItem()))
+		{
+	        ParticleUtil.playParticleDistrib(pLevel, pPlayer, pPos, ParticleTypes.LAVA, EParticlePosition.BLOCKRANDOM, ERandomChance.RARELY, 1, 1503);
+	        SoundUtil.playSoundDistrib(pLevel, pPos, WUTSounds.HAMMERHIT.get(), 0.75f, 0.5F, false, true);
+	        
+	        for(InteractionHand hands : InteractionHand.values())
+	        {
 				ItemStack heldStack = pPlayer.getItemInHand(hands);
-				if (heldStack.getItem() instanceof HammerItem || heldStack.getItem() == WUTItems.HAMMER.get())
+				if (heldStack.getItem() instanceof HammerItem ||
+					heldStack.getItem() == WUTItems.HAMMER.get())
 				{
-					hitCounter += 1;
-
 					if (ItemsConfig.ANVILCOOLDOWN.get())
 						pPlayer.getCooldowns().addCooldown(heldStack.getItem(), 2 + level.random.nextInt(4));
-
-					if (!pPlayer.isCreative() && !pPlayer.isSpectator())
+					
+					if(hotCounter < 0.6)
+						this.hotCounter += 0.06f;
+					this.hotCounter += 0.04f;
+					
+					if(currentRecipe != null)
 					{
-						ItemStackUtil.damageItem(pPlayer, heldStack);
-						double foodexhaustion = ItemsConfig.ANVILFOODEXHAUSTION.get() + this.currentRecipe.value().satcost();
-						pPlayer.getFoodData().addExhaustion((float) foodexhaustion);
+				        if(this.hitCounter == this.currentRecipe.value().hitcounter())
+				        {
+				        	if(pPlayer instanceof ServerPlayer splayer)
+				        	{
+                                popRecipeExperience(splayer, this.currentRecipe.value().experience());
+				        	}
+				        	tryProcessRecipe();
+				        }
+				        else
+				        {
+							hitCounter += 1;
+
+							if (!pPlayer.isCreative() && !pPlayer.isSpectator())
+							{
+								heldStack.setDamageValue(heldStack.getDamageValue() + 2);
+								pPlayer.getFoodData().addExhaustion(0.01f + this.level.random.nextFloat() / 2);
+							}
+				        }
+						return ItemInteractionResult.SUCCESS;
 					}
 				}
-				return ItemInteractionResult.SUCCESS;
-            }
-        }
+	        }
+		}
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 	
@@ -182,10 +184,10 @@ public class AnvilBlockEntity extends WitherMachineBlockEntity {
     				ItemStack[] ingredient = rec.value().input().getItems();
         			for (ItemStack stack : ingredient)
         			{
-        				if(ItemStack.isSameItem(stack, stackIn))
-        				{
-        					currentRecipe = rec;
-        				}
+                        if (ItemStack.isSameItem(stack, stackIn)) {
+                            currentRecipe = rec;
+                            break;
+                        }
     				}
     			}
     		}
@@ -210,7 +212,26 @@ public class AnvilBlockEntity extends WitherMachineBlockEntity {
 	
     public void dropRecipeOutput(ItemStack stack)
     {
-        ItemEntity entityItem = new ItemEntity(level, 0, 0, 0, stack);
+		int stackcount = this.currentRecipe.value().count();
+		int countbonus = this.currentRecipe.value().bonus();
+		if(this.level.random.nextFloat() < 0.25f)
+		{
+        	SoundUtil.playSoundDistrib(level, worldPosition, SoundEvents.TRIDENT_THUNDER.value(), 0.4f, 1.0F, false, true);
+			stackcount += countbonus;
+		}
+		
+		ItemEntity entityItem = new ItemEntity(level, 0, 0, 0, new ItemStack(stack.getItem(), stackcount));
+		
+		if(stack.getItem() instanceof PickaxeHeadItem axeItem)
+		{
+			axeItem.setPickaxeFloat(level.random.nextFloat());
+			
+			stack = new ItemStack(axeItem);
+			stack.set(WUTComponents.PICKAXE, level.random.nextFloat());
+			
+			entityItem = new ItemEntity(level, 0, 0, 0, stack);
+		}
+
         double variance = 0.05F * 4;
         entityItem.setPos(worldPosition.getX() + 0.5, worldPosition.getY() + 1.2, worldPosition.getZ() + 0.5);
         entityItem.setDeltaMovement(Mth.nextDouble(level.random, -variance, variance), 2 / 20F, Mth.nextDouble(level.random, -variance, variance));
@@ -222,8 +243,8 @@ public class AnvilBlockEntity extends WitherMachineBlockEntity {
     @Override
     public void popRecipeExperience(ServerPlayer serverplayer, float count)
     {
-        int i = Mth.floor((float)count * 1);
-        float f = Mth.frac((float)count * 1);
+        int i = Mth.floor(count * 1);
+        float f = Mth.frac(count * 1);
         if (f != 0.0F && Math.random() < (double) f)
         {
            ++i;

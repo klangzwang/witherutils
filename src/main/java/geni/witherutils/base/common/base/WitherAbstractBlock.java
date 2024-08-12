@@ -13,18 +13,19 @@ import geni.witherutils.base.client.ClientTooltipHandler;
 import geni.witherutils.core.common.blockentity.WitherBlockEntity;
 import geni.witherutils.core.common.item.IBlock;
 import geni.witherutils.core.common.item.ItemBlock;
+import geni.witherutils.core.common.util.SoundUtil;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -57,7 +58,10 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 @SuppressWarnings("unused")
 public abstract class WitherAbstractBlock extends Block implements SimpleWaterloggedBlock, IBlock {
@@ -66,9 +70,7 @@ public abstract class WitherAbstractBlock extends Block implements SimpleWaterlo
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     
 	private boolean hasScreen = false;
-	private boolean hasScreenExtra = false;
 	private boolean hasLiquid = false;
-	private boolean hasSoulBankSlot = false;
 	private boolean hasTooltip = false;
 
     protected int lightOpacity;
@@ -136,21 +138,11 @@ public abstract class WitherAbstractBlock extends Block implements SimpleWaterlo
 		this.hasScreen = true;
 		return this;
 	}
-	protected WitherAbstractBlock setHasScreenExtra()
-	{
-	    this.hasScreenExtra = true;
-	    return this;
-	}
 	protected WitherAbstractBlock setHasLiquid()
 	{
 		this.hasLiquid = true;
 		return this;
 	}
-    protected WitherAbstractBlock setHasSoulBankSlot()
-    {
-        this.hasSoulBankSlot = true;
-        return this;
-    }
     protected WitherAbstractBlock setHasTooltip()
     {
         this.hasTooltip = true;
@@ -259,6 +251,15 @@ public abstract class WitherAbstractBlock extends Block implements SimpleWaterlo
 				}
 				worldIn.updateNeighbourForOutputSignal(pos, this);
 			}
+			else if(tileentity instanceof WitherMachineUpgradeBlockEntity wube)
+			{
+				if(wube != null)
+				{
+	                NonNullList<ItemStack> drops = NonNullList.create();
+	                wube.getContentsToDrop(drops);
+	                drops.forEach(stack -> Containers.dropItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), stack));
+				}
+			}
 		}
 		super.onRemove(state, worldIn, pos, newState, isMoving);
 	}
@@ -272,99 +273,81 @@ public abstract class WitherAbstractBlock extends Block implements SimpleWaterlo
         return blockEntity != null && blockEntity.triggerEvent(id, type);
     }
 
-	@SuppressWarnings("unchecked")
-	@Nullable
-    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> type1, BlockEntityType<E> type2, BlockEntityTicker<? super E> ticker)
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult blockHitResult)
     {
-        return type2 == type1 ? (BlockEntityTicker<A>) ticker : null;
+	    BlockEntity tile = level.getBlockEntity(pos);
+	    if (tile instanceof WitherBlockEntity wbe)
+	    {
+			if(hasLiquid)
+			{
+				if(!level.isClientSide)
+				{
+					IFluidHandler fluidHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, blockHitResult.getBlockPos(), blockHitResult.getDirection());
+					if(fluidHandler != null)
+					{
+						if(FluidUtil.interactWithFluidHandler(player, player.getUsedItemHand(), fluidHandler))
+						{
+							if(fluidHandler.getFluidInTank(0) != null)
+							{
+								player.displayClientMessage(Component.translatable(getFluidRatioName(fluidHandler)), true);
+							}
+							if(player instanceof ServerPlayer)
+							{
+								SoundUtil.playSoundFromServer((ServerPlayer) player, SoundEvents.BUCKET_FILL, 1.0f, 1.0f);
+							}
+						}
+						else
+						{
+							player.displayClientMessage(Component.translatable(getFluidRatioName(fluidHandler)), true);
+						}
+					}
+				}
+				if(FluidUtil.getFluidHandler(player.getItemInHand(player.getUsedItemHand())).isPresent())
+				{
+					return InteractionResult.SUCCESS;
+				}
+			}
+			if(this.hasScreen)
+			{
+				if(!level.isClientSide)
+				{
+					if(wbe instanceof MenuProvider menuprovider)
+					{
+				        if (menuprovider != null && player instanceof ServerPlayer serverPlayer)
+				        {
+		                    doOpenGui(serverPlayer, wbe);
+				        }
+					}
+					else
+					{
+						throw new IllegalStateException("Our named container provider is missing!");
+					}
+				}
+				return InteractionResult.SUCCESS;
+			}
+
+		    wbe.useWithoutItem(state, level, pos, player, blockHitResult);
+	    }
+	    return super.useWithoutItem(state, level, pos, player, blockHitResult);
     }
-
-//    @Override
-//    public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult)
-//    {
-//		if(this.hasScreen)
-//		{
-//			if(!pLevel.isClientSide)
-//			{
-//				BlockEntity tileEntity = pLevel.getBlockEntity(pPos);
-//				if(tileEntity instanceof MenuProvider)
-//				{
-//	                if (pPlayer instanceof ServerPlayer serverPlayer)
-//	                	serverPlayer.openMenu((MenuProvider) tileEntity, tileEntity.getBlockPos());
-//				}
-//				else
-//				{
-//					throw new IllegalStateException("Our named container provider is missing!");
-//				}
-//			}
-//			return ItemInteractionResult.SUCCESS;
-//		}
-//		return super.useItemOn(pStack, pState, pLevel, pPos, pPlayer, pHand, pHitResult);
-//    }
-//    
-//    @Override
-//    protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHitResult)
-//    {
-//        BlockEntity be = pLevel.getBlockEntity(pPos);
-//        if (be instanceof WitherBlockEntity wbe)
-//        	wbe.useWithoutItem(pState, pLevel, pPos, pPlayer, pHitResult);
-//    	return super.useWithoutItem(pState, pLevel, pPos, pPlayer, pHitResult);
-//    }
-	
-	@Override
-	public InteractionResult useWithoutItem(BlockState blockstate, Level world, BlockPos pos, Player entity, BlockHitResult hit)
-	{
-        BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof WitherBlockEntity)
-        {
-            MenuProvider provider = new MenuProvider()
-            {
-                @Override
-                public Component getDisplayName()
-                {
-                    return new ItemStack(WitherAbstractBlock.this).getHoverName();
-                }
-                @Nullable
-                @Override
-                public AbstractContainerMenu createMenu(int id, Inventory inventory, Player playerEntity)
-                {
-                    return getContainer(id, inventory, new FriendlyByteBuf(Unpooled.buffer()).writeBlockPos(pos), pos);
-                }
-            };
-            
-            AbstractContainerMenu container = provider.createMenu(0, entity.getInventory(), entity);
-            if (container != null)
-            {
-                if (entity instanceof ServerPlayer serverPlayer)
-                {
-                    serverPlayer.openMenu(provider, buffer -> {
-                        buffer.writeBlockPos(pos);
-                        additionalGuiData(buffer, blockstate, world, pos, entity, hit);
-                    });
-                }
-                return InteractionResult.SUCCESS;
-            }
-            
-        	System.out.println(provider.getDisplayName());
-        }
-        return super.useWithoutItem(blockstate, world, pos, entity, hit);
-	}
-
-    @Nullable
-    public <T extends WitherBlockEntity> AbstractContainerMenu getContainer(int id, Inventory inventory, FriendlyByteBuf buffer, BlockPos pos)
+    
+    protected void doOpenGui(ServerPlayer player, BlockEntity te)
     {
-        return null;
+        player.openMenu((MenuProvider) te, te.getBlockPos());
     }
-
-    protected void additionalGuiData(FriendlyByteBuf buffer, BlockState state, Level world, BlockPos pos, Player player, BlockHitResult result) {}
-	
-	@Override
-	public MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos)
+    
+	@SuppressWarnings("removal")
+	public static String getFluidRatioName(IFluidHandler handler)
 	{
-		BlockEntity tileEntity = worldIn.getBlockEntity(pos);
-		return tileEntity instanceof MenuProvider menuProvider ? menuProvider : null;
+		String ratio = handler.getFluidInTank(0).getAmount() + "/" + handler.getTankCapacity(0);
+		if (!handler.getFluidInTank(0).isEmpty())
+		{
+			ratio += " " + handler.getFluidInTank(0).getDisplayName().getString();
+		}
+		return ratio;
 	}
-
+	
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack)
 	{
@@ -405,4 +388,31 @@ public abstract class WitherAbstractBlock extends Block implements SimpleWaterlo
     {
         return state.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).isEmpty();
     }
+    
+    protected void checkRedstone(Level world, BlockPos pos)
+    {
+        BlockEntity te = world.getBlockEntity(pos);
+        if (te instanceof WitherMachineBlockEntity genericTileEntity)
+        {
+            genericTileEntity.checkRedstone(world, pos);
+        }
+    }
+    
+    protected int getRedstoneOutput(BlockState state, BlockGetter world, BlockPos pos, Direction side)
+    {
+        BlockEntity te = world.getBlockEntity(pos);
+        if (state.getBlock() instanceof WitherAbstractBlock && te instanceof WitherMachineBlockEntity generic)
+        {
+            return generic.getRedstoneOutput(state, world, pos, side);
+        }
+        return 0;
+    }
+    
+	public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity entity)
+	{
+		return Direction.getNearest(
+				(float) (entity.xOld - clickedBlock.getX()),
+				(float) (entity.yOld - clickedBlock.getY()),
+				(float) (entity.zOld - clickedBlock.getZ()));
+	}
 }

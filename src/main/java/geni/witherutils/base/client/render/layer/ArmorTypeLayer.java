@@ -41,7 +41,7 @@ import net.minecraft.world.item.ItemStack;
 //@Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.FORGE)
 public class ArmorTypeLayer extends RenderLayer {
 
-	private RenderLayerParent parent;
+	private final RenderLayerParent parent;
 	
 	public ArmorTypeLayer(RenderLayerParent parent)
     {
@@ -52,11 +52,10 @@ public class ArmorTypeLayer extends RenderLayer {
     @Override
     public void render(PoseStack matrix, MultiBufferSource buffer, int light, Entity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) 
     {
-        if(entity instanceof Player)
+        if(entity instanceof Player player)
         {
-        	Player player = (Player) entity;
 
-    		HumanoidModel<Player> model = (HumanoidModel<Player>) this.getParentModel();
+            HumanoidModel<Player> model = (HumanoidModel<Player>) this.getParentModel();
     		VertexConsumer vertex = buffer.getBuffer(WUTRenderType.solid());
 
             matrix.scale(0.0625F, 0.0625F, 0.0625F);

@@ -10,10 +10,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class RangeHelper {
 
-    private BlockPos current;
-    private AABB box;
-    private RangeType type;
-    private Direction direction;
+    private final BlockPos current;
+    private final AABB box;
+    private final RangeType type;
+    private final Direction direction;
 
     public RangeHelper(BlockPos current, Direction facing, RangeType rangeType)
     {

@@ -2,8 +2,9 @@ package geni.witherutils.base.common.block.creative;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 
-import geni.witherutils.base.common.base.AbstractBlockEntityRenderer;
+import geni.witherutils.base.client.base.AbstractBlockEntityRenderer;
 import geni.witherutils.core.common.util.TextureUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -16,7 +17,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Blocks;
 
 public class CreativeEnergyRenderer extends AbstractBlockEntityRenderer<CreativeEnergyBlockEntity> {
-	
+
     public CreativeEnergyRenderer(BlockEntityRendererProvider.Context context)
     {
         super(context);
@@ -28,6 +29,41 @@ public class CreativeEnergyRenderer extends AbstractBlockEntityRenderer<Creative
     	if(te == null)
     		return;
 
+    	
+    	
+    	
+    	
+//    	int fps = mc.getFps();
+//    	System.out.println(fps);
+    	
+    	
+    	
+    	
+    	
+//        double progress = Math.min(1.0, Math.max(0, te.timer - (1 * 10) + 5 * partialTick) / 60.0);
+//        double angle = (progress * progress) * 90F;
+//        double rotation = 1.0 - Math.cos(Math.toRadians(angle));
+//        System.out.println("TIMER: " + te.timer);
+        
+        
+    	
+        double slideProgress = te.getSlideProgress(partialTick);
+//        System.out.println("SLIDEPROGRESS: " + slideProgress);
+        
+        
+//        System.out.println("TIMER: " + Math.pow(slideProgress, 2) * ((1.5 + 1) * slideProgress - 1.5)); // Math.pow(te.timer, 4));
+        
+
+        
+        
+        
+        
+        matrixStack.translate(0.5, 0.5, 0.5);
+    	matrixStack.mulPose(Axis.YP.rotationDegrees(360 * (float)slideProgress));
+    	matrixStack.translate(-0.5, -0.5, -0.5);
+    	
+    	
+    	
 		float xMin, xMax, yMin, yMax, zMin, zMax = 0;
 		
 		xMax = 1.984375F;

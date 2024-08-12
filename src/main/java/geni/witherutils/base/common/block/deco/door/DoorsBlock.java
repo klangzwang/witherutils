@@ -120,7 +120,7 @@ public class DoorsBlock extends DoorBlock {
 			level.setBlock(pos, state.setValue(POWERED, Boolean.valueOf(gettingPowered)).setValue(OPEN, Boolean.valueOf(gettingPowered)), 2);
 			notifyPower(level, pos, state);
 
-			if(gettingPowered != false)
+			if(gettingPowered)
 			SoundUtil.playSoundFromServer(level, pos, WUTSounds.ELECTRODISTANT.get());
 		}
 	}

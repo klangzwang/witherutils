@@ -14,7 +14,7 @@ public class ArmorEyesLayer extends RenderLayer {
 
 	private static final RenderType WITHERMONK_EYES = RenderType.eyes(ResourceLocation.withDefaultNamespace("witherutils:textures/model/armor/withersteel_armor_eyes.png"));
 	
-	private RenderLayerParent parent;
+	private final RenderLayerParent parent;
 
 	public ArmorEyesLayer(RenderLayerParent parent)
     {

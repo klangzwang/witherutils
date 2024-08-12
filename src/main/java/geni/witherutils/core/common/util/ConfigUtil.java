@@ -21,7 +21,7 @@ public class ConfigUtil {
 	
 	public static boolean dimensionKeyIslisted(ResourceLocation dimensionKey)
 	{
-		final List<String> dimensionlist = LootConfig.SOULORBDROPLIST.get();
+		final List<? extends String> dimensionlist = LootConfig.SOULORBDROPLIST.get();
 		for (String key : dimensionlist)
 		{
 			if (dimensionKey.toString().matches(convertToRegex(key)))
@@ -63,7 +63,7 @@ public class ConfigUtil {
 	@OnlyIn(Dist.CLIENT)
 	public static String getDimensionStringsForDisplay()
 	{
-		final List<String> dimensionlist = LootConfig.SOULORBDROPLIST.get();
+		final List<? extends String> dimensionlist = LootConfig.SOULORBDROPLIST.get();
 		for (String key : dimensionlist)
 		{
 			return key;

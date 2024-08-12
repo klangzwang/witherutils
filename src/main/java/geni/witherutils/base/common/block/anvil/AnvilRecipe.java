@@ -27,21 +27,23 @@ public class AnvilRecipe implements WitherRecipe<RecipeInput> {
     private final ItemStack output;
 	private final int hitcounter;
     private final float experience;
-    private final float satcost;
-    
-    public AnvilRecipe(Ingredient input, ItemStack output, int hitcounter, float experience, float satcost)
+	private final int count;
+	private final int bonus;
+	
+    public AnvilRecipe(Ingredient input, ItemStack output, int hitcounter, float experience, int count, int bonus)
     {
         this.input = input;
         this.output = output;
         this.hitcounter = hitcounter;
         this.experience = experience;
-        this.satcost = satcost;
+        this.count = count;
+        this.bonus = bonus;
     }
     
 	@Override
 	public double getBaseSaturationCost()
 	{
-		return satcost;
+		return 0;
 	}
 
 	@Override
@@ -96,9 +98,14 @@ public class AnvilRecipe implements WitherRecipe<RecipeInput> {
         return experience;
     }
     
-    public float satcost()
+    public int count()
     {
-        return experience;
+        return count;
+    }
+    
+    public int bonus()
+    {
+        return bonus;
     }
     
     @Override
@@ -135,7 +142,8 @@ public class AnvilRecipe implements WitherRecipe<RecipeInput> {
     		ItemStack.CODEC.fieldOf("output").forGetter(AnvilRecipe::output),
             Codec.INT.fieldOf("hitcounter").forGetter(AnvilRecipe::hitcounter),
             Codec.FLOAT.fieldOf("experience").forGetter(AnvilRecipe::experience),
-        	Codec.FLOAT.fieldOf("saturation").forGetter(AnvilRecipe::satcost))
+        	Codec.INT.fieldOf("count").forGetter(AnvilRecipe::count),
+            Codec.INT.fieldOf("bonus").forGetter(AnvilRecipe::bonus))
     		.apply(inst, AnvilRecipe::new));
         
         public static final StreamCodec<RegistryFriendlyByteBuf, AnvilRecipe> STREAM_CODEC = StreamCodec.composite(
@@ -143,7 +151,8 @@ public class AnvilRecipe implements WitherRecipe<RecipeInput> {
             ItemStack.STREAM_CODEC, AnvilRecipe::output,
             ByteBufCodecs.INT, AnvilRecipe::hitcounter,
             ByteBufCodecs.FLOAT, AnvilRecipe::experience,
-            ByteBufCodecs.FLOAT, AnvilRecipe::satcost,
+            ByteBufCodecs.INT, AnvilRecipe::count,
+            ByteBufCodecs.INT, AnvilRecipe::bonus,
             AnvilRecipe::new);
 
         @Override

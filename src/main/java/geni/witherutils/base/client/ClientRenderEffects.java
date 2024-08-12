@@ -61,8 +61,10 @@ public class ClientRenderEffects {
         LevelAccessor levelacc = event.getLevel();
         Block block = event.getState().getBlock();
 
+        ItemStack stack = new ItemStack(Block.byItem(event.getPlacedAgainst().getBlock().asItem()));
+        
         var name = BuiltInRegistries.BLOCK.getKey(block);
-        if (name.getNamespace().equals(Names.MODID))
+        if (name.getNamespace().equals(Names.MODID) && !stack.isEmpty())
         {
             if(levelacc instanceof ServerLevel serverLevel)
             {

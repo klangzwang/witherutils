@@ -10,7 +10,7 @@ public interface IWitherEnergyStorage extends IEnergyStorage {
     int addEnergy(int energy);
     
     int addEnergy(int energy, boolean simulate);
-
+    
     int takeEnergy(int energy);
 
     int consumeEnergy(int energy, boolean simulate);

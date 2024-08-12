@@ -183,7 +183,7 @@ public class UserIdent {
 
 	public void saveToNbt(@Nonnull CompoundTag nbt, @Nonnull String prefix) {
 		if (uuid != null) {
-			nbt.putString(prefix + ".uuid", "" + uuid.toString());
+			nbt.putString(prefix + ".uuid", String.valueOf(uuid));
 		}
 		nbt.putString(prefix + ".login", playerName);
 	}

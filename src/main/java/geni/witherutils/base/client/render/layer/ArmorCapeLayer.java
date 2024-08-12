@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 @SuppressWarnings({ "unused", "unchecked", "rawtypes" })
 public class ArmorCapeLayer extends RenderLayer {
 
-	private RenderLayerParent parent;
+	private final RenderLayerParent parent;
 
 	public ArmorCapeLayer(RenderLayerParent parent)
     {

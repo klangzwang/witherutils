@@ -29,7 +29,7 @@ public enum SpecialModels
 	EMTOTEM("wither/emissive/em_totem"),
 	EMMULTI("wither/emissive/em_multi"),
 //	EMMINER("wither/emissive/em_miner"),
-//	EMPROCESSOR("wither/emissive/em_processor"),
+	EMPROCESSOR("wither/emissive/em_processor"),
 
 	DRYHEAD_HEAD("wither/entity/dryhead/head"),
 	DRYHEAD_HAIR("wither/entity/dryhead/hair"),
@@ -66,7 +66,7 @@ public enum SpecialModels
 //	SKULL_UPPER("wither/skull/skull_upper"),
 //	SKULL_LOWER("wither/skull/skull_lower"),
 	
-//	ADAPTER("wither/processor/processor_adapter"),
+	ADAPTER("wither/processor/processor_adapter"),
 	
 	MOTOR("wither/motor/motor"),
 //	WHEEL("wither/wheel/wheel"),
@@ -82,18 +82,22 @@ public enum SpecialModels
 //	SWORDHANDLE("wither/sword/sword_2"),
 //	SWORDPEARL("wither/sword/sword_3"),
 	
+	IRONGEAR("item/iron_gear_helper"),
+	
 	WANDHELPER("item/wand_helper"),
 	WANDPOWER("item/wand_powered"),
-	WANDSWING("item/wand_swinging");
-//	FAN("item/fan_helper"),
-//	SHOVEL("item/shovel_helper"),
+	WANDSWING("item/wand_swinging"),
+	FAN("item/fan_helper"),
+	SHOVEL_BASIC("item/shovel_basic"),
+	SHOVEL_ADVANCED("item/shovel_advanced"),
+	SHOVEL_MASTER("item/shovel_master"),
 //	BLITZ("wither/misc/blitz"),
-//	LAVA("wither/misc/lava"),
+	LAVA("wither/misc/lava"),
 //	CYLINDER("wither/misc/cylinder"),
 //	GLOW("wither/glow/glow"),
 //	STATUS_LIGHT("wither/status/status_light"),
-//	METALDOOR("wither/door/metal_model"),
-//	METALDOORTEETH("wither/door/metal_teeth_model"),
+	METALDOOR("wither/door/metal_model"),
+	METALDOORTEETH("wither/door/metal_teeth_model");
 //	FAUCET("wither/floodgate/faucet"),
 //	FAUCET_OPEN("wither/floodgate/faucet_open"),
 //	PLUG("wither/plug/plug"),

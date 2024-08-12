@@ -1,5 +1,6 @@
 package geni.witherutils.api;
 
+import geni.witherutils.api.upgrade.IUpgradeRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModLoadingContext;
 
@@ -27,5 +28,6 @@ public final class WitherUtilsRegistry {
 
     public interface IWitherUtilsInterface
 	{
+        IUpgradeRegistry getUpgradeRegistry();
     }
 }

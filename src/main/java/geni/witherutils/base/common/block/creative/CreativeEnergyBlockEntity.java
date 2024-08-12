@@ -4,37 +4,44 @@ import org.jetbrains.annotations.Nullable;
 
 import geni.witherutils.api.io.energy.EnergyIOMode;
 import geni.witherutils.base.common.base.WitherMachineBlockEntity;
-import geni.witherutils.base.common.block.LogicalBlockEntities;
+import geni.witherutils.base.common.init.WUTBlockEntityTypes;
+import geni.witherutils.base.common.init.WUTSounds;
+import geni.witherutils.base.common.io.energy.IWitherEnergyStorage;
 import geni.witherutils.base.common.io.energy.WitherEnergyStorage;
-import geni.witherutils.base.common.io.fluid.WitherFluidTank;
-import io.netty.buffer.Unpooled;
+import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraft.world.phys.BlockHitResult;
 
-public class CreativeEnergyBlockEntity extends WitherMachineBlockEntity implements MenuProvider {
+public class CreativeEnergyBlockEntity extends WitherMachineBlockEntity {
 
     private static final int BASE_FE_PRODUCTION = 4000;
     private final WitherEnergyStorage energy = new WitherEnergyStorage(EnergyIOMode.OUTPUT, () -> Integer.MAX_VALUE, () -> Integer.MAX_VALUE);
-    private final WitherFluidTank tank = new WitherFluidTank(Integer.MAX_VALUE);
     
     private int rfPerTick;
     
+    /*************************************************************/
+    
+    private boolean powered = false;
+    private int maxProgress = 10;
+    private int slideProgress;
+    private int prevSlideProgress;
+    
+    /*************************************************************/
+    
+    public int timer;
+    
+    /*************************************************************/
+    
 	public CreativeEnergyBlockEntity(BlockPos pos, BlockState state)
 	{
-		super(LogicalBlockEntities.CREATIVEENERGY.get(), pos, state);
+		super(WUTBlockEntityTypes.CREATIVE_GENERATOR.get(), pos, state);
 	}
 	
     @Override
@@ -56,13 +63,7 @@ public class CreativeEnergyBlockEntity extends WitherMachineBlockEntity implemen
     }
     
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir)
-    {
-        return dir == getCurrentFacing() ? null : tank;
-    }
-    
-    @Override
-    public IEnergyStorage getEnergyHandler(@Nullable Direction dir)
+    public IWitherEnergyStorage getEnergyHandler(@Nullable Direction dir)
     {
         return dir == getCurrentFacing() ? null : energy;
     }
@@ -74,21 +75,100 @@ public class CreativeEnergyBlockEntity extends WitherMachineBlockEntity implemen
 
         if (level.getGameTime() % 5 == 0)
         {
-            rfPerTick = (int) (BASE_FE_PRODUCTION);
+            rfPerTick = BASE_FE_PRODUCTION;
         }
         if (energy.getEnergyStored() != Integer.MAX_VALUE)
         {
             energy.receiveEnergy(rfPerTick, false);
         }
-        if (tank.getFluidAmount() != Integer.MAX_VALUE)
-        {
-        	tank.fill(new FluidStack(Fluids.LAVA, 1000), FluidAction.EXECUTE);
-        }
         
-        System.out.println(tank.getFluidAmount());
-        System.out.println(energy.getEnergyStored());
+//        System.out.println(tank.getFluidAmount());
+//        System.out.println(energy.getEnergyStored());
     }
 
+    @Override
+    public void clientTick()
+    {
+    	super.clientTick();
+    	
+        prevSlideProgress = slideProgress;
+        if(powered)
+        {
+            if(slideProgress < Math.max(0, maxProgress))
+            {
+                slideProgress++;
+            }
+        }
+        else if(slideProgress > 0)
+        {
+            slideProgress--;
+        }
+        
+        
+    	if(powered)
+    	{
+        	if(this.timer < 200)
+        		this.timer += 5;
+        	else if(this.timer >= 200)
+        	{
+        		setPowered(false);
+        		this.timer = 200;
+        	}
+    	}
+    	else
+    	{
+        	if(this.timer > 0)
+        		this.timer -= 5;
+        	else if(this.timer <= 0)
+        	{
+        		this.timer = 0;
+        	}
+    	}
+    }
+    
+    /*************************************************************/
+    
+    public float getSlideProgress(float partialTicks)
+    {
+        float partialSlideProgress = prevSlideProgress + (slideProgress - prevSlideProgress) * partialTicks;
+        float normalProgress = partialSlideProgress / (float) maxProgress;
+        return 1.0F * (1.0F - ((float) Math.sin(Math.toRadians(90.0 + 180.0 * normalProgress)) / 2.0F + 0.5F));
+    }
+    public void setPowered(boolean powered)
+    {
+        this.powered = powered;
+    }
+    public boolean isPowered()
+    {
+        return powered;
+    }
+    @Override
+    public InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHitResult)
+    {
+        boolean powered = isPowered();
+        setPowered(pLevel, pPos, pState, !powered);
+    	return super.useWithoutItem(pState, pLevel, pPos, pPlayer, pHitResult);
+    }
+    private void setPowered(Level world, BlockPos pos, BlockState state, boolean powered)
+    {
+        if(isPowered() == powered)
+            return;
+
+        setPowered(powered);
+        sync();
+
+        if(powered)
+        {
+        	SoundUtil.playSoundDistrib(world, pos, WUTSounds.WORMBIP.get(), 1.f, 1.2f);
+        }
+        else
+        {
+        	SoundUtil.playSoundDistrib(world, pos, WUTSounds.WORMBIP.get(), 1.f, 0.8f);
+        }
+    }
+    
+    /*************************************************************/
+    
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider)
     {
@@ -101,11 +181,5 @@ public class CreativeEnergyBlockEntity extends WitherMachineBlockEntity implemen
     {
         super.loadAdditional(tag, provider);
         energy.deserializeNBT(provider, tag);
-    }
-    
-    @Override
-    public AbstractContainerMenu createMenu(int id, Inventory playerInventory, Player playerEntity)
-    {
-    	return new CreativeEnergyContainer(id, playerInventory, new FriendlyByteBuf(Unpooled.buffer()).writeBlockPos(this.worldPosition));
     }
 }

@@ -45,8 +45,8 @@ public class SoulOrbProjectile extends ThrowableItemProjectile {
 	{
 		super.tick();
 		
-		double d8 = (double) this.getX() - this.random.nextDouble() + 0.5D;
-		double d9 = (double) this.getZ() - this.random.nextDouble() + 0.5D;
+		double d8 = this.getX() - this.random.nextDouble() + 0.5D;
+		double d9 = this.getZ() - this.random.nextDouble() + 0.5D;
 
 		this.level().addParticle(WUTParticles.SOULORB.get(),
 				this.getX(),

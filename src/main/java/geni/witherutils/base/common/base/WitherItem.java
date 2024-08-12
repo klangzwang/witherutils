@@ -46,7 +46,7 @@ public class WitherItem extends Item {
 		Quaternionf quaternionf = (new Quaternionf()).setAngleAxis(pitch * ((float) Math.PI / 180F), vec31.x, vec31.y, vec31.z);
 		Vec3 vec3 = shooter.getViewVector(1.0F);
 		Vector3f vector3f = vec3.toVector3f().rotate(quaternionf);
-		ball.shoot((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), velocityFactor * 1.5f, 1.0F);
+		ball.shoot(vector3f.x(), vector3f.y(), vector3f.z(), velocityFactor * 1.5f, 1.0F);
 		world.addFreshEntity(ball);
 	}
 }

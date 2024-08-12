@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "witherutils:item/soulbank/soulbank",
+    "layer1": "witherutils:item/soulbank/soulbank_basic"
+  }
+}

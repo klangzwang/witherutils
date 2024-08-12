@@ -58,7 +58,7 @@ public class AngelBlock extends WitherAbstractBlock implements Fallable {
 //			}
 //		}
 
-		dropsOriginal.add(new ItemStack(WUTBlocks.CASE.get(), 1));
+		dropsOriginal.add(new ItemStack(WUTBlocks.CASE_BIG.get(), 1));
 		dropsOriginal.add(new ItemStack(Items.GOLD_NUGGET, 4));
 		dropsOriginal.add(new ItemStack(Items.FEATHER, 4));
 		return dropsOriginal;

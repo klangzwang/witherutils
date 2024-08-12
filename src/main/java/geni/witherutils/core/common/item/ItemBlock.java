@@ -20,7 +20,7 @@ public class ItemBlock<B extends Block> extends BlockItem {
     public Component getName(ItemStack stack)
     {
         if (this.block instanceof WitherAbstractBlock)
-            return ((WitherAbstractBlock) this.block).getName();
+            return this.block.getName();
         return super.getName(stack);
     }
 

@@ -63,7 +63,7 @@ public class GifDecoder {
     public int getDelay(int n) {
         this.delay = -1;
         if (n >= 0 && n < this.frameCount) {
-            this.delay = ((GifFrame)this.frames.get((int)n)).delay;
+            this.delay = ((GifFrame)this.frames.get(n)).delay;
         }
         return this.delay;
     }
@@ -149,7 +149,7 @@ public class GifDecoder {
     public BufferedImage getFrame(int n) {
         BufferedImage im = null;
         if (n >= 0 && n < this.frameCount) {
-            im = ((GifFrame)this.frames.get((int)n)).image;
+            im = ((GifFrame)this.frames.get(n)).image;
         }
         return im;
     }
@@ -414,7 +414,7 @@ public class GifDecoder {
                             for (int i = 0; i < 11; ++i) {
                                 app = (String)app + (char)this.block[i];
                             }
-                            if (((String)app).equals("NETSCAPE2.0")) {
+                            if (app.equals("NETSCAPE2.0")) {
                                 this.readNetscapeExt();
                                 continue block10;
                             }

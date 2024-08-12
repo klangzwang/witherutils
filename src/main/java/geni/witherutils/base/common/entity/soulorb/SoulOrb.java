@@ -135,8 +135,8 @@ public class SoulOrb extends FlyingMob {
 				this.getZ(),
 				0.0D, 0.0D, 0.0D);
 		
-		double d8 = (double) this.getX() - this.random.nextDouble() + 0.5D;
-		double d9 = (double) this.getZ() - this.random.nextDouble() + 0.5D;
+		double d8 = this.getX() - this.random.nextDouble() + 0.5D;
+		double d9 = this.getZ() - this.random.nextDouble() + 0.5D;
 		
 		for(int i = 0; i < 2; i++)
 		{

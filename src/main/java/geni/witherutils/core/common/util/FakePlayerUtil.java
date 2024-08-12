@@ -9,6 +9,9 @@ import javax.annotation.Nullable;
 import geni.witherutils.core.common.fakeplayer.WUTFakePlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Direction.AxisDirection;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -32,17 +35,16 @@ public class FakePlayerUtil {
 
     public static void setupFakePlayerForUse(WUTFakePlayer player, BlockPos pos, Direction direction, ItemStack toHold, boolean sneaking)
     {
-//        player.getInventory().items.set(player.getInventory().selected, toHold);
-//        float pitch = direction == Direction.UP ? -90 : direction == Direction.DOWN ? 90 : 0;
-//        float yaw = direction == Direction.SOUTH ? 0 : direction == Direction.WEST ? 90 : direction == Direction.NORTH ? 180 : -90;
-//        Vec3i sideVec = direction.getNormal();
-//        Axis a = direction.getAxis();
-//        AxisDirection ad = direction.getAxisDirection();
-//        double x = a == Axis.X && ad == AxisDirection.NEGATIVE ? -.5 : .5 + sideVec.getX() / 1.9D;
-//        double y = 0.5 + sideVec.getY() / 1.9D;
-//        double z = a == Axis.Z && ad == AxisDirection.NEGATIVE ? -.5 : .5 + sideVec.getZ() / 1.9D;
-//        player.moveTo(pos.getX() + x, pos.getY() + y - player.getEyeHeight(), pos.getZ() + z, yaw, pitch);
-//        if (!toHold.isEmpty()) player.getAttributes().addTransientAttributeModifiers(toHold.getAttributeModifiers(EquipmentSlot.MAINHAND));
+        player.getInventory().items.set(player.getInventory().selected, toHold);
+        float pitch = direction == Direction.UP ? -90 : direction == Direction.DOWN ? 90 : 0;
+        float yaw = direction == Direction.SOUTH ? 0 : direction == Direction.WEST ? 90 : direction == Direction.NORTH ? 180 : -90;
+        Vec3i sideVec = direction.getNormal();
+        Axis a = direction.getAxis();
+        AxisDirection ad = direction.getAxisDirection();
+        double x = a == Axis.X && ad == AxisDirection.NEGATIVE ? -.5 : .5 + sideVec.getX() / 1.9D;
+        double y = 0.5 + sideVec.getY() / 1.9D;
+        double z = a == Axis.Z && ad == AxisDirection.NEGATIVE ? -.5 : .5 + sideVec.getZ() / 1.9D;
+        player.moveTo(pos.getX() + x, pos.getY() + y - player.getEyeHeight(), pos.getZ() + z, yaw, pitch);
         player.setShiftKeyDown(sneaking);
     }
 
@@ -211,9 +213,9 @@ public class FakePlayerUtil {
         return toUse;
     }
 
-    public static enum InteractionType {
+    public enum InteractionType {
         INTERACT,
         INTERACT_AT,
-        ATTACK;
+        ATTACK
     }
 }

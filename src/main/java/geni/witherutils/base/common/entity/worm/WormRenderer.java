@@ -20,7 +20,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class WormRenderer extends EntityRenderer<Worm> {
 
-    private ItemStack stack;
+    private final ItemStack stack;
 	
 	public WormRenderer(EntityRendererProvider.Context manager)
 	{

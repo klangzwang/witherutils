@@ -1,7 +1,8 @@
 package geni.witherutils.base.common.config.common;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -9,8 +10,10 @@ public class LootConfig {
 
     public static ModConfigSpec.ConfigValue<Double> LILLYDROPCHANCE;
 	public static ModConfigSpec.ConfigValue<Double> SOULORBDROPCHANCE;
-	public static ModConfigSpec.ConfigValue<List<String>> SOULORBDROPLIST;
-		
+	public static ModConfigSpec.ConfigValue<List<? extends String>> SOULORBDROPLIST;
+
+	private static final Predicate<Object> STRING_PREDICATE = s -> s instanceof String;
+
     public LootConfig(ModConfigSpec.Builder builder)
     {
     	builder.push("loot");
@@ -29,12 +32,10 @@ public class LootConfig {
 	    	
 				builder.push("dropatdimension");
 				SOULORBDROPLIST = builder
-		                .comment("The Dimensions, the SoulOrb will drop from LivingEntitys when they killed by the Player"
-		                		+ " Ex: [\"minecraft:overworld\", \"minecraft:the_nether\", \"minecraft:the_end\"]")
-		                .define("dropatdimension", new ArrayList<String>());
-		        builder.pop();
-		        
-		    builder.pop();
+						.comment("The Dimensions, the SoulOrb will drop from LivingEntitys when they killed by the Player"
+								+ " Ex: [\"minecraft:overworld\", \"minecraft:the_nether\", \"minecraft:the_end\"]")
+						.defineList("dropatdimension", Collections.singletonList("minecraft:nether"), STRING_PREDICATE);
+		    	builder.pop();
 
 	    	builder.push("soulorbchance");
 	    	

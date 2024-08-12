@@ -6,7 +6,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public interface IWitherPoweredItem {
 
-	public ICapabilityProvider<ItemStack, Void, IEnergyStorage> initEnergyCap();
+	ICapabilityProvider<ItemStack, Void, IEnergyStorage> initEnergyCap();
 	
 	boolean consumeByActive();
 	

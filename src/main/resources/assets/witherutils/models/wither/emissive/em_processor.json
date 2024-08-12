@@ -1,6 +1,5 @@
 {
-	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "block/block",
 	"textures": {
 		"3": "witherutils:block/emissive/blue",
 		"particle": "witherutils:block/emissive/blue"

@@ -5,8 +5,9 @@ import static geni.witherutils.api.WitherUtilsRegistry.loc;
 import java.util.Optional;
 
 import geni.witherutils.api.soul.PlayerSoul;
+import geni.witherutils.base.common.base.IWitherInventoryItem;
 import geni.witherutils.base.common.base.IWitherPoweredItem;
-import geni.witherutils.base.common.block.LogicalBlockEntities;
+import geni.witherutils.base.common.item.pickaxe.PickaxeHeadItem;
 import geni.witherutils.core.common.blockentity.WitherBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -15,13 +16,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public class WUTCapabilities {
 	
     public static final EntityCapability<PlayerSoul, Void> PLAYERSOUL = EntityCapability.createVoid(loc("playersoul"), PlayerSoul.class);
-    
+
     public static Optional<PlayerSoul> getPlayerSoulHandler(Entity entity)
     {
         return Optional.ofNullable(entity.getCapability(PLAYERSOUL));
@@ -55,22 +57,37 @@ public class WUTCapabilities {
                 event.registerItem(Capabilities.EnergyStorage.ITEM, ipowered.initEnergyCap(), entry.get());
             }
         });
+        WUTItems.ITEM_TYPES.getEntries().forEach(entry -> {
+            if (entry.get() instanceof IWitherInventoryItem iinventory)
+            {
+                event.registerItem(Capabilities.ItemHandler.ITEM, iinventory.initItemHandlerCap(), entry.get());
+            }
+        });
+        WUTItems.ITEM_TYPES.getEntries().forEach(entry -> {
+            if (entry.get() instanceof PickaxeHeadItem)
+            {
+                event.registerItem(ItemCapability.createVoid(loc("pickaxe"), Float.class), PickaxeHeadItem.STORED_FLOAT_PROVIDER, entry.get());
+            }
+        });
     }
     
     public static void registerBlockCapabilities(RegisterCapabilitiesEvent event)
     {
-        LogicalBlockEntities.streamBlockEntities().forEach(blockEntity -> {
+        WUTBlockEntityTypes.streamBlockEntities().forEach(blockEntity -> {
             if (blockEntity instanceof WitherBlockEntity wbe)
             {
-                if (wbe.hasItemCapability()) {
+                if (wbe.hasItemCapability())
+                {
                     event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, wbe.getType(),
                             (object, dir) -> object instanceof WitherBlockEntity be ? be.getItemHandler(dir) : null);
                 }
-                if (wbe.hasFluidCapability()) {
+                if (wbe.hasFluidCapability())
+                {
                     event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, wbe.getType(),
                             (object, dir) -> object instanceof WitherBlockEntity be ? be.getFluidHandler(dir) : null);
                 }
-                if (wbe.hasEnergyCapability()) {
+                if (wbe.hasEnergyCapability())
+                {
                     event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, wbe.getType(),
                             (object, dir) -> object instanceof WitherBlockEntity be ? be.getEnergyHandler(dir) : null);
                 }

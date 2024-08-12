@@ -3,8 +3,8 @@ package geni.witherutils.base.data.generator;
 import com.google.gson.JsonObject;
 import earth.terrarium.athena.impl.client.DefaultModels;
 import geni.witherutils.api.WitherUtilsRegistry;
-import geni.witherutils.base.common.block.cutter.CutterBlock;
-import geni.witherutils.base.common.block.cutter.CutterBlock.CutterBlockType;
+import geni.witherutils.base.common.block.deco.cutter.CutterBlock;
+import geni.witherutils.base.common.block.deco.cutter.CutterBlock.CutterBlockType;
 import geni.witherutils.base.common.init.WUTBlocks;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,7 +38,7 @@ public class WitherUtilsBlockModels implements DataProvider {
     {
         List<CompletableFuture<?>> futures = new ArrayList<>();
 
-    	for (CutterBlock cutterBlock : WUTBlocks.CUTTERBLOCKS)
+        for (CutterBlock cutterBlock : WUTBlocks.CUTTERBLOCKS)
         {
             futures.add(CompletableFuture.runAsync(() -> {
             	

@@ -4,13 +4,8 @@ import org.jetbrains.annotations.Nullable;
 
 import geni.witherutils.base.common.base.WitherAbstractBlock;
 import geni.witherutils.core.common.block.WitherEntityBlock;
-import geni.witherutils.core.common.blockentity.WitherBlockEntity;
-import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -28,7 +23,6 @@ public class CreativeEnergyBlock extends WitherAbstractBlock implements WitherEn
     {
         super(props);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.valueOf(false)));
-		this.setHasScreen();
         this.setHasTooltip();
     }
 
@@ -72,12 +66,6 @@ public class CreativeEnergyBlock extends WitherAbstractBlock implements WitherEn
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
         return Block.box(0, 0, 0, 16, 16, 16);
-    }
-
-    @Override
-    public <T extends WitherBlockEntity> AbstractContainerMenu getContainer(int id, Inventory inventory, FriendlyByteBuf buffer, BlockPos pos)
-    {
-        return new CreativeEnergyContainer(id, inventory, new FriendlyByteBuf(Unpooled.buffer()).writeBlockPos(pos));
     }
     
     @Nullable

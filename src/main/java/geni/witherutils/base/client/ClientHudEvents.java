@@ -1,16 +1,20 @@
 package geni.witherutils.base.client;
 
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.base.common.init.WUTAttachments;
+import geni.witherutils.base.common.init.WUTEffects;
 import geni.witherutils.core.common.helper.HudHelper;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
@@ -33,6 +37,7 @@ public final class ClientHudEvents {
     }
 	
 	private static final LayeredDraw.Layer SOULOVERLAY = (GuiGraphics pGuiGraphics, DeltaTracker pDeltaTracker) -> {
+		renderBlindHud(pGuiGraphics, pDeltaTracker);
 		renderSoulsHud(pGuiGraphics, pDeltaTracker);
 	};
 	
@@ -41,6 +46,26 @@ public final class ClientHudEvents {
         return !(mc.screen instanceof ChatScreen) && !mc.options.hideGui;
     }
 
+    private static void renderBlindHud(GuiGraphics guiGraphics, DeltaTracker pDeltaTracker)
+    {
+		var mc = Minecraft.getInstance();
+		if(mc.player != null && isVisible(mc))
+	    {
+			var pos = HudHelper.getHudPos();
+  			if(pos != null)
+  			{
+  		        Player player = mc.player;
+  		        MobEffectInstance effect = player.getEffect(WUTEffects.BLIND);
+  		        if (effect != null)
+  		        {
+  		            float percent = Math.min((effect.getDuration() / (float) 40), 1);
+  		            Window window = Minecraft.getInstance().getWindow();
+  		            guiGraphics.fill(RenderType.guiOverlay(), 0, 0, window.getScreenWidth(), window.getScreenHeight(), ((int) (percent * 255 + 0.5) << 24) | 16777215);
+  		        }
+  			}
+	    }
+    }
+    
 	private static void renderSoulsHud(GuiGraphics guiGraphics, DeltaTracker pDeltaTracker)
     {
 		var mc = Minecraft.getInstance();

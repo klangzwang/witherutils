@@ -4,9 +4,13 @@ import java.util.Objects;
 
 import javax.annotation.Nullable;
 
+import geni.witherutils.api.misc.RedstoneControl;
+import geni.witherutils.base.common.init.WUTAttachments;
+import geni.witherutils.base.common.io.item.MachineInstallable;
 import geni.witherutils.base.common.io.item.MachineInventory;
 import geni.witherutils.base.common.io.item.MachineInventoryLayout;
 import geni.witherutils.core.common.blockentity.WitherBlockEntity;
+import geni.witherutils.core.common.network.NetworkDataSlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -14,29 +18,35 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.items.IItemHandler;
 
-public abstract class WitherMachineBlockEntity extends WitherBlockEntity implements Nameable {
+public abstract class WitherMachineBlockEntity extends WitherBlockEntity implements Nameable, MenuProvider, MachineInstallable {
 
     private Component customName = null;
-    
-    public static final ICapabilityProvider<WitherMachineBlockEntity, Direction, IItemHandler> ITEM_HANDLER_PROVIDER =
-            (be, side) -> be.inventory != null ? be.inventory.getForSide(side) : null;
+	
+    public static final NetworkDataSlot.CodecType<RedstoneControl> REDSTONE_CONTROL_DATA_SLOT_TYPE
+    = new NetworkDataSlot.CodecType<>(RedstoneControl.CODEC, RedstoneControl.STREAM_CODEC.cast());
 
+    private final NetworkDataSlot<RedstoneControl> redstoneControlDataSlot;
+	protected int powerLevel = 0;
+	
     @Nullable
     private final MachineInventory inventory;
-
+    
     public WitherMachineBlockEntity(BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState)
     {
         super(type, worldPosition, blockState);
@@ -47,6 +57,49 @@ public abstract class WitherMachineBlockEntity extends WitherBlockEntity impleme
             inventory = createMachineInventory(slotLayout);
         else
             inventory = null;
+        
+        if (supportsRedstoneControl())
+        {
+            redstoneControlDataSlot = addDataSlot(REDSTONE_CONTROL_DATA_SLOT_TYPE.create(
+                this::getRedstoneControl,
+                this::internalSetRedstoneControl));
+        }
+        else
+        {
+            redstoneControlDataSlot = null;
+        }
+    }
+    
+    /*
+     * 
+     * ITEMINVENTORY
+     * 
+     */
+    @Override
+    public InteractionResult tryItemInstall(ItemStack stack, UseOnContext context, int slot)
+    {
+        MachineInventory inventory = getInventory();
+        MachineInventoryLayout layout = getInventoryLayout();
+        if (inventory != null && layout != null)
+        {
+        	if(inventory.getStackInSlot(slot).isEmpty())
+                inventory.setStackInSlot(slot, stack.copyWithCount(1));            		
+            stack.shrink(1);
+            return InteractionResult.sidedSuccess(context.getLevel().isClientSide());
+        }
+        return InteractionResult.PASS;
+    }
+    
+    @Override
+    public boolean hasItemCapability()
+    {
+        return true;
+    }
+    
+    @Override
+    public IItemHandler getItemHandler(@Nullable Direction dir)
+    {
+    	return inventory;
     }
     
     @Nullable
@@ -81,97 +134,9 @@ public abstract class WitherMachineBlockEntity extends WitherBlockEntity impleme
 
     protected void onInventoryContentsChanged(int slot) {}
 
-    @Override
-    public void serverTick()
-    {
-        if (canActSlow())
-            forceResources();
-        
-        super.serverTick();
-    }
-
-    public boolean canAct()
-    {
-        if (this.level == null)
-            return false;
-        return true;
-    }
-
-    public boolean canActSlow()
-    {
-        if (this.level == null)
-            return false;
-        return canAct() && this.level.getGameTime() % 5 == 0;
-    }
-
-    private void forceResources()
-    {
-        for (Direction direction : Direction.values())
-        {
-            moveItems(direction);
-            moveFluids(direction);
-        }
-    }
-
-    private void moveItems(Direction side)
-    {
-//        IItemHandler selfHandler = getSelfCapability(Capabilities.ItemHandler.BLOCK, side);
-//        IItemHandler otherHandler = getNeighbouringCapability(Capabilities.ItemHandler.BLOCK, side);
-    }
-    private void moveFluids(Direction side)
-    {
-//        IFluidHandler selfHandler = getSelfCapability(Capabilities.FluidHandler.BLOCK, side);
-//        IFluidHandler otherHandler = getNeighbouringCapability(Capabilities.FluidHandler.BLOCK, side);
-    }
-
-    private String getBlockTranslationKey()
-    {
-        String key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getResourceKey(getType())
-                .map(rk -> rk.location().getPath())
-                .orElse("unknown");
-        return "block.witherutils." + key;
-    }
-    
-    @Override
-    public Component getName() {
-        return customName == null ? Component.translatable(getBlockTranslationKey()) : customName;
-    }
-
-    @Nullable
-    @Override
-    public Component getCustomName() {
-        return customName;
-    }
-
-    public void setCustomName(Component customName) {
-        this.customName = customName;
-    }
-
-    @Override
-    public Component getDisplayName()
-    {
-        return getName();
-    }
-
-    public ItemInteractionResult onBlockEntityUsed(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
-    {
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-
-    public boolean canOpenMenu()
-    {
-        return true;
-    }
-
-    @SuppressWarnings("deprecation")
-	public int getLightEmission()
-    {
-        return getBlockState().getLightEmission();
-    }
-    
     /*
      * 
-     * LIT
+     * LITREDSTONE
      * 
      */
     public void setLitProperty(boolean lit)
@@ -188,11 +153,67 @@ public abstract class WitherMachineBlockEntity extends WitherBlockEntity impleme
     {
         return this.getLevel().hasNeighborSignal(this.getBlockPos());
     }
+
     public boolean supportsRedstoneControl()
     {
         return true;
     }
 
+    public RedstoneControl getRedstoneControl()
+    {
+        if (!supportsRedstoneControl())
+        {
+            throw new IllegalStateException("This machine does not support redstone control.");
+        }
+        return getData(WUTAttachments.REDSTONE_CONTROL);
+    }
+
+    public void setRedstoneControl(RedstoneControl redstoneControl)
+    {
+        if (!supportsRedstoneControl())
+        {
+            throw new IllegalStateException("This machine does not support redstone control.");
+        }
+        if (level != null && level.isClientSide())
+        {
+            clientUpdateSlot(redstoneControlDataSlot, redstoneControl);
+        }
+        else
+        {
+            internalSetRedstoneControl(redstoneControl);
+        }
+    }
+
+    private void internalSetRedstoneControl(RedstoneControl redstoneControl)
+    {
+        setData(WUTAttachments.REDSTONE_CONTROL, redstoneControl);
+        setChanged();
+    }
+    
+    protected boolean needsRedstoneMode() {
+        return false;
+    }
+
+    public void checkRedstone(Level world, BlockPos pos)
+    {
+        int powered = world.getBestNeighborSignal(pos);
+        setPowerInput(powered);
+    }
+
+    public void setPowerInput(int powered)
+    {
+        if (powerLevel != powered)
+        {
+            powerLevel = powered;
+            setChanged();
+        }
+    }
+
+    public int getPowerLevel()
+    {
+        return powerLevel;
+    }
+    
     /*
      * 
      * PACKET
@@ -206,6 +227,10 @@ public abstract class WitherMachineBlockEntity extends WitherBlockEntity impleme
         {
             pTag.put("Items", inventory.serializeNBT(lookupProvider));
         }
+        if (customName != null)
+        {
+        	pTag.putString("CustomName", Component.Serializer.toJson(customName, lookupProvider));
+        }
     }
 
     @Override
@@ -217,6 +242,10 @@ public abstract class WitherMachineBlockEntity extends WitherBlockEntity impleme
         }
         if (this.level != null)
         {
+        }
+        if (pTag.contains("CustomName", Tag.TAG_STRING))
+        {
+            customName = Component.Serializer.fromJson(pTag.getString("CustomName"), lookupProvider);
         }
         super.loadAdditional(pTag, lookupProvider);
     }
@@ -247,5 +276,32 @@ public abstract class WitherMachineBlockEntity extends WitherBlockEntity impleme
     {
         super.removeComponentsFromTag(tag);
         tag.remove("Items");
-	    }
+	}
+    
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player)
+    {
+        return null;
+    }
+    
+    private String getBlockTranslationKey()
+    {
+        String key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getResourceKey(getType())
+                .map(rk -> rk.location().getPath())
+                .orElse("unknown");
+        return "block.witherutils." + key;
+    }
+    
+    @Override
+    public Component getName()
+    {
+        return customName == null ? Component.translatable(getBlockTranslationKey()) : customName;
+    }
+    
+	@Override
+	public Component getDisplayName()
+	{
+		return getName();
+	}
 }

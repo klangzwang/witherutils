@@ -14,6 +14,7 @@ public class MathHelper {
 	public static final float PI2 = (float) (Math.PI * 2);
 	public static final Random RANDOM = new Random();
 	public static final double torad = 0.017453292519943;
+	public static final double todeg = 57.29577951308232;
 	
     public static double clip(double value, double min, double max)
     {

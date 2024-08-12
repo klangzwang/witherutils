@@ -180,7 +180,7 @@ public class ClientTooltipHandler {
             {
                 if (tip_available)
                     tip_text = localize(advancedTooltipTranslationKey + ".desc");
-                mcid_text = "witherutils:" + stack.getItem().toString();
+                mcid_text = "witherutils:" + stack.getItem();
             }
             else if (addAdvancedTooltipHints)
             {

@@ -62,7 +62,7 @@ public class MachineInventoryLayout {
 
         private final ArrayList<SlotConfig> slots = new ArrayList<>();
         private int currentStackLimit = 64;
-        private int capacitorSlot = -1;
+        private final int capacitorSlot = -1;
 
         private SlotAdditionInfo additionInfo = new SlotAdditionInfo(Integer.MIN_VALUE, Integer.MIN_VALUE);
 

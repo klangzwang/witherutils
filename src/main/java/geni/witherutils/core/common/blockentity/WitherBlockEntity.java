@@ -13,6 +13,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import geni.witherutils.api.UseOnly;
+import geni.witherutils.base.common.io.energy.IWitherEnergyStorage;
 import geni.witherutils.core.common.network.ClientboundDataSlotChange;
 import geni.witherutils.core.common.network.NetworkDataSlot;
 import geni.witherutils.core.common.network.ServerboundCDataSlotUpdate;
@@ -33,7 +34,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -56,13 +56,12 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-public class WitherBlockEntity extends BlockEntity implements Container {
+public class WitherBlockEntity extends BlockEntity {
 	
     public static final String DATA = "Data";
     public static final String INDEX = "Index";
@@ -77,7 +76,7 @@ public class WitherBlockEntity extends BlockEntity implements Container {
     {
         super(type, worldPosition, blockState);
     }
-	
+    
     public static void tick(Level level, BlockPos pos, BlockState state, WitherBlockEntity blockEntity)
     {
         if (level.isClientSide)
@@ -284,6 +283,8 @@ public class WitherBlockEntity extends BlockEntity implements Container {
     public InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHitResult) { return InteractionResult.PASS; }
     public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
     
+    public int getRedstoneOutput(BlockState state, BlockGetter world, BlockPos pos, Direction side) { return -1; }
+    
     public void popRecipeExperience(ServerPlayer serverplayer, float count) {}
 
     public boolean stillValid(Player pPlayer)
@@ -298,53 +299,7 @@ public class WitherBlockEntity extends BlockEntity implements Container {
         }
         return pPlayer.canInteractWithBlock(this.worldPosition, 1.5);
     }
-    
-    /**
-     * 
-     * RECIPE
-     * 
-     */
-    @Deprecated
-    @Override
-    public int getContainerSize()
-    {
-        return 0;
-    }
-    @Deprecated
-    @Override
-    public boolean isEmpty()
-    {
-        return true;
-    }
-    @Deprecated
-    @Override
-    public ItemStack getItem(int index)
-    {
-        return ItemStack.EMPTY;
-    }
-    @Deprecated
-    @Override
-    public ItemStack removeItem(int index, int count)
-    {
-        return ItemStack.EMPTY;
-    }
-    @Deprecated
-    @Override
-    public ItemStack removeItemNoUpdate(int index)
-    {
-        return ItemStack.EMPTY;
-    }
-    @Deprecated
-    @Override
-    public void setItem(int index, ItemStack stack)
-    {
-    }
-    @Deprecated
-    @Override
-    public void clearContent()
-    {
-    }
-    
+  
     /**
      * 
      * CAPABILITY
@@ -417,47 +372,40 @@ public class WitherBlockEntity extends BlockEntity implements Container {
         }
     }
     
-    public boolean hasItemCapability() {
-        return true;
-    }
-
-    public boolean hasFluidCapability() {
+    public boolean hasItemCapability()
+    {
         return false;
     }
-
-    public boolean hasEnergyCapability() {
+    public boolean hasFluidCapability()
+    {
         return false;
     }
-
-    public final IItemHandler getItemHandler() {
+    public boolean hasEnergyCapability()
+    {
+        return false;
+    }
+    public final IItemHandler getItemHandler()
+    {
         return getItemHandler(null);
     }
-
-    public final IFluidHandler getFluidHandler() {
+    public final IFluidHandler getFluidHandler()
+    {
         return getFluidHandler(null);
     }
-
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public final IEnergyStorage getEnergyHandler()
+    {
+        return getEnergyHandler(null);
+    }
+    public IItemHandler getItemHandler(@Nullable Direction dir)
+    {
         return null;
     }
-
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public IFluidHandler getFluidHandler(@Nullable Direction dir)
+    {
         return null;
     }
-
-    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+    public IWitherEnergyStorage getEnergyHandler(@Nullable Direction dir)
+    {
         return null;
-    }
-
-    public BlockCapabilityCache<IItemHandler,Direction> createItemHandlerCache(Direction dir) {
-        return getLevel() instanceof ServerLevel serverLevel ?
-                BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
-                null;
-    }
-
-    public BlockCapabilityCache<IFluidHandler,Direction> createFluidHandlerCache(Direction dir) {
-        return getLevel() instanceof ServerLevel serverLevel ?
-                BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
-                null;
     }
 }

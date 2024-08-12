@@ -310,10 +310,10 @@ public class CutterContainer extends AbstractContainerMenu {
     				ItemStack[] ingredient = rec.value().input().getItems();
         			for (ItemStack stack : ingredient)
         			{
-        				if(ItemStack.isSameItem(stack, stackIn))
-        				{
-        					currentRecipe = rec;
-        				}
+                        if (ItemStack.isSameItem(stack, stackIn)) {
+                            currentRecipe = rec;
+                            break;
+                        }
     				}
     			}
     		}

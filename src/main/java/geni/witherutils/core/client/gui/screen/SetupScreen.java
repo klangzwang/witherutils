@@ -52,12 +52,12 @@ public class SetupScreen extends Screen {
         RenderSystem.setShaderTexture(0, WitherUtilsRegistry.loc("textures/gui/bareffect.png"));
         float time = mc.level.getGameTime() + partialTicks;
         double offset = Math.sin(time * 1.0D / 4.0D) / 10.0D;
-        if (redstone == true)
+        if (redstone)
             offset = Math.sin(time * 1.0D / 12.0D) / 10.0D;
         gui.pose().translate(0.0D + offset * 100, 0.0D, 0.0D);
         gui.blit(WitherUtilsRegistry.loc("textures/gui/bareffect.png"), this.leftPos + 120, this.topPos + 7, 0, 0, 32, 16, 32, 16);
         gui.pose().popPose();
-        gui.drawString(this.font, new String(getBarName()), this.leftPos + 8, this.topPos + 6, 16777215);
+        gui.drawString(this.font, getBarName(), this.leftPos + 8, this.topPos + 6, 16777215);
     }
 
     @SuppressWarnings("resource")

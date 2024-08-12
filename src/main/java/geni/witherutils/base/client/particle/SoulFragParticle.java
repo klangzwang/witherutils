@@ -18,10 +18,10 @@ public class SoulFragParticle extends TextureSheetParticle {
 		super(p_107074_, p_107075_, p_107076_, p_107077_, 0.0D, 0.0D, 0.0D);
 		this.gravity = 0.75F;
 		this.friction = 0.999F;
-		this.xd *= (double) 0.8F;
-		this.yd *= (double) 0.8F;
-		this.zd *= (double) 0.8F;
-		this.yd = (double) (this.random.nextFloat() * 0.4F + 0.05F);
+		this.xd *= 0.8F;
+		this.yd *= 0.8F;
+		this.zd *= 0.8F;
+		this.yd = this.random.nextFloat() * 0.4F + 0.05F;
 		this.quadSize *= this.random.nextFloat() * 0.5F + 0.2F;
 		this.lifetime = (int) (16.0D / (Math.random() * 0.8D + 0.2D));
 	}

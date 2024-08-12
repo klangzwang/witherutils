@@ -20,9 +20,9 @@ public class WitherBaseParticle extends TextureSheetParticle {
 		this.gravity = p_171918_;
 		this.speedUpWhenYMotionIsBlocked = true;
 		this.sprites = p_171915_;
-		this.xd *= (double) p_171908_;
-		this.yd *= (double) p_171909_;
-		this.zd *= (double) p_171910_;
+		this.xd *= p_171908_;
+		this.yd *= p_171909_;
+		this.zd *= p_171910_;
 		this.xd += p_171911_;
 		this.yd += p_171912_;
 		this.zd += p_171913_;

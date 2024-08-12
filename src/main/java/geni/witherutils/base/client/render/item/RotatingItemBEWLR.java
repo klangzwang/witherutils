@@ -46,22 +46,23 @@ public class RotatingItemBEWLR extends AbstractBEWLRRenderer {
         if(mc == null)
             return;
 
-        if (pStack.getItem() instanceof IRotatingItem)
+        if (pStack.getItem() instanceof IRotatingItem rotatingItem)
         {
             ResourceLocation itemRegName = BuiltInRegistries.ITEM.getKey(pStack.getItem());
             if(itemRegName.getPath().contains("wand"))
                 renderWand(partialTick, mc, player, pStack, matrix, light, rand);
+            if(itemRegName.getPath().contains("iron_gear"))
+            	rotatingGear(rotatingItem, mc, pStack, matrix, light);
         }
     }
     
     public void renderWand(float partialTick, Minecraft mc, LocalPlayer player, ItemStack pStack, PoseStack matrix, int light, RandomSource rand)
     {
-    	if(pStack.getItem() instanceof WandSteelItem)
+    	if(pStack.getItem() instanceof WandSteelItem wand)
     	{
     		mc.getItemRenderer().renderModelLists(SpecialModels.WANDHELPER.getModel(), pStack, light, OverlayTexture.NO_OVERLAY, matrix, mc.renderBuffers().bufferSource().getBuffer(RenderType.cutout()));
-    		
-    		WandSteelItem wand = (WandSteelItem) pStack.getItem();
-    		if(wand.getPowerLevel(pStack) > 0 && EnergyUtil.getEnergyStored(pStack) > ItemsConfig.WANDENERGYUSE.get())
+
+            if(wand.getPowerLevel(pStack) > 0 && EnergyUtil.getEnergyStored(pStack) > ItemsConfig.WANDENERGYUSE.get())
     		{
     			renderWandLightning(partialTick, mc, matrix, rand);
     			
@@ -109,6 +110,32 @@ public class RotatingItemBEWLR extends AbstractBEWLRRenderer {
         }
         
         matrix.popPose();
+    }
+    
+    public void rotatingGear(IRotatingItem rotatingItem, Minecraft mc, ItemStack pStack, PoseStack pPoseStack, int pPackedLight)
+    {
+        pPoseStack.pushPose();
+        if (rotatingItem.getTicksPerRotation() != 0)
+        {
+            pPoseStack.scale(0.8f, 0.8f, 0.8f);
+            pPoseStack.translate(0.5, 0.5, 0.5);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees((360.0F / rotatingItem.getTicksPerRotation()) * (mc.player.clientLevel.getGameTime() % rotatingItem.getTicksPerRotation())));
+            pPoseStack.translate(-0.5, -0.5, -0.5);
+        }
+        mc.getItemRenderer().renderModelLists(SpecialModels.IRONGEAR.getModel(), pStack, pPackedLight, OverlayTexture.NO_OVERLAY, pPoseStack, mc.renderBuffers().bufferSource().getBuffer(RenderType.cutout()));
+        pPoseStack.popPose();
+        
+        pPoseStack.pushPose();
+        if (rotatingItem.getTicksPerRotation() != 0)
+        {
+            pPoseStack.scale(0.9f, 0.9f, 0.9f);
+            pPoseStack.translate(0.15f, 0.1f, 0.0f);
+            pPoseStack.translate(0.5, 0.5, 0.5);
+            pPoseStack.mulPose(Axis.ZP.rotationDegrees((-360.0F / rotatingItem.getTicksPerRotation()) * (mc.player.clientLevel.getGameTime() % rotatingItem.getTicksPerRotation())));
+            pPoseStack.translate(-0.5, -0.5, -0.5);
+        }
+        mc.getItemRenderer().renderModelLists(SpecialModels.IRONGEAR.getModel(), pStack, pPackedLight, OverlayTexture.NO_OVERLAY, pPoseStack, mc.renderBuffers().bufferSource().getBuffer(RenderType.cutout()));
+        pPoseStack.popPose();
     }
 
     public Color getColor(ResourceLocation rl)

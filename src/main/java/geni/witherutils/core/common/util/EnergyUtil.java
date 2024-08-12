@@ -114,7 +114,7 @@ public final class EnergyUtil {
 			sunAngle += (((float) Math.PI * 2F) - sunAngle) * 0.2F;
 		}
 		lightValue = Math.round(lightValue * Mth.cos(sunAngle));
-		lightValue = (long) Mth.clamp(lightValue, 0, 15);
+		lightValue = Mth.clamp(lightValue, 0, 15);
 
 		return lightValue / 4 * 2;
 	}

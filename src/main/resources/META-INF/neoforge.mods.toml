@@ -1,25 +1,25 @@
+license="GNU GPLv3"
 modLoader="javafml"
-loaderVersion="[1,)"
+loaderVersion="${loader_version_range}"
 issueTrackerURL="https://github.com/klangzwang/WitherUtils/issues"
-license="LGPLv3"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/witherutils"
+logoFile="witherutils.png"
+credits=""
+authors="klangzwang, helgenius"
 
 [[mods]]
-modId="witherutils"
-version="0.0.0"
-displayName="WitherUtils"
-displayURL="https://www.curseforge.com/minecraft/mc-mods/witherutils"
-authors="helgenius,klangzwang"
-description='''
-When working at Technical Ideas
-'''
+	modId="witherutils"
+    version="${mod_version}"
+	displayName="WitherUtils"
+	description='''
+When working at Technical Ideas '''
 
 [[dependencies.witherutils]]
-    modId="neoforge"
-    type="required"
-    versionRange="${neo_version_range}"
+    modId="neoforge" #mandatory
+    type="required" #mandatory
+    versionRange="${neo_version_range}" #mandatory
     ordering="NONE"
     side="BOTH"
-
 [[dependencies.witherutils]]
     modId="minecraft"
     type="required"
@@ -32,3 +32,9 @@ When working at Technical Ideas
     versionRange="[19.0.0,)"
     ordering="NONE"
     side="BOTH"
+
+[[accessTransformers]]
+	file="META-INF/accesstransformer.cfg"
+
+[[mixins]]
+    config = "mixins.witherutils.json"

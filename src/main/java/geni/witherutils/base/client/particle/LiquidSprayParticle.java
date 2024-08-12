@@ -23,9 +23,9 @@ public class LiquidSprayParticle extends TextureSheetParticle
         super(world, x, y, z);
 		this.sprite = spriteSet;
 		this.setSize((float) 0.1, (float) 0.1);
-		this.quadSize *= (float) Math.max(0.9f, 0.4f + (this.random.nextFloat() - 0.5f));
+		this.quadSize *= Math.max(0.9f, 0.4f + (this.random.nextFloat() - 0.5f));
 		this.lifetime = (int)(8.0D / (Math.random() * 0.8D + 0.2D));
-		this.gravity = (float) 0.09F;
+		this.gravity = 0.09F;
 		this.hasPhysics = false;
 		this.xd = vx * (double)0.3F;
 		this.yd = vy * Math.random() * (double)0.2F + (double)0.1F;
@@ -65,11 +65,11 @@ public class LiquidSprayParticle extends TextureSheetParticle
         }
 		else
 		{
-			this.yd -= (double)this.gravity;
+			this.yd -= this.gravity;
 			this.move(this.xd, this.yd, this.zd);
-			this.xd *= (double)0.98F;
-			this.yd *= (double)0.98F;
-			this.zd *= (double)0.98F;
+			this.xd *= 0.98F;
+			this.yd *= 0.98F;
+			this.zd *= 0.98F;
 			
 			if (this.onGround)
 			{
@@ -77,13 +77,13 @@ public class LiquidSprayParticle extends TextureSheetParticle
 				{
 					this.remove();
 				}
-				this.xd *= (double)0.7F;
-				this.zd *= (double)0.7F;
+				this.xd *= 0.7F;
+				this.zd *= 0.7F;
 			}
 
 			BlockPos blockpos = new BlockPos((int) this.x, (int) this.y, (int) this.z);
 			
-			double d0 = Math.max(this.level.getBlockState(blockpos).getCollisionShape(this.level, blockpos).max(Direction.Axis.Y, this.x - (double)blockpos.getX(), this.z - (double)blockpos.getZ()), (double)this.level.getFluidState(blockpos).getHeight(this.level, blockpos));
+			double d0 = Math.max(this.level.getBlockState(blockpos).getCollisionShape(this.level, blockpos).max(Direction.Axis.Y, this.x - (double)blockpos.getX(), this.z - (double)blockpos.getZ()), this.level.getFluidState(blockpos).getHeight(this.level, blockpos));
 			
 			if (d0 > 0.0D && this.y < (double)blockpos.getY() + d0)
 			{

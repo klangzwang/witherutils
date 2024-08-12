@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import geni.witherutils.base.common.block.cutter.CutterBlock;
-import geni.witherutils.base.common.block.cutter.CutterBlock.CutterBlockType;
+import geni.witherutils.base.common.block.deco.cutter.CutterBlock;
+import geni.witherutils.base.common.block.deco.cutter.CutterBlock.CutterBlockType;
 import geni.witherutils.base.common.init.WUTBlocks;
 import geni.witherutils.base.common.init.WUTItems;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -40,11 +40,14 @@ public class WitherUtilsLanguages extends LanguageProvider {
     	addItemName(WUTItems.SOULORB.get(), "§9SoulOrb§r");
     	addItemDesc(WUTItems.SOULORB.get(), "This Orb is filled with Souls, that the Wither Boss has trapped.", "Dimension listed below.", "You can either use them for crafting, or Right-Click to enhance your PlayerSoulPower.");
 
+    	addItemName(WUTItems.HAMMER.get(), "§9Hammer§r");
+    	addItemDesc(WUTItems.HAMMER.get(), "The hammer is a versatile Tool. It offers three Functions that can prove useful in various situations.", "NULL", "In Combination with the WitherAnvil, you can process materials and create additional items. Also serve as a weapon against enemies. It can demolish blocks while recovering the recipe's materials. So, if you accidentally break misplaced blocks, you can reclaim the resources for reuse.");
+
         add("itemGroup.witherutils.items", "§9WitherUtils - §fItems");
         add("itemGroup.witherutils.blocks", "§9WitherUtils - §fBlocks");
         add("itemGroup.witherutils.decos", "§9WitherUtils - §fDecos");
         
-    	for (CutterBlock cutterBlock : WUTBlocks.CUTTERBLOCKS)
+        for (CutterBlock cutterBlock : WUTBlocks.CUTTERBLOCKS)
         {
     		final String blockNameId = BuiltInRegistries.BLOCK.getKey(cutterBlock).getPath();
     		addBlockName(cutterBlock, "§9" + blockNameId + "§r");
@@ -54,7 +57,7 @@ public class WitherUtilsLanguages extends LanguageProvider {
         }
         
         add("block.witherutils.anvil", "Anvil");
-        add("block.witherutils.anvil.desc", "\n §9How to Become:§r \n Place a Vanilla Anvil and right Click it with a SoulOrb. \n\n §9How to use:§r \n Place Ingredients with Right Click. Use the Hammer, to smash it.");
+        add("block.witherutils.anvil.desc", "\n §9How to Become:§r \n Place a Vanilla Anvil and right Click it with the Hammer Item. \n\n §9How to use:§r \n Place Ingredients with Right Click. Use the Hammer, to smash it.");
         add("block.witherutils.angel", "Angel Block");
         add("block.witherutils.angel.desc", "\n§9How to use:§r\n Can be placed in Air. Look up and Click!");
         add("block.witherutils.case", "Case Block");
@@ -110,12 +113,17 @@ public class WitherUtilsLanguages extends LanguageProvider {
         
         add("item.witherutils.cutter", "Cutter");
         add("item.witherutils.cutter.desc", "\n §9How to Use:§r \nAnother Version of Chisel like Tool. \nRight Click to open Gui, and using \nthe left Slot for Input Ingredients.");
-        
-        
+
         add("gui.witherutils.namesquares", "□■□ ");
         add("gui.witherutils.blockheads", "╘ Blockheads Inc.");
-    }
 
+        add("witherutils.advancement.root", "WayOfWither");
+        add("witherutils.advancement.root.descr", "Look Buddy, its time to work!");
+        
+        add("witherutils.advancement.anvil", "Anvil");
+        add("witherutils.advancement.anvil.descr", "Cant touch this...");
+    }
+	
     public void addItemName(Item key, String name)
     {
     	add(key.getDescriptionId(), name);

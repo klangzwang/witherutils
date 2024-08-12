@@ -23,7 +23,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 @SuppressWarnings({ "unused", "unchecked", "rawtypes" })
 public class ArmorHelmetLayer extends RenderLayer {
 
-	private RenderLayerParent parent;
+	private final RenderLayerParent parent;
 
 	public ArmorHelmetLayer(RenderLayerParent parent)
     {

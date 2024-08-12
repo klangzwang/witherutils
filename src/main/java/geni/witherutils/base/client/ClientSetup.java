@@ -1,7 +1,16 @@
 package geni.witherutils.base.client;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import geni.witherutils.api.WitherUtilsRegistry;
+import geni.witherutils.base.client.particle.BlackSmokeParticle;
 import geni.witherutils.base.client.particle.BubbleParticle;
+import geni.witherutils.base.client.particle.EnergyCoreParticle;
+import geni.witherutils.base.client.particle.EnergyParticle;
+import geni.witherutils.base.client.particle.GuardianBeamParticle;
+import geni.witherutils.base.client.particle.GuardianCloudParticle;
+import geni.witherutils.base.client.particle.GuardianProjectileParticle;
 import geni.witherutils.base.client.particle.LiquidSprayParticle;
 import geni.witherutils.base.client.particle.RisingSoulParticle;
 import geni.witherutils.base.client.particle.SoulFlakeParticle;
@@ -9,20 +18,35 @@ import geni.witherutils.base.client.particle.SoulFragParticle;
 import geni.witherutils.base.client.particle.SoulOrbParticle;
 import geni.witherutils.base.client.particle.WindParticle;
 import geni.witherutils.base.client.particle.XpOrbParticle;
-import geni.witherutils.base.common.block.LogicalBlockEntities;
-import geni.witherutils.base.common.block.LogicalBlocks;
 import geni.witherutils.base.common.block.anvil.AnvilRenderer;
+import geni.witherutils.base.common.block.cauldron.CauldronRenderer;
+import geni.witherutils.base.common.block.collector.CollectorRenderer;
+import geni.witherutils.base.common.block.collector.CollectorScreen;
 import geni.witherutils.base.common.block.creative.CreativeEnergyRenderer;
-import geni.witherutils.base.common.block.creative.CreativeEnergyScreen;
-import geni.witherutils.base.common.block.cutter.CutterBlock;
+import geni.witherutils.base.common.block.deco.cutter.CutterBlock;
+import geni.witherutils.base.common.block.deco.door.metal.MetalDoorRenderer;
+import geni.witherutils.base.common.block.fakedriver.FakeDriverRenderer;
+import geni.witherutils.base.common.block.generator.lava.LavaGeneratorRenderer;
+import geni.witherutils.base.common.block.generator.solar.SolarPanelRenderer;
+import geni.witherutils.base.common.block.generator.water.WaterGeneratorRenderer;
+import geni.witherutils.base.common.block.generator.wind.WindGeneratorRenderer;
+import geni.witherutils.base.common.block.smarttv.SmartTVRenderer;
+import geni.witherutils.base.common.block.totem.TotemRenderer;
+import geni.witherutils.base.common.data.WorldData;
+import geni.witherutils.base.common.entity.bolt.CursedLightningBoltRenderer;
+import geni.witherutils.base.common.entity.cursed.zombie.CursedZombieRenderer;
 import geni.witherutils.base.common.entity.soulorb.SoulOrbProjectileRenderer;
 import geni.witherutils.base.common.entity.soulorb.SoulOrbRenderer;
 import geni.witherutils.base.common.entity.worm.WormRenderer;
+import geni.witherutils.base.common.init.WUTBlockEntityTypes;
 import geni.witherutils.base.common.init.WUTBlocks;
 import geni.witherutils.base.common.init.WUTEntities;
+import geni.witherutils.base.common.init.WUTFluids;
 import geni.witherutils.base.common.init.WUTMenus;
 import geni.witherutils.base.common.init.WUTParticles;
+import geni.witherutils.base.common.item.card.CardScreen;
 import geni.witherutils.base.common.item.cutter.CutterScreen;
+import geni.witherutils.base.common.item.scaper.ScaperScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
@@ -31,11 +55,13 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -53,14 +79,40 @@ public class ClientSetup {
 	@SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event)
 	{
-        ItemBlockRenderTypes.setRenderLayer(LogicalBlocks.ANVIL.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(LogicalBlocks.CREATIVEENERGY.get(), RenderType.cutout());
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null)
+		{
+            WorldData.clear();
+        }
+    	
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ANVIL.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CREATIVE_GENERATOR.get(), RenderType.cutout());
     	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ANGEL.get(), RenderType.cutout());
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CAULDRON.get(), RenderType.cutout());
+    	
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.GREENHOUSE.get(), RenderType.translucent());
     	
     	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_A.get(), RenderType.cutout());
     	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_K.get(), RenderType.cutout());
     	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_L.get(), RenderType.cutout());
     	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_M.get(), RenderType.cutout());
+    	
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.BLUELIMBO.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.BLUELIMBO_FLOWING.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.COLDSLUSH.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.COLDSLUSH_FLOWING.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.EXPERIENCE.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.EXPERIENCE_FLOWING.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.FERTILIZER.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.FERTILIZER_FLOWING.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.PORTIUM.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.PORTIUM_FLOWING.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.REDRESIN.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.REDRESIN_FLOWING.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.WITHERWATER.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.WITHERWATER_FLOWING.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.SOULFUL.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTFluids.SOULFUL_FLOWING.get(), RenderType.translucent());
     	
     	for (CutterBlock cutterBlock : WUTBlocks.CUTTERBLOCKS)
         {
@@ -72,14 +124,18 @@ public class ClientSetup {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event)
 	{
-        event.register(WUTMenus.CREATIVEGEN.get(), CreativeEnergyScreen::new);
         event.register(WUTMenus.CUTTER.get(), CutterScreen::new);
+        event.register(WUTMenus.SCAPER.get(), ScaperScreen::new);
+        event.register(WUTMenus.BLOCKCARD.get(), CardScreen::new);
+        
+        event.register(WUTMenus.COLLECTOR.get(), CollectorScreen::new);
     }
     
     @SubscribeEvent
     public static void additionalModels(ModelEvent.RegisterAdditional event)
 	{
         event.register(ModelResourceLocation.standalone(WitherUtilsRegistry.loc("item/wand_helper")));
+        event.register(ModelResourceLocation.standalone(WitherUtilsRegistry.loc("item/iron_gear_helper")));
     }
 
     @SubscribeEvent
@@ -104,11 +160,9 @@ public class ClientSetup {
     {
 		Minecraft.getInstance().particleEngine.register(WUTParticles.SOULFLAKE.get(), sprite -> new SoulFlakeParticle.Provider(sprite));
 		Minecraft.getInstance().particleEngine.register(WUTParticles.EXPERIENCE.get(), sprite -> new XpOrbParticle.Factory(sprite));
-		
-//	    Minecraft.getInstance().particleEngine.register(WUTParticles.ENERGY.get(), EnergyParticle.Factory::new);
-//	    Minecraft.getInstance().particleEngine.register(WUTParticles.ENERGY_CORE.get(), EnergyCoreParticle.Factory::new);
-//	    Minecraft.getInstance().particleEngine.register(WUTParticles.BLACKSMOKE.get(), BlackSmokeParticle.Factory::new);
-	    
+	    Minecraft.getInstance().particleEngine.register(WUTParticles.ENERGY.get(), EnergyParticle.Factory::new);
+	    Minecraft.getInstance().particleEngine.register(WUTParticles.ENERGY_CORE.get(), EnergyCoreParticle.Factory::new);
+	    Minecraft.getInstance().particleEngine.register(WUTParticles.BLACKSMOKE.get(), BlackSmokeParticle.Factory::new);
 	    Minecraft.getInstance().particleEngine.register(WUTParticles.BUBBLE.get(), BubbleParticle.Provider::new);
 	    Minecraft.getInstance().particleEngine.register(WUTParticles.LIQUIDSPRAY.get(), LiquidSprayParticle.WaterSplashProvider::new);
 	    Minecraft.getInstance().particleEngine.register(WUTParticles.FERTSPRAY.get(), LiquidSprayParticle.FertilizerSplashProvider::new);
@@ -117,6 +171,9 @@ public class ClientSetup {
 	    Minecraft.getInstance().particleEngine.register(WUTParticles.RISINGSOUL.get(), RisingSoulParticle.Provider::new);
 	    Minecraft.getInstance().particleEngine.register(WUTParticles.SOULFRAGSOFT.get(), SoulFragParticle.SoftProvider::new);
 	    Minecraft.getInstance().particleEngine.register(WUTParticles.SOULFRAGHARD.get(), SoulFragParticle.HardProvider::new);
+	    Minecraft.getInstance().particleEngine.register(WUTParticles.MONK_PROJECTILE.get(), GuardianProjectileParticle.Factory::new);
+	    Minecraft.getInstance().particleEngine.register(WUTParticles.MONK_CLOUD.get(), GuardianCloudParticle.Factory::new);
+	    Minecraft.getInstance().particleEngine.register(WUTParticles.MONK_BEAM.get(), GuardianBeamParticle.Factory::new);
     }
 
     @SubscribeEvent
@@ -128,11 +185,25 @@ public class ClientSetup {
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event)
 	{
-	    event.registerBlockEntityRenderer(LogicalBlockEntities.ANVIL.get(), AnvilRenderer::new);
-	    event.registerBlockEntityRenderer(LogicalBlockEntities.CREATIVEENERGY.get(), CreativeEnergyRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.ANVIL.get(), AnvilRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.FAKE_DRIVER.get(), FakeDriverRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.CREATIVE_GENERATOR.get(), CreativeEnergyRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.CAULDRON.get(), CauldronRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.COLLECTOR.get(), CollectorRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.METALDOOR.get(), MetalDoorRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.LAVA_GENERATOR.get(), LavaGeneratorRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.WATER_GENERATOR.get(), WaterGeneratorRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.WIND_GENERATOR.get(), WindGeneratorRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.SOLARBASIC.get(), SolarPanelRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.SOLARADV.get(), SolarPanelRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.SOLARULTRA.get(), SolarPanelRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.SMARTTV.get(), SmartTVRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.TOTEM.get(), TotemRenderer::new);
 		event.registerEntityRenderer(WUTEntities.WORM.get(), WormRenderer::new);
 		event.registerEntityRenderer(WUTEntities.SOULORB.get(), SoulOrbRenderer::new);
 		event.registerEntityRenderer(WUTEntities.SOULORBPRO.get(), SoulOrbProjectileRenderer::new);
+		event.registerEntityRenderer(WUTEntities.CURSEDZOMBIE.get(), CursedZombieRenderer::new);
+		event.registerEntityRenderer(WUTEntities.CURSEDBOLT.get(), CursedLightningBoltRenderer::new);
     }
 	
     @SubscribeEvent
@@ -172,4 +243,27 @@ public class ClientSetup {
             return true;
         }
     };
+
+    /*
+     * 
+     * STITCH
+     * 
+     */
+    public static void onTextureStitch(IEventBus bus, Supplier<List<ResourceLocation>> textures) {}
+    public static final ResourceLocation REDHALO = WitherUtilsRegistry.loc("block/redhalo");
+    public static final ResourceLocation HALO = WitherUtilsRegistry.loc("block/halo");
+    public static final ResourceLocation LASER = WitherUtilsRegistry.loc("block/laserblue");
+    public static final ResourceLocation ADAPTER = WitherUtilsRegistry.loc("block/processor/adapter_type");
+    public static final ResourceLocation[] LASERBEAMS = new ResourceLocation[]
+    {
+    	WitherUtilsRegistry.loc("block/laserbeam1"),
+    	WitherUtilsRegistry.loc("block/laserbeam2"),
+    	WitherUtilsRegistry.loc("block/laserbeam3"),
+    	WitherUtilsRegistry.loc("block/laserbeam4")
+    };
+
+    public static List<ResourceLocation> onTextureStitch()
+    {
+        return List.of(REDHALO, HALO, LASER, ADAPTER, LASERBEAMS[0], LASERBEAMS[1], LASERBEAMS[2], LASERBEAMS[3]);
+    }
 }

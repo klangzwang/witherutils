@@ -25,6 +25,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -41,6 +42,29 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 @SuppressWarnings("resource")
 public class ClientUtils {
 
+    public static Level getWorld()
+    {
+        return Minecraft.getInstance().level;
+    }
+    public static boolean inWorld()
+    {
+        return Minecraft.getInstance().getConnection() != null;
+    }
+
+    public static String getServerIP()
+    {
+        try {
+            Connection networkManager = Minecraft.getInstance().getConnection().getConnection();
+            String s = networkManager.getRemoteAddress().toString();
+            s = s.substring(s.indexOf("/") + 1);
+            return s;
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     public static void emitParticles(Level world, BlockPos pos, ParticleOptions particle, double yOffset) {
         float xOff = world.random.nextFloat() * 0.6F + 0.2F;
         float zOff = world.random.nextFloat() * 0.6F + 0.2F;

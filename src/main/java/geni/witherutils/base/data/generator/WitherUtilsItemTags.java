@@ -1,96 +1,65 @@
 package geni.witherutils.base.data.generator;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
-import geni.witherutils.WitherUtils;
-import geni.witherutils.api.WitherUtilsRegistry;
+import geni.witherutils.api.data.WitherUtilsTags;
+import geni.witherutils.api.lib.Names;
 import geni.witherutils.base.common.init.WUTItems;
-import geni.witherutils.base.common.init.WUTTags;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-@SuppressWarnings("unused")
 public class WitherUtilsItemTags extends ItemTagsProvider {
-
-    public static final TagKey<Item> WRENCHES = forgeTag("wrenches");
-    public static final TagKey<Item> WRENCH = forgeTag("tools/wrench");
-    public static final TagKey<Item> RODS = forgeTag("rods");
-    public static final TagKey<Item> GEARS = forgeTag("gears");
-    public static final TagKey<Item> INGOTS = forgeTag("ingots");
-    public static final TagKey<Item> NUGGETS = forgeTag("nuggets");
-    public static final TagKey<Item> PLATES = forgeTag("plates");
-    public static final TagKey<Item> FISHING_RODS = forgeTag("fishing_rods");
-    
-    private static TagKey<Item> witherUtilsTag(String name)
+	
+    public WitherUtilsItemTags(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagsProvider, ExistingFileHelper existingFileHelper)
     {
-        return ItemTags.create(WitherUtilsRegistry.loc(name));
-    }
-    private static TagKey<Item> minecraftTag(String name)
-    {
-        return ItemTags.create(WitherUtilsRegistry.loc(name));
-    }
-    private static TagKey<Item> forgeTag(String name)
-    {
-        return ItemTags.create(WitherUtilsRegistry.loc(name));
+        super(generatorIn.getPackOutput(), lookupProvider, blockTagsProvider, Names.MODID, existingFileHelper);
     }
 
-    public WitherUtilsItemTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTags, ExistingFileHelper helper)
-    {
-        super(generator, lookupProvider, blockTags, WitherUtilsRegistry.MODID, helper);
-    }
-    
     @Override
-    protected void addTags(Provider provider)
+    protected void addTags(HolderLookup.Provider pProvider)
     {
-        addForgeTags(provider);
+//        copy(WitherUtilsTags.Blocks.SLABS, WitherUtilsTags.Items.SLABS);
+//        copy(WitherUtilsTags.Blocks.STAIRS, WitherUtilsTags.Items.STAIRS);
+//        copy(WitherUtilsTags.Blocks.WALLS, WitherUtilsTags.Items.WALLS);
+//        copy(WitherUtilsTags.Blocks.DOORS, WitherUtilsTags.Items.DOORS);
+//        copy(WitherUtilsTags.Blocks.FLUID_TANKS, WitherUtilsTags.Items.FLUID_TANKS);
+//        copy(WitherUtilsTags.Blocks.CHESTS, WitherUtilsTags.Items.CHESTS);
+//
+//        appendToTag(ItemTags.SLABS, WitherUtilsTags.Items.SLABS);
+//        appendToTag(ItemTags.STAIRS, WitherUtilsTags.Items.STAIRS);
+//        appendToTag(ItemTags.WALLS, WitherUtilsTags.Items.WALLS);
+//        appendToTag(ItemTags.DOORS, WitherUtilsTags.Items.DOORS);
+//        appendToTag(Tags.Items.CHESTS, WitherUtilsTags.Items.CHESTS);
+
+        addItemsToTag(WitherUtilsTags.Items.WRENCHES, WUTItems.WRENCH);
+        addItemsToTag(WitherUtilsTags.Items.GEARS, WUTItems.IRON_GEAR);
     }
-    
-    protected void addWitherUtilsTags(Provider provider)
+
+    @SafeVarargs
+    private void addItemsToTag(TagKey<Item> tag, Supplier<? extends ItemLike>... items)
     {
+        tag(tag).add(Arrays.stream(items).map(Supplier::get).map(ItemLike::asItem).toArray(Item[]::new));
     }
-    protected void addMinecraftTags(Provider provider)
+
+    @SuppressWarnings("unused")
+	@SafeVarargs
+    private void appendToTag(TagKey<Item> tag, TagKey<Item>... toAppend)
     {
-    }
-    protected void addForgeTags(Provider provider)
-    {
-        tag(WRENCHES)
-                .add(WUTItems.WRENCH.get());
-        tag(WRENCH)
-                .add(WUTItems.WRENCH.get());
-//        tag(RODS)
-//                .add(WUTItems.IRON_ROD.get());
-//        tag(GEARS)
-//                .add(WUTItems.IRON_GEAR.get())
-//                .add(WUTItems.WITHERSTEEL_GEAR.get());
-//        tag(INGOTS)
-//                .add(WUTItems.WITHERSTEEL_INGOT.get())
-//                .add(WUTItems.SOULISHED_INGOT.get());
-//        tag(NUGGETS)
-//                .add(WUTItems.WITHERSTEEL_NUGGET.get())
-//                .add(WUTItems.SOULISHED_NUGGET.get());
-//        tag(PLATES)
-//                .add(WUTItems.IRON_PLATE.get())
-//                .add(WUTItems.WITHERSTEEL_PLATE.get());
-        tag(FISHING_RODS)
-		        .add(Items.FISHING_ROD);
-        
-//        tag(WUTTags.Items.COLLECTOR_BLACKLIST)
-//				.add(Items.WITHER_SPAWN_EGG);
+        tag(tag).addTags(toAppend);
     }
 
     @Override
     public String getName()
     {
-        return "WitherUtils ItemTags";
+        return "WitherUtils Item Tags";
     }
+
 }

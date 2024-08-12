@@ -4,12 +4,9 @@ import org.jetbrains.annotations.Nullable;
 
 import geni.witherutils.base.common.base.WitherAbstractBlock;
 import geni.witherutils.base.common.init.WUTItems;
-import geni.witherutils.base.common.init.WUTSounds;
-import geni.witherutils.base.common.item.hammer.HammerItem;
 import geni.witherutils.core.common.block.WitherEntityBlock;
 import geni.witherutils.core.common.util.ParticleUtil;
 import geni.witherutils.core.common.util.ParticleUtil.EParticlePosition;
-import geni.witherutils.core.common.util.ParticleUtil.ERandomChance;
 import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,7 +14,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -83,49 +79,37 @@ public class AnvilBlock extends WitherAbstractBlock implements WitherEntityBlock
     {
         BlockEntity te = pLevel.getBlockEntity(pPos);
 
-        if (pPlayer.isShiftKeyDown() || te instanceof MenuProvider || !pLevel.getBlockState(pPos.above()).isAir())
+        if (pPlayer.isShiftKeyDown() || !pLevel.getBlockState(pPos.above()).isAir())
         	return super.useItemOn(pStack, pState, pLevel, pPos, pPlayer, pHand, pHitResult);
         else if (te instanceof AnvilBlockEntity anvil)
         {
             if (!pLevel.isClientSide)
             {
-                if (anvil.getInventory().getStackInSlot(0).isEmpty())
-                {
-                	if (pPlayer.getItemInHand(pHand).getItem() != WUTItems.HAMMER.get())
-                	{
-                   		ParticleUtil.playParticleDistrib(pLevel, pPlayer, pPos, ParticleTypes.SMOKE, EParticlePosition.BLOCKRANDOM, ERandomChance.RARELY, 5, -1);
-                   		SoundUtil.playSoundDistrib(pLevel, pPos, SoundEvents.PLAYER_ATTACK_STRONG, 0.75f, 1.0F, false, true);
-
-                        ItemStack excess = anvil.getInventory().insertItem(0, pPlayer.getItemInHand(pHand), false);
-                        if (!pPlayer.isCreative())
-                        {
-                        	pPlayer.setItemInHand(pHand, excess);
-                        }
-                	}
-                }
-                else
-                {
-            		if(pPlayer.getCooldowns().isOnCooldown(pPlayer.getItemInHand(pHand).getItem()))
-            			return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
-                	
-                	if (pPlayer.getItemInHand(pHand).getItem() instanceof HammerItem ||
-                		pPlayer.getItemInHand(pHand).getItem() == WUTItems.HAMMER.get())
-                	{
-                   		ParticleUtil.playParticleStarEffect(pLevel, pPlayer, ParticleTypes.SMOKE, 0.5D, EParticlePosition.HITRESULT);
-                   		ParticleUtil.playParticleDistrib(pLevel, pPlayer, pPos, ParticleTypes.LAVA, EParticlePosition.BLOCKRANDOM, ERandomChance.RARELY, 1, 1503);
-                		SoundUtil.playSoundDistrib(pLevel, pPos, WUTSounds.HAMMERHIT.get(), 0.75f, 0.5F, false, true);
-
-                		anvil.useItemOn(pStack, pState, pLevel, pPos, pPlayer, pHand, pHitResult);
-                	}
-                	else
-                	{
+        		if (pPlayer.getItemInHand(pHand).isEmpty() || pPlayer.getItemInHand(pHand).getItem() != WUTItems.HAMMER.get())
+        		{
+            		if (!anvil.getInventory().getStackInSlot(0).isEmpty())
+            		{
                         ItemStack stack = anvil.getInventory().extractItem(0, 64, false);
                         ItemEntity entityItem = new ItemEntity(pLevel, pPos.getX() + 0.5, pPos.getY() + 0.6, pPos.getZ() + 0.5, stack);
                         entityItem.setDeltaMovement(0, 0, 0);
                         entityItem.setPickUpDelay(20);
                         pLevel.addFreshEntity(entityItem);
-                	}
-                }
+            		}
+            		else
+            		{
+                        ItemStack excess = anvil.getInventory().insertItem(0, pPlayer.getItemInHand(pHand), false);
+                        if (!pPlayer.isCreative())
+                        {
+                        	pPlayer.setItemInHand(pHand, excess);
+                        }
+            		}
+            		
+            		ParticleUtil.playParticleStarEffect(pLevel, pPlayer, ParticleTypes.SMOKE, 0.5D, EParticlePosition.HITRESULT);
+        			SoundUtil.playSoundDistrib(pLevel, pPos, SoundEvents.PLAYER_ATTACK_STRONG, 0.75f, 1.0F, false, true);
+
+            		return ItemInteractionResult.SUCCESS;
+        		}
+            	anvil.useItemOn(pStack, pState, pLevel, pPos, pPlayer, pHand, pHitResult);
             }
             return ItemInteractionResult.SUCCESS;
         }

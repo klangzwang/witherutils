@@ -13,8 +13,8 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 
 import geni.witherutils.api.WitherUtilsRegistry;
+import geni.witherutils.base.client.base.AbstractBlockEntityRenderer;
 import geni.witherutils.base.client.model.special.SpecialModels;
-import geni.witherutils.base.common.base.AbstractBlockEntityRenderer;
 import geni.witherutils.core.common.math.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -50,17 +50,17 @@ public class AnvilRenderer extends AbstractBlockEntityRenderer<AnvilBlockEntity>
             return;
 
         matrix.pushPose();
-       	renderHotGlow(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
+        renderSkullEmissive(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
         matrix.popPose();
     	
         matrix.pushPose();
         renderSkullSolid(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
         matrix.popPose();
-        
+
         matrix.pushPose();
-        renderSkullEmissive(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
+       	renderHotGlow(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
         matrix.popPose();
-        
+       	
         matrix.pushPose();
         renderRecipeItem(tile, partialTick, matrix, buffer, mc, level, player, light, overlayLight);
         matrix.popPose();
@@ -174,14 +174,15 @@ public class AnvilRenderer extends AbstractBlockEntityRenderer<AnvilBlockEntity>
 	
     public void renderHotGlow(AnvilBlockEntity tile, float partialTicks, PoseStack matrix, MultiBufferSource buffer, Minecraft mc, ClientLevel level, LocalPlayer player, int light, int overlay)
     {
+        matrix.pushPose();
         matrix.translate(0.5, 0.5, 0.5);
-        matrix.mulPose(Axis.XP.rotationDegrees(-90));
         Direction facing = tile.getCurrentFacing();
         if(facing == Direction.EAST || facing == Direction.WEST)
-            matrix.mulPose(Axis.ZP.rotationDegrees(-90));
+            matrix.mulPose(Axis.YP.rotationDegrees(90));
         matrix.translate(-0.5, -0.5, -0.5);
 
-        matrix.pushPose();
+        matrix.translate(0.0, 0.005, 0.0);
+
         ANVIL_TRANSPARENCY = new TransparencyStateShard("ghost_transparency",
                 () -> {
                     RenderSystem.enableBlend();
@@ -226,5 +227,16 @@ public class AnvilRenderer extends AbstractBlockEntityRenderer<AnvilBlockEntity>
             	return Axis.XN.rotationDegrees(90);
         }
 		return Axis.YN.rotationDegrees(180);
+    }
+    
+    @Override
+    public boolean shouldRenderOffScreen(AnvilBlockEntity p_188185_1_)
+    {
+        return true;
+    }	
+    @Override
+    public int getViewDistance()
+    {
+        return 64;
     }
 }

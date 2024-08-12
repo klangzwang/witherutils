@@ -105,7 +105,6 @@ public class CutterScreen extends WUTScreen<CutterContainer> {
         }
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button)
 	{

@@ -1,6 +1,5 @@
 {
-	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "block/block",
 	"textures": {
 		"4": "witherutils:block/machine/machine00",
 		"5": "witherutils:block/processor_on",

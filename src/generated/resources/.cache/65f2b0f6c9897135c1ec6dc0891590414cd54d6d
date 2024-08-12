@@ -1,6 +1,10 @@
-// 1.21	2024-07-24T05:06:46.0843789	Wither Utils Data (witherutils)
-ec62bc92c7aa4e0a0057f2b78d647d27cc59bf5c data/witherutils/recipe/anvil/acacia_planks.json
-f79c8e1902bc3f1de34740d0a0ca2ca331337f5e data/witherutils/recipe/anvil/oak_planks.json
+// 1.21	2024-08-11T14:58:00.4405357	Wither Utils Data (witherutils)
+784a07767aaacf15170a337c9a79cf2850f58e45 data/witherutils/recipe/anvil/bone_meal.json
+1b1346222e359eebb2593701afb21fa21a5749c7 data/witherutils/recipe/anvil/iron_nugget.json
+bedd9f849c94c919a4e83761941cd890e909aced data/witherutils/recipe/anvil/iron_plate.json
+770f6710d71cb5167459515c45ed8ba4b353b505 data/witherutils/recipe/anvil/iron_rod.json
+f0532e7cebc3afad72a28bfcb2e98dc8aef09f19 data/witherutils/recipe/anvil/pickaxe_head.json
+25d733ed05d8fad073c690041a32b5b02e0551bd data/witherutils/recipe/cauldron/fertilizer.json
 8852ad4a18b6ea2dadfbf16895f53a6f175ca9e2 data/witherutils/recipe/cutter/acacia_planks.json
 bd233e4eecde6cb8d88562f98d31192323928f1b data/witherutils/recipe/cutter/concretea.json
 6c7e38d155da77c215b760d8b5183709f261e36c data/witherutils/recipe/cutter/concreteb.json

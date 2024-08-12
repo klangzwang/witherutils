@@ -22,14 +22,14 @@ public class ParticleUtil {
         ALWAYS,
         OFTEN,
         FIFTY,
-        RARELY;
+        RARELY
     }
 	
     public enum EParticlePosition
     {
         BLOCKSTATIC,
         BLOCKRANDOM,
-        HITRESULT;
+        HITRESULT
     }
 	
 	@SuppressWarnings("static-access")
@@ -57,9 +57,9 @@ public class ParticleUtil {
 		        xyz.add(2, (double)blockhitresult.getBlockPos().getZ() + pLevel.random.nextDouble());
 				break;
 			case HITRESULT:
-		        xyz.add(0, (double)blockhitresult.getLocation().x());
-		        xyz.add(1, (double)blockhitresult.getLocation().y());
-		        xyz.add(2, (double)blockhitresult.getLocation().z());
+		        xyz.add(0, blockhitresult.getLocation().x());
+		        xyz.add(1, blockhitresult.getLocation().y());
+		        xyz.add(2, blockhitresult.getLocation().z());
 				break;
         }
 		return xyz;

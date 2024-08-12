@@ -108,7 +108,7 @@ public class PlayerUtil {
 	}
 	public static void decrStackSize(Player player, int slot)
 	{
-		if(player.isCreative() == false && slot >= 0)
+		if(!player.isCreative() && slot >= 0)
 		{
 			player.getInventory().removeItem(slot, 1);
 		}
@@ -156,6 +156,6 @@ public class PlayerUtil {
     }
     public static boolean isPlayerCrouching(Entity entity)
     {
-        return entity instanceof Player && ((Player) entity).isCrouching();
+        return entity instanceof Player && entity.isCrouching();
     }
 }

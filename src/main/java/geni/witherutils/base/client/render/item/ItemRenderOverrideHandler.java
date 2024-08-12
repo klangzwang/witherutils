@@ -25,8 +25,8 @@ public class ItemRenderOverrideHandler {
         Minecraft mc = Minecraft.getInstance();
         AbstractClientPlayer player = mc.player;
         
-        if (player == null)
-        	return;
+        if (player == null) {
+        }
         
 //        ItemStack stack = event.getItemStack();
 //        if (event.getHand() == InteractionHand.MAIN_HAND && stack.getItem() instanceof WandSteelItem)

@@ -2,7 +2,7 @@
   "block.witherutils.angel": "Angel Block",
   "block.witherutils.angel.desc": "\n§9How to use:§r\n Can be placed in Air. Look up and Click!",
   "block.witherutils.anvil": "Anvil",
-  "block.witherutils.anvil.desc": "\n §9How to Become:§r \n Place a Vanilla Anvil and right Click it with a SoulOrb. \n\n §9How to use:§r \n Place Ingredients with Right Click. Use the Hammer, to smash it.",
+  "block.witherutils.anvil.desc": "\n §9How to Become:§r \n Place a Vanilla Anvil and right Click it with the Hammer Item. \n\n §9How to use:§r \n Place Ingredients with Right Click. Use the Hammer, to smash it.",
   "block.witherutils.case": "Case Block",
   "block.witherutils.case.desc": "\n§9How to use:§r\n Can be used for Crafting!",
   "block.witherutils.concretea": "§9concretea§r",
@@ -121,6 +121,8 @@
   "gui.witherutils.namesquares": "□■□ ",
   "item.witherutils.cutter": "Cutter",
   "item.witherutils.cutter.desc": "\n §9How to Use:§r \nAnother Version of Chisel like Tool. \nRight Click to open Gui, and using \nthe left Slot for Input Ingredients.",
+  "item.witherutils.hammer": "§9Hammer§r",
+  "item.witherutils.hammer.desc": "\n■-§9 §nInformation:\n§r§fThe hammer is a versatile Tool. It offers three Functions that can prove useful in various situations.§r\n■-§9 §nHowtoUse:\n§r§fIn Combination with the WitherAnvil, you can process materials and create additional items. Also serve as a weapon against enemies. It can demolish blocks while recovering the recipe's materials. So, if you accidentally break misplaced blocks, you can reclaim the resources for reuse.§r\n",
   "item.witherutils.shield_basic": "WitherSteel Shield",
   "item.witherutils.shield_basic.desc": "\n §9How to Use:§r \nRight Click to Block.",
   "item.witherutils.soulorb": "§9SoulOrb§r",
@@ -134,5 +136,9 @@
   "itemGroup.witherutils.blocks": "§9WitherUtils - §fBlocks",
   "itemGroup.witherutils.decos": "§9WitherUtils - §fDecos",
   "itemGroup.witherutils.items": "§9WitherUtils - §fItems",
-  "tooltip.witherutils.hint.extended": ">>> §9SHIFT§r Key for Tooltips."
+  "tooltip.witherutils.hint.extended": ">>> §9SHIFT§r Key for Tooltips.",
+  "witherutils.advancement.anvil": "Anvil",
+  "witherutils.advancement.anvil.descr": "Cant touch this...",
+  "witherutils.advancement.root": "WayOfWither",
+  "witherutils.advancement.root.descr": "Look Buddy, its time to work!"
 }

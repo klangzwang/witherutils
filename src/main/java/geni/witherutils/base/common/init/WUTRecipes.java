@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.api.lib.Names;
 import geni.witherutils.base.common.block.anvil.AnvilRecipe;
+import geni.witherutils.base.common.block.cauldron.CauldronRecipe;
 import geni.witherutils.base.common.item.cutter.CutterRecipe;
 import geni.witherutils.core.common.recipe.RecipeTypeSerializerPair;
 import net.minecraft.core.registries.Registries;
@@ -20,7 +21,7 @@ public class WUTRecipes {
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, Names.MODID);
 
     public static final RecipeTypeSerializerPair<AnvilRecipe, AnvilRecipe.Serializer> ANVIL = register("anvil", AnvilRecipe.Serializer::new);
-    
+    public static final RecipeTypeSerializerPair<CauldronRecipe, CauldronRecipe.Serializer> CAULDRON = register("cauldron", CauldronRecipe.Serializer::new);
     public static final RecipeTypeSerializerPair<CutterRecipe, CutterRecipe.Serializer> CUTTER = register("cutter", CutterRecipe.Serializer::new);
     
     @SuppressWarnings("unused")

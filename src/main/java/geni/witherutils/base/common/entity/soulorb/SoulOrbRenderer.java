@@ -43,14 +43,14 @@ public class SoulOrbRenderer extends EntityRenderer<SoulOrb> {
 
 		int i = soulorb.getIcon();
 
-		float f = (float) (i % 4 * 16 + 0) / 64.0F;
+		float f = (float) (i % 4 * 16) / 64.0F;
 		float f1 = (float) (i % 4 * 16 + 16) / 64.0F;
-		float f2 = (float) (i / 4 * 16 + 0) / 64.0F;
+		float f2 = (float) (i / 4 * 16) / 64.0F;
 		float f3 = (float) (i / 4 * 16 + 16) / 64.0F;
 
 		float f8 = ((float) soulorb.tickCount + partialTicks) / 2.0F;
 
-		matrix.translate(0.0D, (double) 0.1F, 0.0D);
+		matrix.translate(0.0D, 0.1F, 0.0D);
 		matrix.mulPose(this.entityRenderDispatcher.cameraOrientation());
 		matrix.mulPose(Axis.YP.rotationDegrees(180.0F));
 

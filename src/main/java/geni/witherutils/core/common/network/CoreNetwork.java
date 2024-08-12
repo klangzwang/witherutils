@@ -1,12 +1,22 @@
 package geni.witherutils.core.common.network;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import geni.witherutils.api.WitherUtilsRegistry;
+import geni.witherutils.base.common.data.PlayerData;
+import geni.witherutils.base.common.data.WorldData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -14,12 +24,14 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class CoreNetwork {
 	
+    public static final List<IDataHandler> DATA_HANDLERS = new ArrayList<>();
     private static final String PROTOCOL_VERSION = "1.0";
 
     @SubscribeEvent
@@ -33,9 +45,42 @@ public class CoreNetwork {
         registrar.playToServer(ClientboundDataSlotChange.TYPE, ClientboundDataSlotChange.STREAM_CODEC, ServerPayloadHandler.getInstance()::handleDataSlotChange);
         
 		registrar.playToClient(PacketSoulsSync.TYPE, PacketSoulsSync.CODEC, PacketSoulsSync::handle);
-		
 		registrar.playToServer(PacketRotateBlock.TYPE, PacketRotateBlock.CODEC, PacketRotateBlock::handle);
+		registrar.playToServer(PacketDirectionDash.TYPE, PacketDirectionDash.CODEC, PacketDirectionDash::handle);
+        registrar.playToClient(PacketServerToClient.ID, PacketServerToClient.CODEC, PacketServerToClient::handle);
+		
+        DATA_HANDLERS.add(SYNC_PLAYER_DATA);
+        DATA_HANDLERS.add(PLAYER_DATA_TO_SERVER);
     }
+    
+    public static final IDataHandler SYNC_PLAYER_DATA = new IDataHandler()
+    {
+        @Override
+        public void handleData(CompoundTag compound, IPayloadContext context)
+        {
+            CompoundTag dataTag = compound.getCompound("Data");
+            Player player = context.player();
+            
+            if (player != null)
+            {
+                PlayerData.getDataFromPlayer(player).readFromNBT(dataTag, false);
+            }
+        }
+    };
+    
+    public static final IDataHandler PLAYER_DATA_TO_SERVER = (compound, context) -> {
+    	
+        if (context.player() != null)
+        {
+            Level level = context.player().getServer().getLevel(ResourceKey.create(Registries.DIMENSION, ResourceLocation.tryParse(compound.getString("World"))));
+            Player player = level.getServer().getPlayerList().getPlayer(compound.getUUID("UUID"));
+            
+            if (player != null)
+            {
+                WorldData.get(level).setDirty();
+            }
+        }
+    };
     
     public static void sendToAll(CustomPacketPayload message)
     {

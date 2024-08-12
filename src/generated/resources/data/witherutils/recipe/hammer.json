@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "tag": "c:ingots/iron"
+    },
+    "S": {
+      "tag": "c:rods"
+    }
+  },
+  "pattern": [
+    "  I",
+    "SSI",
+    "  I"
+  ],
+  "result": {
+    "count": 1,
+    "id": "witherutils:hammer"
+  }
+}

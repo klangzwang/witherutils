@@ -69,7 +69,7 @@ public class FluidsUtil {
 		BlockState targetState = level.getBlockState(posTarget);
 		FluidState fluidState = level.getFluidState(posTarget);
 		if (targetState.hasProperty(BlockStateProperties.WATERLOGGED)
-				&& targetState.getValue(BlockStateProperties.WATERLOGGED) == true) {
+				&& targetState.getValue(BlockStateProperties.WATERLOGGED)) {
 			int simFill = tank.fill(new FluidStack(new FluidStack(Fluids.WATER, FluidType.BUCKET_VOLUME).getFluid(),
 					FluidType.BUCKET_VOLUME), FluidAction.SIMULATE);
 			if (simFill == FluidType.BUCKET_VOLUME && level.setBlockAndUpdate(posTarget,
@@ -108,7 +108,7 @@ public class FluidsUtil {
         {
             return "null";
         }
-        return fluid.getAmount() + "mb " + fluid.getFluid().toString();
+        return fluid.getAmount() + "mb " + fluid.getFluid();
     }
     
     @SuppressWarnings("removal")
@@ -213,13 +213,13 @@ public class FluidsUtil {
         IFluidHandlerItem flItem;
         if (replace && single)
         {
-            flItem = (IFluidHandlerItem) FluidUtil.getFluidHandler(held).get();
+            flItem = FluidUtil.getFluidHandler(held).get();
         }
         else
         {
             ItemStack copy = held.copy();
             copy.setCount(1);
-            flItem = (IFluidHandlerItem) FluidUtil.getFluidHandler(copy).get();
+            flItem = FluidUtil.getFluidHandler(copy).get();
         }
         if (flItem == null)
         {

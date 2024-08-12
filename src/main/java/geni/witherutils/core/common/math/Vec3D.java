@@ -148,9 +148,7 @@ public class Vec3D {
         if (getClass() != obj.getClass()) return false;
         Vec3D other = (Vec3D) obj;
 
-        if (x == other.x && y == other.y && z == other.z) return true;
-
-        return false;
+        return x == other.x && y == other.y && z == other.z;
     }
 
     @Override
@@ -173,7 +171,7 @@ public class Vec3D {
     }
 
     public Vec3D radialOffset(Direction.Axis axis, double sin, double cos, double offsetAmount) {
-        x += ((axis == X ? 0 : axis == Y ? sin : sin) * offsetAmount);
+        x += ((axis == X ? 0 : sin) * offsetAmount);
         y += ((axis == X ? sin : axis == Y ? 0 : cos) * offsetAmount);
         z += ((axis == X ? cos : axis == Y ? cos : 0) * offsetAmount);
         return this;

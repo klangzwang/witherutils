@@ -12,7 +12,6 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +24,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 public class ShieldSteelItem extends WitherItem {
 	
@@ -110,8 +108,8 @@ public class ShieldSteelItem extends WitherItem {
 	{
 		if(player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ShieldSteelItem)
 		{
-			player.level().playSound((Player)null, player.getX(), player.getY(), player.getZ(), SoundEvents.METAL_BREAK, SoundSource.NEUTRAL, 0.4F, 0.4F / (player.level().getRandom().nextFloat() * 0.4F + 0.8F));
-			player.level().playSound((Player)null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL, 0.1F, 0.3F / (player.level().getRandom().nextFloat() * 0.4F + 0.4F));
+			player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.METAL_BREAK, SoundSource.NEUTRAL, 0.4F, 0.4F / (player.level().getRandom().nextFloat() * 0.4F + 0.8F));
+			player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL, 0.1F, 0.3F / (player.level().getRandom().nextFloat() * 0.4F + 0.4F));
 		}
 		return super.onLeftClickEntity(stack, player, entity);
 	}
@@ -120,7 +118,7 @@ public class ShieldSteelItem extends WitherItem {
 	{
 		ItemStack itemstack = player.getItemInHand(hand);
 		player.startUsingItem(hand);
-		world.playSound((Player)null, player.getX(), player.getY(), player.getZ(), WUTSounds.PLACEBOOMTWO.get(), SoundSource.NEUTRAL, 0.75F, 0.5F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
+		world.playSound(null, player.getX(), player.getY(), player.getZ(), WUTSounds.PLACEBOOMTWO.get(), SoundSource.NEUTRAL, 0.75F, 0.5F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
 
 //        if (!world.isClientSide)
 //        {
@@ -157,7 +155,7 @@ public class ShieldSteelItem extends WitherItem {
     	ADVANCED(1, "shieldadvanced"),
     	ROTTEN(2, "shieldrotten");
 
-    	private int type;
+    	private final int type;
     	private final String name;
     	public static final ShieldType[] BY_ID = values();
 
@@ -205,10 +203,6 @@ public class ShieldSteelItem extends WitherItem {
     		return solarType.ordinal();
     	}
     }
-	
-	public void hitShield(ItemStack stack, Player player, DamageSource source, float amount, LivingDamageEvent event)
-	{
-	}
 	
 //	@Override
 //	public void releaseUsing(ItemStack stack, Level world, LivingEntity entity, int chargeTimer)

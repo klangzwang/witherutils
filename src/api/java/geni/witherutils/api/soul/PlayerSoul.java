@@ -3,7 +3,7 @@ package geni.witherutils.api.soul;
 public class PlayerSoul {
 
 	private int souls = 0;
-	private int maxSouls = 20;
+	private final int maxSouls = 20;
 
 	public void addSouls(int souls)
 	{

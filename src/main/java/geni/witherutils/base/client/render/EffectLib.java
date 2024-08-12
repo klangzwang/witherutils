@@ -17,8 +17,8 @@ import net.minecraft.util.Mth;
 public class EffectLib {
 
     protected static Random rand = new Random();
-    private static float[] r = new float[256];
-    private static float[] randSet = new float[4096];
+    private static final float[] r = new float[256];
+    private static final float[] randSet = new float[4096];
     private static int randPos = 0;
     
     static

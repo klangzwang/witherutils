@@ -37,9 +37,9 @@ public class SoulOrbProjectileRenderer extends ThrownItemRenderer {
 
 		int i = RandomSource.create().nextInt(10);
 
-		float f = (float) (i % 4 * 16 + 0) / 64.0F;
+		float f = (float) (i % 4 * 16) / 64.0F;
 		float f1 = (float) (i % 4 * 16 + 16) / 64.0F;
-		float f2 = (float) (i / 4 * 16 + 0) / 64.0F;
+		float f2 = (float) (i / 4 * 16) / 64.0F;
 		float f3 = (float) (i / 4 * 16 + 16) / 64.0F;
 
 		matrix.translate(0.0D, -0.2F, 0.0D);

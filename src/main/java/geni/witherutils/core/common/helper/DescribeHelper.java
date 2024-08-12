@@ -68,9 +68,8 @@ public class DescribeHelper
 //            addDescription(list, (Object)("Ticket[Player: " + ticket.getEntityTickets() + " World:" + ticket.level().provider.getDimension() + "]"), i);
 //            addDescription(list, (Object)ticket.getChunkList().toString(), i);
 //        }
-        else if (object instanceof Level)
+        else if (object instanceof Level world)
         {
-            final Level world = (Level) object;
             addDescription(list, "World[Dim:" + world.dimension() + " isRemote:" + world.isClientSide + "]");
         }
         else
@@ -80,11 +79,11 @@ public class DescribeHelper
             final String s2 = object.getClass().getName() + "@" + Integer.toHexString(hash);
             if (s.equals(s2))
             {
-                addDescription(list, (Object)(object.getClass().getSimpleName() + ":" + hash), i);
+                addDescription(list, object.getClass().getSimpleName() + ":" + hash, i);
             }
             else
             {
-                addDescription(list, (Object)(object.getClass().getSimpleName() + ":" + s), i);
+                addDescription(list, object.getClass().getSimpleName() + ":" + s, i);
             }
         }
     }

@@ -35,8 +35,8 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 @OnlyIn(Dist.CLIENT)
 public class ModelHandler {
 
-	private static Map<ModelLayerLocation, Layer> layers = new HashMap<>();
-	private static Map<Pair<ModelLayerLocation, EquipmentSlot>, AbstractArmorModel> cachedArmors = new HashMap<>();
+	private static final Map<ModelLayerLocation, Layer> layers = new HashMap<>();
+	private static final Map<Pair<ModelLayerLocation, EquipmentSlot>, AbstractArmorModel> cachedArmors = new HashMap<>();
 
 	public static ModelLayerLocation steelarmor_head;
 	public static ModelLayerLocation steelarmor_body;

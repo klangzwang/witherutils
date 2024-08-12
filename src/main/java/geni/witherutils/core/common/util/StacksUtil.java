@@ -33,7 +33,7 @@ public class StacksUtil extends NonNullList<ItemStack> {
         Validate.notNull(fill);
         ItemStack[] objects = new ItemStack[size];
         Arrays.fill(objects, fill);
-        return new StacksUtil(Arrays.asList((ItemStack[]) objects), fill);
+        return new StacksUtil(Arrays.asList(objects), fill);
     }
 
     public static StacksUtil from(ItemStack... elements) {
