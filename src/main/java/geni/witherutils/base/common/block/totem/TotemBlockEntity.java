@@ -68,6 +68,12 @@ public class TotemBlockEntity extends WitherMachineFakeBlockEntity implements Me
         addDataSlot(NetworkDataSlot.INT.create(this::getScaleZ, p -> scaleZ = p));
     }
 
+	@Override
+	public boolean canOpenMenu()
+	{
+		return true;
+	}
+	
     @Override
     public void serverTick()
     {

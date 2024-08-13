@@ -1,4 +1,4 @@
-// 1.21	2024-08-12T23:08:08.77867	Loot Tables
+// 1.21	2024-08-13T15:45:12.9464678	Loot Tables
 2d65c19737632fcdd71e3baf8416e7ae15b82f2e data/witherutils/loot_table/blocks/angel.json
 ac159030973f803481d02256427df48da95fb46a data/witherutils/loot_table/blocks/anvil.json
 b7811b6a23d7f5443e42da234af4973c7ad7d046 data/witherutils/loot_table/blocks/bricks_dark.json
@@ -30,6 +30,7 @@ e626648ce244a61011cfc957e13166167ed55a32 data/witherutils/loot_table/blocks/fan0
 56e72fd75c1349c9ec48a0f5088c707b4253f40d data/witherutils/loot_table/blocks/fan1.json
 0d400135655bb30364e4b0b5e0199343daeff37a data/witherutils/loot_table/blocks/fan2.json
 7f6fb8d73bf32d869c1ecda3bcc42bfe63c16c68 data/witherutils/loot_table/blocks/fan3.json
+dc06fda9cdbcde5aff2d446a7e383ac4989d166d data/witherutils/loot_table/blocks/floorsensor.json
 0e8861ce962078f4d56d9b5b16935b4046842fad data/witherutils/loot_table/blocks/glassa.json
 0d77ba2a51b7dbbf5d58736c7056eccf9e98803e data/witherutils/loot_table/blocks/glassb.json
 df9394767b493659f26f95cfb05131f4531b6037 data/witherutils/loot_table/blocks/glassc.json
@@ -43,6 +44,7 @@ ca60c5321b73e1c8752a2411a0bdeca3cfe59e3f data/witherutils/loot_table/blocks/glas
 f797cf31741bdcbd22ec1b44d865ae4a27ec5808 data/witherutils/loot_table/blocks/lava_generator.json
 1626d59d51d785572c742375c03d985adf8b504e data/witherutils/loot_table/blocks/light.json
 4d6aa9412d0bba38b46600f117ab164e57c85ebd data/witherutils/loot_table/blocks/lilly.json
+b397cbb4850d699edcf7e15e9dda82799433c9cc data/witherutils/loot_table/blocks/lines.json
 7b54442cce33987743c439512ccbcc9b1c9f0c5e data/witherutils/loot_table/blocks/liron_door.json
 2095ad3d41177b5cf45edf277fab2ffe70e85bff data/witherutils/loot_table/blocks/metal0.json
 2f8bc4f33d747c0847596acaa64ecf4782a481eb data/witherutils/loot_table/blocks/metala.json
@@ -74,6 +76,7 @@ b88fb0b530d68cec65cfda25f3867ac01c12d975 data/witherutils/loot_table/blocks/rott
 620502d0cb95db8194c7d2ba8678876ae865db8b data/witherutils/loot_table/blocks/solar_basic.json
 404ce4fa9ae00eb1d0bb72fd09f8364e63887f8e data/witherutils/loot_table/blocks/solar_case.json
 c6a8736b345cd06843a43381edfb67f8bcf1ca87 data/witherutils/loot_table/blocks/solar_ultra.json
+8cd13eb696250aeff5e06fc5a221425a4339b314 data/witherutils/loot_table/blocks/soulfire.json
 7813131687fcc73e5ec9a75f987c4a9eef76f3e6 data/witherutils/loot_table/blocks/soulished_block.json
 3d2fc019e4f31299da959a42fd100a039644b6b1 data/witherutils/loot_table/blocks/steel_door.json
 5f7178156dd2438a8abf50ca634a3c0638d11420 data/witherutils/loot_table/blocks/steel_pole.json
@@ -84,6 +87,7 @@ c5d3085607d582c875473c6bed1c5feea1c862f7 data/witherutils/loot_table/blocks/ston
 7706426eba1ac388c0c0a0c8275b50ccd1512ad0 data/witherutils/loot_table/blocks/stonec.json
 cf21e6df49d7ceb42b99b3bc6361e9924ec6e09a data/witherutils/loot_table/blocks/striped_door.json
 2d802eb397dd24095ed8f3d1e9077689723250a0 data/witherutils/loot_table/blocks/totem.json
+fd54789946859951df2e268767a6df808c3e11dd data/witherutils/loot_table/blocks/wallsensor.json
 941c034f040f25cae82bbe250c2d1200ddc08baf data/witherutils/loot_table/blocks/water_generator.json
 2ced84e3d3f5569f7c549bb0b8833cd1d63df06e data/witherutils/loot_table/blocks/wind_generator.json
 239b1bb14b0ae5f7bb19a3d831be4cc38fc4925e data/witherutils/loot_table/blocks/withersteel_block.json

@@ -20,6 +20,7 @@ import geni.witherutils.base.common.block.deco.cutter.CutterBlock.CutterBlockTyp
 import geni.witherutils.base.common.block.deco.door.DoorsBlock;
 import geni.witherutils.base.common.block.deco.door.metal.MetalDoorBlock;
 import geni.witherutils.base.common.block.deco.fan.FanBlock;
+import geni.witherutils.base.common.block.deco.fire.SoulFireBlock;
 import geni.witherutils.base.common.block.deco.lavabricks.BricksLavaBlock;
 import geni.witherutils.base.common.block.deco.light.LightBlock;
 import geni.witherutils.base.common.block.deco.pole.SteelPoleBlock;
@@ -27,6 +28,8 @@ import geni.witherutils.base.common.block.deco.railing.RailingBlock;
 import geni.witherutils.base.common.block.deco.sliced.SlicedConcreteBlock;
 import geni.witherutils.base.common.block.fakedriver.FakeDriverBlock;
 import geni.witherutils.base.common.block.fakedriver.FakeDriverBlockEntity;
+import geni.witherutils.base.common.block.farmer.FarmerBlock;
+import geni.witherutils.base.common.block.fisher.FisherBlock;
 import geni.witherutils.base.common.block.fluid.BlueLimboBlock;
 import geni.witherutils.base.common.block.fluid.ColdSlushBlock;
 import geni.witherutils.base.common.block.fluid.ExperienceBlock;
@@ -47,7 +50,10 @@ import geni.witherutils.base.common.block.nature.RottenRoots;
 import geni.witherutils.base.common.block.nature.RottenSapling;
 import geni.witherutils.base.common.block.nature.RottenSpike;
 import geni.witherutils.base.common.block.nature.RottenWood;
+import geni.witherutils.base.common.block.sensor.floor.FloorSensorBlock;
+import geni.witherutils.base.common.block.sensor.wall.WallSensorBlock;
 import geni.witherutils.base.common.block.smarttv.SmartTVBlock;
+import geni.witherutils.base.common.block.spawner.SpawnerBlock;
 import geni.witherutils.base.common.block.totem.TotemBlock;
 import geni.witherutils.base.common.block.xpdrain.XpDrainBlock;
 import net.minecraft.data.worldgen.features.TreeFeatures;
@@ -94,6 +100,19 @@ public class WUTBlocks {
      * PROPERTIES
      * 
      */
+    public static Block.Properties soulFireProps()
+    {
+        return Block.Properties
+                .of()
+                .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                .replaceable()
+                .noCollission()
+                .instabreak()
+                .lightLevel(p_50884_ -> 10)
+                .sound(SoundType.WOOL)
+                .pushReaction(PushReaction.DESTROY);
+    }
+    
     public static Block.Properties glassProps()
     {
         return Block.Properties
@@ -191,6 +210,8 @@ public class WUTBlocks {
 	 * LOGICALBLOCK
 	 *
 	 */
+    public static final DeferredBlock<Block> LINES = register("lines", () -> new WitherSimpleBlock(standardProps()));
+    
 	public static final DeferredBlock<Block> ANVIL = register("anvil", () -> new AnvilBlock(machineProps()));
 	public static final DeferredBlock<Block> FAKE_DRIVER = register("fake_driver", () -> new FakeDriverBlock(FakeDriverBlockEntity::new));
 	
@@ -215,6 +236,13 @@ public class WUTBlocks {
 	public static final DeferredBlock<Block> SOLARULTRA = register("solar_ultra", () -> new SolarPanelBlock(glassProps(), SolarType.ULTRA));
     
 	public static final DeferredBlock<Block> SMARTTV = register("smarttv", () -> new SmartTVBlock(machineProps()));
+	
+	public static final DeferredBlock<Block> FLOORSENSOR = register("floorsensor", () -> new FloorSensorBlock(machineProps()));
+	public static final DeferredBlock<Block> WALLSENSOR = register("wallsensor", () -> new WallSensorBlock(machineProps()));
+	
+	public static final DeferredBlock<Block> FARMER = register("farmer", () -> new FarmerBlock(machineProps()));
+	public static final DeferredBlock<Block> SPAWNER = register("spawner", () -> new SpawnerBlock(machineProps()));
+	public static final DeferredBlock<Block> FISHER = register("fisher", () -> new FisherBlock(machineProps()));
 	
 	/*
 	 * 
@@ -345,6 +373,7 @@ public class WUTBlocks {
 	public static final DeferredBlock<Block> FAN1 = register("fan1", () -> new FanBlock(metalProps()));
 	public static final DeferredBlock<Block> FAN2 = register("fan2", () -> new FanBlock(metalProps()));
 	public static final DeferredBlock<Block> FAN3 = register("fan3", () -> new FanBlock(metalProps()));
+	public static final DeferredBlock<Block> SOULFIRE = register("soulfire", () -> new SoulFireBlock(soulFireProps()));
 	
 	/*
 	 * 

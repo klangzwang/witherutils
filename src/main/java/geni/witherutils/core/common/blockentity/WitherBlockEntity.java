@@ -282,7 +282,7 @@ public class WitherBlockEntity extends BlockEntity {
     public void onAdded(Level world, BlockState state, BlockState oldState, boolean isMoving) {}
     public InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHitResult) { return InteractionResult.PASS; }
     public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult) { return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; }
-    
+
     public int getRedstoneOutput(BlockState state, BlockGetter world, BlockPos pos, Direction side) { return -1; }
     
     public void popRecipeExperience(ServerPlayer serverplayer, float count) {}

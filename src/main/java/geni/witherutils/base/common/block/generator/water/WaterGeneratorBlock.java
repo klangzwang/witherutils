@@ -18,7 +18,6 @@ public class WaterGeneratorBlock extends WitherAbstractBlock implements WitherEn
 	{
 		super(props);
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.valueOf(false)));
-		this.setHasTooltip();
 	}
 	
     @Override

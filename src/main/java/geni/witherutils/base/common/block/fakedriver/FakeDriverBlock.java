@@ -57,8 +57,7 @@ public class FakeDriverBlock extends WitherAbstractBlock implements WitherEntity
         this.beFactory = beFactory;
 
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.valueOf(false)));
-		this.setHasTooltip();
-		
+
 		NeoForge.EVENT_BUS.register(new EventHandler());
 	}
 	

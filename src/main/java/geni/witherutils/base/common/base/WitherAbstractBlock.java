@@ -10,25 +10,23 @@ import javax.annotation.Nullable;
 
 import geni.witherutils.base.client.ClientSetup;
 import geni.witherutils.base.client.ClientTooltipHandler;
+import geni.witherutils.base.common.init.WUTTags;
 import geni.witherutils.core.common.blockentity.WitherBlockEntity;
 import geni.witherutils.core.common.item.IBlock;
 import geni.witherutils.core.common.item.ItemBlock;
-import geni.witherutils.core.common.util.SoundUtil;
-import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
@@ -47,8 +45,6 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -58,20 +54,12 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
-@SuppressWarnings("unused")
 public abstract class WitherAbstractBlock extends Block implements SimpleWaterloggedBlock, IBlock {
 	
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
-    
-	private boolean hasScreen = false;
-	private boolean hasLiquid = false;
-	private boolean hasTooltip = false;
 
     protected int lightOpacity;
 	protected final boolean notNormalBlock;
@@ -133,21 +121,6 @@ public abstract class WitherAbstractBlock extends Block implements SimpleWaterlo
 		lightOpacity = opacity;
 		return this;
 	}
-	protected WitherAbstractBlock setHasScreen()
-	{
-		this.hasScreen = true;
-		return this;
-	}
-	protected WitherAbstractBlock setHasLiquid()
-	{
-		this.hasLiquid = true;
-		return this;
-	}
-    protected WitherAbstractBlock setHasTooltip()
-    {
-        this.hasTooltip = true;
-        return this;
-    }
     
 	@Override
 	public int getLightBlock(BlockState state, BlockGetter worldIn, BlockPos pos)
@@ -218,8 +191,7 @@ public abstract class WitherAbstractBlock extends Block implements SimpleWaterlo
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext pContext, List<Component> list, TooltipFlag flag)
     {
-        if(hasTooltip)
-            ClientTooltipHandler.Tooltip.addInformation(stack, pContext, list, flag, true);
+    	ClientTooltipHandler.Tooltip.addInformation(stack, pContext, list, flag, true);
     }
     
     @Override
@@ -274,80 +246,63 @@ public abstract class WitherAbstractBlock extends Block implements SimpleWaterlo
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult blockHitResult)
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand interactionHand, BlockHitResult hit)
     {
-	    BlockEntity tile = level.getBlockEntity(pos);
-	    if (tile instanceof WitherBlockEntity wbe)
-	    {
-			if(hasLiquid)
-			{
-				if(!level.isClientSide)
-				{
-					IFluidHandler fluidHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, blockHitResult.getBlockPos(), blockHitResult.getDirection());
-					if(fluidHandler != null)
-					{
-						if(FluidUtil.interactWithFluidHandler(player, player.getUsedItemHand(), fluidHandler))
-						{
-							if(fluidHandler.getFluidInTank(0) != null)
-							{
-								player.displayClientMessage(Component.translatable(getFluidRatioName(fluidHandler)), true);
-							}
-							if(player instanceof ServerPlayer)
-							{
-								SoundUtil.playSoundFromServer((ServerPlayer) player, SoundEvents.BUCKET_FILL, 1.0f, 1.0f);
-							}
-						}
-						else
-						{
-							player.displayClientMessage(Component.translatable(getFluidRatioName(fluidHandler)), true);
-						}
-					}
-				}
-				if(FluidUtil.getFluidHandler(player.getItemInHand(player.getUsedItemHand())).isPresent())
-				{
-					return InteractionResult.SUCCESS;
-				}
-			}
-			if(this.hasScreen)
-			{
-				if(!level.isClientSide)
-				{
-					if(wbe instanceof MenuProvider menuprovider)
-					{
-				        if (menuprovider != null && player instanceof ServerPlayer serverPlayer)
-				        {
-		                    doOpenGui(serverPlayer, wbe);
-				        }
-					}
-					else
-					{
-						throw new IllegalStateException("Our named container provider is missing!");
-					}
-				}
-				return InteractionResult.SUCCESS;
-			}
+        BlockEntity entity = level.getBlockEntity(pos);
+        if (!(entity instanceof WitherMachineBlockEntity machineBlockEntity))
+        {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
 
-		    wbe.useWithoutItem(state, level, pos, player, blockHitResult);
-	    }
-	    return super.useWithoutItem(state, level, pos, player, blockHitResult);
+        if (!level.isClientSide && stack.is(WUTTags.Items.WRENCH))
+        {
+            var res = machineBlockEntity.onWrenched(player, hit.getDirection());
+            if (res != ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION)
+            {
+                return res;
+            }
+        }
+
+        var result = machineBlockEntity.onBlockEntityUsed(state, level, pos, player, interactionHand, hit);
+        if (result != ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION)
+        {
+            return result;
+        }
+
+        return super.useItemOn(stack, state, level, pos, player, interactionHand, hit);
     }
-    
-    protected void doOpenGui(ServerPlayer player, BlockEntity te)
-    {
-        player.openMenu((MenuProvider) te, te.getBlockPos());
-    }
-    
-	@SuppressWarnings("removal")
-	public static String getFluidRatioName(IFluidHandler handler)
-	{
-		String ratio = handler.getFluidInTank(0).getAmount() + "/" + handler.getTankCapacity(0);
-		if (!handler.getFluidInTank(0).isEmpty())
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult blockHitResult) {
+        if (level.isClientSide()){
+            return InteractionResult.SUCCESS;
+        }
+
+        BlockEntity entity = level.getBlockEntity(pos);
+        if (!(entity instanceof WitherMachineBlockEntity machineBlockEntity))
+        {
+            return InteractionResult.PASS;
+        }
+
+        if (!machineBlockEntity.canOpenMenu())
+        {
+            return InteractionResult.PASS;
+        }
+
+		if(machineBlockEntity instanceof MenuProvider menuprovider)
 		{
-			ratio += " " + handler.getFluidInTank(0).getDisplayName().getString();
+	        if (menuprovider != null && player instanceof ServerPlayer serverPlayer)
+	        {
+	        	serverPlayer.openMenu((MenuProvider) machineBlockEntity, machineBlockEntity.getBlockPos());
+	        }
 		}
-		return ratio;
-	}
-	
+		else
+		{
+			throw new IllegalStateException("Our named container provider is missing!");
+		}
+        return InteractionResult.CONSUME;
+    }
+
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack)
 	{

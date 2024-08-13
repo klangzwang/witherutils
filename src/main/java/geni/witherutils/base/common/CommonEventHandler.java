@@ -6,6 +6,7 @@ import com.mojang.brigadier.CommandDispatcher;
 
 import geni.witherutils.WitherUtils;
 import geni.witherutils.base.common.block.anvil.AnvilBlockEntity;
+import geni.witherutils.base.common.block.deco.fire.SoulFireBlock;
 import geni.witherutils.base.common.config.common.LootConfig;
 import geni.witherutils.base.common.data.PlayerData;
 import geni.witherutils.base.common.entity.bolt.CursedLightningBolt;
@@ -35,7 +36,6 @@ import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -176,7 +176,7 @@ public class CommonEventHandler {
         for(int i = 0; i < 20; ++i)
         {
             BlockPos blockpos = pos.offset(-2 + level.random.nextInt(4), level.random.nextInt(3) - 1, -2 + level.random.nextInt(4));
-            BlockState blockstate = BaseFireBlock.getState(level, blockpos);
+            BlockState blockstate = SoulFireBlock.getState(level, blockpos);
             if(level.getBlockState(blockpos).isAir() && blockstate.canSurvive(level, blockpos))
             {
                 level.setBlockAndUpdate(blockpos, blockstate);

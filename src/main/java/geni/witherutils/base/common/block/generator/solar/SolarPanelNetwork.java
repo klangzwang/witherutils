@@ -187,6 +187,8 @@ public class SolarPanelNetwork implements ISolarPanelNetwork {
 			}
 			energyAvailableThisTick = energyAvailablePerTick;
 		}
+		
+//    	System.out.println(this.toString());
 	}
 
 	@Override

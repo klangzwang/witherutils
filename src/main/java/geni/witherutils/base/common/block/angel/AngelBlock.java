@@ -29,7 +29,6 @@ public class AngelBlock extends WitherAbstractBlock implements Fallable {
 	public AngelBlock(BlockBehaviour.Properties props)
 	{
 		super(props);
-		this.setHasTooltip();
 	}
 
 	@Override

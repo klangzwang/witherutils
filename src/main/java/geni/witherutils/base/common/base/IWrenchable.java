@@ -1,9 +1,15 @@
 package geni.witherutils.base.common.base;
 
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.context.UseOnContext;
+import javax.annotation.Nullable;
+
+import geni.witherutils.api.UseOnly;
+import net.minecraft.core.Direction;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.fml.LogicalSide;
 
 public interface IWrenchable {
     
-    InteractionResult onWrenched(UseOnContext context);
+    @UseOnly(LogicalSide.SERVER)
+    ItemInteractionResult onWrenched(@Nullable Player player, @Nullable Direction side);
 }

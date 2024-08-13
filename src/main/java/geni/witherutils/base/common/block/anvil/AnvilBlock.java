@@ -46,7 +46,6 @@ public class AnvilBlock extends WitherAbstractBlock implements WitherEntityBlock
     {
         super(props);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.valueOf(false)));
-        this.setHasTooltip();
     }
     
     @Override
@@ -106,14 +105,10 @@ public class AnvilBlock extends WitherAbstractBlock implements WitherEntityBlock
             		
             		ParticleUtil.playParticleStarEffect(pLevel, pPlayer, ParticleTypes.SMOKE, 0.5D, EParticlePosition.HITRESULT);
         			SoundUtil.playSoundDistrib(pLevel, pPos, SoundEvents.PLAYER_ATTACK_STRONG, 0.75f, 1.0F, false, true);
-
-            		return ItemInteractionResult.SUCCESS;
         		}
-            	anvil.useItemOn(pStack, pState, pLevel, pPos, pPlayer, pHand, pHitResult);
             }
-            return ItemInteractionResult.SUCCESS;
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return super.useItemOn(pStack, pState, pLevel, pPos, pPlayer, pHand, pHitResult);
     }
     
     @Nullable

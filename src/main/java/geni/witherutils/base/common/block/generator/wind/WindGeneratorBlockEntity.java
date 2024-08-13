@@ -64,6 +64,12 @@ public class WindGeneratorBlockEntity extends WitherMachineEnergyGenBlockEntity 
 		addDataSlot(NetworkDataSlot.FLOAT.create(this::getCurrentMultiplier, p -> currentMultiplier = p));
     }
 
+	@Override
+	public boolean canOpenMenu()
+	{
+		return true;
+	}
+	
     @Override
     public void serverTick()
     {
@@ -78,7 +84,7 @@ public class WindGeneratorBlockEntity extends WitherMachineEnergyGenBlockEntity 
         if(freeAirPlacement())
         {
             if(level.getGameTime() % 20 == 0)
-            	currentMultiplier = getMultiplier();
+            	currentMultiplier = (float) getMultiplier();
         }
         else
         	currentMultiplier = 0;
@@ -179,23 +185,23 @@ public class WindGeneratorBlockEntity extends WitherMachineEnergyGenBlockEntity 
         return currentMultiplier;
     }
     
-    private float getMultiplier()
+    private double getMultiplier()
     {
         if (level != null)
         {
             if (level.getFluidState(getBlockPos().above()).isEmpty() && level.canSeeSky(getBlockPos().above()))
             {
-                int minY = Math.max(WindGeneratorConfig.GENERATIONMINY.get(), level.getMinBuildHeight());
-                int maxY = Math.min(WindGeneratorConfig.GENERATIONMAXY.get(), level.dimensionType().logicalHeight());
+                int minY = Math.max(24, level.getMinBuildHeight());
+                int maxY = Math.min(level.getMaxBuildHeight(), level.dimensionType().logicalHeight());
                 float clampedY = Math.min(maxY, Math.max(minY, getBlockPos().above().getY()));
                 float minG = WindGeneratorConfig.GENERATIONMIN.get();
                 float maxG = WindGeneratorConfig.GENERATIONMAX.get();
-                float slope = (maxG - minG) / (maxY - minY);
-                float toGen = minG += (slope * (clampedY - minY));
-                return slope * (clampedY - minY) / toGen;
+                double slope = ((double) (maxG - minG)) / (maxY - minY);
+                double toGen = minG + (slope * (clampedY - minY));
+                return (toGen / minG);
             }
         }
-        return 0.0f;
+        return 0L;
     }
     
     @Override

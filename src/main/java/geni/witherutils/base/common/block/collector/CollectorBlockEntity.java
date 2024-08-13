@@ -73,6 +73,12 @@ public class CollectorBlockEntity extends WitherMachineBlockEntity {
 		addDataSlot(NetworkDataSlot.BOOL.create(() -> getRender(), p -> render = p));
 	}
 	
+	@Override
+	public boolean canOpenMenu()
+	{
+		return true;
+	}
+	
     @Override
     protected MachineInventory createMachineInventory(MachineInventoryLayout layout)
     {

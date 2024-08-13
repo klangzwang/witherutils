@@ -56,6 +56,12 @@ public class LavaGeneratorBlockEntity extends WitherMachineEnergyGenBlockEntity 
 		addDataSlot(NetworkDataSlot.FLOAT.create(this::getEfficiencyRate, p -> efficiencyRate = p));
     }
 
+	@Override
+	public boolean canOpenMenu()
+	{
+		return true;
+	}
+	
     @Override
     public void serverTick()
     {

@@ -27,11 +27,19 @@ import geni.witherutils.base.common.block.deco.cutter.CutterBlock;
 import geni.witherutils.base.common.block.deco.door.metal.MetalDoorRenderer;
 import geni.witherutils.base.common.block.fakedriver.FakeDriverRenderer;
 import geni.witherutils.base.common.block.generator.lava.LavaGeneratorRenderer;
+import geni.witherutils.base.common.block.generator.lava.LavaGeneratorScreen;
 import geni.witherutils.base.common.block.generator.solar.SolarPanelRenderer;
 import geni.witherutils.base.common.block.generator.water.WaterGeneratorRenderer;
+import geni.witherutils.base.common.block.generator.water.WaterGeneratorScreen;
 import geni.witherutils.base.common.block.generator.wind.WindGeneratorRenderer;
+import geni.witherutils.base.common.block.generator.wind.WindGeneratorScreen;
+import geni.witherutils.base.common.block.sensor.floor.FloorSensorRenderer;
+import geni.witherutils.base.common.block.sensor.floor.FloorSensorScreen;
+import geni.witherutils.base.common.block.sensor.wall.WallSensorRenderer;
 import geni.witherutils.base.common.block.smarttv.SmartTVRenderer;
+import geni.witherutils.base.common.block.smarttv.SmartTVScreen;
 import geni.witherutils.base.common.block.totem.TotemRenderer;
+import geni.witherutils.base.common.block.totem.TotemScreen;
 import geni.witherutils.base.common.data.WorldData;
 import geni.witherutils.base.common.entity.bolt.CursedLightningBoltRenderer;
 import geni.witherutils.base.common.entity.cursed.zombie.CursedZombieRenderer;
@@ -97,6 +105,10 @@ public class ClientSetup {
     	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_L.get(), RenderType.cutout());
     	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_M.get(), RenderType.cutout());
     	
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.SOULFIRE.get(), RenderType.cutout());
+    	
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.WALLSENSOR.get(), RenderType.cutout());
+    	
     	ItemBlockRenderTypes.setRenderLayer(WUTFluids.BLUELIMBO.get(), RenderType.translucent());
     	ItemBlockRenderTypes.setRenderLayer(WUTFluids.BLUELIMBO_FLOWING.get(), RenderType.translucent());
     	ItemBlockRenderTypes.setRenderLayer(WUTFluids.COLDSLUSH.get(), RenderType.translucent());
@@ -127,8 +139,13 @@ public class ClientSetup {
         event.register(WUTMenus.CUTTER.get(), CutterScreen::new);
         event.register(WUTMenus.SCAPER.get(), ScaperScreen::new);
         event.register(WUTMenus.BLOCKCARD.get(), CardScreen::new);
-        
         event.register(WUTMenus.COLLECTOR.get(), CollectorScreen::new);
+        event.register(WUTMenus.SMARTTV.get(), SmartTVScreen::new);
+        event.register(WUTMenus.LAVA_GENERATOR.get(), LavaGeneratorScreen::new);
+        event.register(WUTMenus.WATER_GENERATOR.get(), WaterGeneratorScreen::new);
+        event.register(WUTMenus.WIND_GENERATOR.get(), WindGeneratorScreen::new);
+        event.register(WUTMenus.TOTEM.get(), TotemScreen::new);
+        event.register(WUTMenus.FLOORSENSOR.get(), FloorSensorScreen::new);
     }
     
     @SubscribeEvent
@@ -199,6 +216,8 @@ public class ClientSetup {
 	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.SOLARULTRA.get(), SolarPanelRenderer::new);
 	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.SMARTTV.get(), SmartTVRenderer::new);
 	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.TOTEM.get(), TotemRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.FLOORSENSOR.get(), FloorSensorRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.WALLSENSOR.get(), WallSensorRenderer::new);
 		event.registerEntityRenderer(WUTEntities.WORM.get(), WormRenderer::new);
 		event.registerEntityRenderer(WUTEntities.SOULORB.get(), SoulOrbRenderer::new);
 		event.registerEntityRenderer(WUTEntities.SOULORBPRO.get(), SoulOrbProjectileRenderer::new);
@@ -266,4 +285,18 @@ public class ClientSetup {
     {
         return List.of(REDHALO, HALO, LASER, ADAPTER, LASERBEAMS[0], LASERBEAMS[1], LASERBEAMS[2], LASERBEAMS[3]);
     }
+    
+//	public static void onRenderLast(PoseStack matrix, float partialTick)
+//  {
+//  	Minecraft mc = Minecraft.getInstance();
+//		MultiBufferSource getter = Minecraft.getInstance().renderBuffers().bufferSource();
+//		int light = mc.level.getLightEmission(BlockPos.ZERO.above());
+//		int packedLight = OverlayTexture.NO_OVERLAY;
+//  	WUTBlocks.BLOCK_TYPES.getEntries().forEach(block -> {
+//  		if(block.get() instanceof IRenderProvider provider)
+//  		{
+//  			provider.render(block.get().defaultBlockState(), partialTick, matrix, getter, mc, mc.level, mc.player, light, packedLight);
+//  		}
+//  	});
+//  }
 }

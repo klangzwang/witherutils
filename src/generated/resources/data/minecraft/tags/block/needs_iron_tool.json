@@ -1,5 +1,6 @@
 {
   "values": [
+    "witherutils:lines",
     "witherutils:anvil",
     "witherutils:fake_driver",
     "witherutils:creative_generator",
@@ -17,6 +18,8 @@
     "witherutils:solar_adv",
     "witherutils:solar_ultra",
     "witherutils:smarttv",
+    "witherutils:floorsensor",
+    "witherutils:wallsensor",
     "witherutils:angel",
     "witherutils:case_small",
     "witherutils:case_big",
@@ -43,6 +46,7 @@
     "witherutils:fan1",
     "witherutils:fan2",
     "witherutils:fan3",
+    "witherutils:soulfire",
     "witherutils:rotten_earth",
     "witherutils:rotten_sapling",
     "witherutils:rotten_leaves",

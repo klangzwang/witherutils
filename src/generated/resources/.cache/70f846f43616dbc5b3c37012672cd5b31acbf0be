@@ -1,4 +1,4 @@
-// 1.21	2024-08-12T23:08:08.7776675	WitherUtils BlockTags
-7e2ddd07fe50cef4ecfab88baa171af81b212b18 data/minecraft/tags/block/mineable/pickaxe.json
+// 1.21	2024-08-13T15:45:12.9454655	WitherUtils BlockTags
+bf06a9c15c3641c03979ac9b7cd3aa1fd45e3c28 data/minecraft/tags/block/mineable/pickaxe.json
 f19d218396e8923e742a88cd0e0dedb4d68cf3ce data/minecraft/tags/block/mineable/shovel.json
-65a8760b2a5b4380cb41dddf0a57a7c11d55e3e8 data/minecraft/tags/block/needs_iron_tool.json
+88f579b78844535a69433dd7f4d479c9c91a1eba data/minecraft/tags/block/needs_iron_tool.json

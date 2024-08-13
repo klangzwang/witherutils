@@ -22,6 +22,7 @@ import geni.witherutils.base.common.init.WUTSounds;
 import geni.witherutils.base.common.item.remote.RemoteItem;
 import geni.witherutils.core.common.helper.DownloadingTexture;
 import geni.witherutils.core.common.network.NetworkDataSlot;
+import geni.witherutils.core.common.util.BlockEntityUtil;
 import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -94,7 +95,13 @@ public class SmartTVBlockEntity extends WitherMachineBlockEntity implements Menu
         }
     }
     
-    private void init()
+	@Override
+	public boolean canOpenMenu()
+	{
+		return true;
+	}
+	
+   private void init()
     {
         try { FileUtils.writeStringToFile(new File(cacheDir, "!read-me.txt"), "This is a cache for GIFs that are played on the TV in order to speed up load time.\nIt is safe to delete the entire folder in case you are running out of space, however it will mean that all GIFs will have to be downloaded again.", "UTF-8"); }
         catch(IOException e) { e.printStackTrace(); }
@@ -379,7 +386,7 @@ public class SmartTVBlockEntity extends WitherMachineBlockEntity implements Menu
             {
                 this.currentChannel = 0;
             }
-//            BlockEntityUtil.sendUpdatePacket(this);
+            BlockEntityUtil.sendUpdatePacket(this);
             return true;
         }
         return false;
@@ -395,7 +402,7 @@ public class SmartTVBlockEntity extends WitherMachineBlockEntity implements Menu
 		if (!disabled)
 		{
 			this.powered = powered;
-//			BlockEntityUtil.sendUpdatePacket(this);
+			BlockEntityUtil.sendUpdatePacket(this);
 			setChanged();
 		}
 	}

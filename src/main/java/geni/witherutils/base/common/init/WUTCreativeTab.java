@@ -174,8 +174,8 @@ public class WUTCreativeTab {
 //                    output.accept(new ItemStack(WUTBlocks.TANKDRUM.get()));
  
                     output.accept(new ItemStack(WUTBlocks.SMARTTV.get()));
-//                    output.accept(new ItemStack(WUTBlocks.FLOORSENSOR.get()));
-//                    output.accept(new ItemStack(WUTBlocks.WALLSENSOR.get()));
+                    output.accept(new ItemStack(WUTBlocks.FLOORSENSOR.get()));
+                    output.accept(new ItemStack(WUTBlocks.WALLSENSOR.get()));
                     output.accept(new ItemStack(WUTBlocks.COLLECTOR.get()));
 //                    output.accept(new ItemStack(WUTBlocks.FARMER.get()));
 //                    output.accept(new ItemStack(WUTBlocks.SPAWNER.get()));

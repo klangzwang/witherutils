@@ -3,15 +3,20 @@ package geni.witherutils.base.common.block.cauldron;
 import geni.witherutils.base.common.base.WitherAbstractBlock;
 import geni.witherutils.base.common.init.WUTParticles;
 import geni.witherutils.core.common.block.WitherEntityBlock;
+import geni.witherutils.core.common.util.ParticleUtil;
+import geni.witherutils.core.common.util.ParticleUtil.EParticlePosition;
+import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -28,7 +33,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class CauldronBlock extends WitherAbstractBlock implements WitherEntityBlock {
 
@@ -39,8 +43,6 @@ public class CauldronBlock extends WitherAbstractBlock implements WitherEntityBl
 	{
 		super(props);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.valueOf(false)));
-        this.setHasLiquid();
-        this.setHasTooltip();
 	}
 
     @Override
@@ -56,53 +58,54 @@ public class CauldronBlock extends WitherAbstractBlock implements WitherEntityBl
     }
     
     @Override
-    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr)
+    public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult)
     {
-        BlockEntity te = world.getBlockEntity(pos);
-        ItemStack heldStack = player.getItemInHand(player.getUsedItemHand());
-        
-        if (player.isShiftKeyDown() ||
-        		te instanceof MenuProvider ||
-        		!world.getBlockState(pos.above()).isAir())
-            	return super.useWithoutItem(state, world, pos, player, brtr);
-    	
-        if (te instanceof CauldronBlockEntity)
-        {
-        	CauldronBlockEntity cauldron = (CauldronBlockEntity) te;
-        	cauldron.useItemOn(heldStack, state, world, pos, player, player.getUsedItemHand(), brtr);
+        BlockEntity te = pLevel.getBlockEntity(pPos);
 
-        	if(!cauldron.getInventory().getStackInSlot(0).isEmpty())
-			{
-    			ItemStack outstack = cauldron.getInventory().extractItem(0, 1, false);
-    			ItemHandlerHelper.giveItemToPlayer(player, outstack, player.getInventory().selected);
-            	world.playSound(null, pos, SoundEvents.NETHERITE_BLOCK_PLACE, SoundSource.BLOCKS, 0.8f, 1.0f);
-            	return InteractionResult.SUCCESS;
-			}
-			else
-			{
-				if(heldStack.isEmpty())
-				{
-		            world.playSound(null, pos, SoundEvents.MUD_BRICKS_PLACE, SoundSource.BLOCKS, 0.8f, 1.0f);
-		            return InteractionResult.SUCCESS;
-				}
-				else
-				{
-					if(cauldron.getFluidTank().isEmpty())
-					{
-			            ItemStack stack = heldStack.split(1);
-			            player.setItemInHand(player.getUsedItemHand(), heldStack.isEmpty() ? ItemStack.EMPTY : heldStack);
-			            ItemHandlerHelper.insertItem(cauldron.getInventory(), stack, false);
-			            world.playSound(null, pos, SoundEvents.BONE_BLOCK_PLACE, SoundSource.BLOCKS, 0.8f, 1.0f);
-			            return InteractionResult.SUCCESS;
-					}
-					else
-					{
-						return super.useWithoutItem(state, world, pos, player, brtr);
-					}
-				}
-			}
+        if (pPlayer.isShiftKeyDown() || !pLevel.getBlockState(pPos.above()).isAir())
+        	return super.useItemOn(pStack, pState, pLevel, pPos, pPlayer, pHand, pHitResult);
+        else if (te instanceof CauldronBlockEntity cauldron)
+        {
+            if (!pLevel.isClientSide)
+            {
+            	if(pPlayer.getItemInHand(pHand).getItem() instanceof BucketItem)
+            		return cauldron.onBlockEntityUsed(pState, pLevel, pPos, pPlayer, pHand, pHitResult);
+
+        		if(pPlayer.getItemInHand(pHand).isEmpty())
+        			SoundUtil.playSoundDistrib(pLevel, pPos, SoundEvents.PLAYER_ATTACK_STRONG, 0.75f, 1.0F, false, true);
+        		else
+        		{
+            		if (!cauldron.getInventory().getStackInSlot(0).isEmpty())
+            		{
+                        ItemStack stack = cauldron.getInventory().extractItem(0, 64, false);
+                        ItemEntity entityItem = new ItemEntity(pLevel, pPos.getX() + 0.5, pPos.getY() + 0.6, pPos.getZ() + 0.5, stack);
+                        entityItem.setDeltaMovement(
+                        		-0.5 + pLevel.random.nextFloat(),
+                        		0.25,
+                        		-0.5 + pLevel.random.nextFloat());
+                        entityItem.setPickUpDelay(20);
+                        pLevel.addFreshEntity(entityItem);
+                        SoundUtil.playSoundDistrib(pLevel, pPos, SoundEvents.NETHERITE_BLOCK_PLACE, 0.75f, 1.0F, false, true);
+            		}
+            		else
+            		{
+            			if(cauldron.getFluidHandler(null).getFluidInTank(0).isEmpty())
+            			{
+                            ItemStack excess = cauldron.getInventory().insertItem(0, pPlayer.getItemInHand(pHand), false);
+                            SoundUtil.playSoundDistrib(pLevel, pPos, SoundEvents.BONE_BLOCK_PLACE, 0.75f, 1.0F, false, true);
+                            if (!pPlayer.isCreative())
+                            {
+                            	pPlayer.setItemInHand(pHand, excess);
+                            }
+            			}
+            		}
+        		}
+
+        		ParticleUtil.playParticleStarEffect(pLevel, pPlayer, ParticleTypes.SMOKE, 0.5D, EParticlePosition.HITRESULT);
+                return ItemInteractionResult.SUCCESS;
+            }
         }
-		return InteractionResult.SUCCESS;
+        return super.useItemOn(pStack, pState, pLevel, pPos, pPlayer, pHand, pHitResult);
     }
 
     @Override

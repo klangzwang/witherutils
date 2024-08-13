@@ -150,6 +150,6 @@ public class SolarPanelRenderer extends AbstractBlockEntityRenderer<SolarPanelBl
 
 	private void addVertexWithUV(VertexConsumer buffer, PoseStack matrixStack, float x, float y, float z, float u, float v, float red, float green, float blue, float alpha, int combinedLight)
 	{
-		buffer.addVertex(matrixStack.last().pose(), x / 2f, y, z / 2f).setColor(red, green, blue, alpha).setUv(u, v).setColor(combinedLight).setNormal(1, 0, 0);
+		buffer.addVertex(matrixStack.last().pose(), x / 2f, y, z / 2f).setColor(red, green, blue, alpha).setUv(u, v).setUv2(combinedLight, 240).setNormal(1, 0, 0);
 	}
 }

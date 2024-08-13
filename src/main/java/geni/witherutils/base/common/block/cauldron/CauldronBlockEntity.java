@@ -5,37 +5,232 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import geni.witherutils.base.common.base.WitherMachineBlockEntity;
-import geni.witherutils.base.common.block.anvil.AnvilRecipe.RecipeIn;
+import geni.witherutils.base.common.block.cauldron.CauldronRecipe.RecipeIn;
 import geni.witherutils.base.common.init.WUTBlockEntityTypes;
-import geni.witherutils.base.common.init.WUTComponents;
 import geni.witherutils.base.common.init.WUTRecipes;
-import geni.witherutils.base.common.io.fluid.FluidTankUser;
-import geni.witherutils.base.common.io.fluid.MachineFluidHandler;
-import geni.witherutils.base.common.io.fluid.MachineFluidTank;
-import geni.witherutils.base.common.io.fluid.MachineTankLayout;
-import geni.witherutils.base.common.io.fluid.TankAccess;
+import geni.witherutils.base.common.io.fluid.FluidUtils;
+import geni.witherutils.base.common.io.fluid.WitherFluidTank;
 import geni.witherutils.base.common.io.item.MachineInventory;
 import geni.witherutils.base.common.io.item.MachineInventoryLayout;
 import geni.witherutils.base.common.io.item.SingleSlotAccess;
 import geni.witherutils.core.common.network.NetworkDataSlot;
 import geni.witherutils.core.common.util.SoundUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
-public class CauldronBlockEntity extends WitherMachineBlockEntity implements FluidTankUser {
+public class CauldronBlockEntity extends WitherMachineBlockEntity {
+    
+    @Nullable
+    private RecipeHolder<CauldronRecipe> currentRecipe;
 	
+    private int timer;
+    @SuppressWarnings("unused")
+	private int experience;
+    
+    public static final SingleSlotAccess INPUT = new SingleSlotAccess();
+	private final WitherFluidTank TANK = new WitherFluidTank(FluidType.BUCKET_VOLUME);
+
+	public CauldronBlockEntity(BlockPos pos, BlockState state)
+	{
+		super(WUTBlockEntityTypes.CAULDRON.get(), pos, state);
+		addDataSlot(NetworkDataSlot.INT.create(() -> getTimer(), p -> timer = p));
+        addDataSlot(NetworkDataSlot.ITEM_STACK.create(() -> getInventory().getStackInSlot(0), f -> getInventory().setStackInSlot(0, f)));
+        addDataSlot(NetworkDataSlot.FLUID_STACK.create(() -> getFluidHandler(null).getFluidInTank(0), f -> TANK.setFluid(f)));
+	}
+	
+    @Override
+    public MachineInventoryLayout getInventoryLayout()
+    {
+        return MachineInventoryLayout.builder().inputSlot().slotAccess(INPUT).setStackLimit(1).build();
+    }
+	
+	@Override
+	protected MachineInventory createMachineInventory(MachineInventoryLayout layout)
+	{
+		return new MachineInventory(layout)
+		{
+            protected void onContentsChanged(int slot)
+            {
+                super.onContentsChanged(slot);
+//                if (level == null)
+//                    return;
+//                if (slot == 0)
+//                {
+//                	findMatchingRecipe();
+//                }
+//                setChanged();
+            }
+
+	        @Override
+	        public int getSlotLimit(int slot)
+	        {
+	            return 1;
+	        }
+		};
+	}
+	
+	@Override
+	public boolean hasFluidCapability()
+	{
+		return true;
+	}
+	
+	@Override
+	public IFluidHandler getFluidHandler(@Nullable Direction dir)
+	{
+		return TANK;
+	}
+	
+	@Override
+	public void serverTick()
+	{
+		super.serverTick();
+
+        this.findMatchingRecipe();
+
+        if(currentRecipe == null || !getFluidHandler(null).getFluidInTank(0).isEmpty())
+        {
+        	this.currentRecipe = null;
+            this.timer = 0;
+            return;
+        }
+
+        if (currentRecipe == null || !currentRecipe.value().matches(new RecipeIn(INPUT.getItemStack(getInventory())), null))
+        {
+            this.findMatchingRecipe();
+            
+            if (currentRecipe == null)
+            {
+            	this.currentRecipe = null;
+                this.timer = 0;
+                return;
+            }
+        }
+		
+        if (timer > 0)
+        {
+            timer--;
+            return;
+        }
+        else
+        {
+            this.tryProcessRecipe();
+        }
+//        System.out.println("SERVER: " + getFluidHandler(null).getFluidInTank(0));
+//        System.out.println("SERVER: " + getInventory().getStackInSlot(0));
+	}
+	
+	@Override
+	public void clientTick()
+	{
+		super.clientTick();
+        setLitProperty(timer > 0);
+        
+//        System.out.println("CLIENT: " + getFluidHandler(null).getFluidInTank(0));
+//        System.out.println("CLIENT: " + getInventory().getStackInSlot(0));
+	}
+
+    @Override
+    public ItemInteractionResult onBlockEntityUsed(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+    {
+//    	if(player.isCrouching())
+//    	{
+//    		if(getFluidHandler(null).getFluidInTank(0).isEmpty())
+//    			TANK.setFluid(new FluidStack(WUTFluids.BLUELIMBO.get(), 1000));
+//    		else
+//    			TANK.setFluid(FluidStack.EMPTY);
+//    	}
+    	
+//    	if(player.isCrouching())
+//    	{
+//    		if(getInventory().getStackInSlot(0).isEmpty())
+//    			getInventory().setStackInSlot(0, new ItemStack(Items.OAK_LOG));
+//    		else
+//    			getInventory().setStackInSlot(0, ItemStack.EMPTY);
+//    	}
+    	
+        ItemStack stack = player.getItemInHand(hand);
+        if (!stack.isEmpty())
+        {
+            if (player instanceof ServerPlayer)
+            {
+                if (FluidUtils.tryFluidInsertion(this, null, player, hand))
+                {
+                    level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
+                    return ItemInteractionResult.sidedSuccess(false);
+                }
+                else if (FluidUtils.tryFluidExtraction(this, null, player, hand))
+                {
+                    level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
+                    return ItemInteractionResult.sidedSuccess(false);
+                }
+            }
+//            player.getInventory().setChanged();
+//            return ItemInteractionResult.sidedSuccess(level.isClientSide());
+        }
+        return super.onBlockEntityUsed(state, level, pos, player, hand, hit);
+    }
+    
+    public int getTimer()
+    {
+        return timer;
+    }
+	
+    private void findMatchingRecipe()
+    {
+        if(currentRecipe != null && currentRecipe.value().matches(new RecipeIn(INPUT.getItemStack(getInventory())), null))
+            return;
+        
+        currentRecipe = null;
+        
+		List<RecipeHolder<CauldronRecipe>> recipes = level.getRecipeManager().getAllRecipesFor(WUTRecipes.CAULDRON.type().get());
+		for(RecipeHolder<CauldronRecipe> rec : recipes)
+		{
+            if(rec.value().matches(new RecipeIn(INPUT.getItemStack(getInventory())), null))
+            {
+            	currentRecipe = rec;
+                timer = rec.value().timer();
+                experience = rec.value().experience();
+            	SoundUtil.playServerSound(level, worldPosition, SoundEvents.BLASTFURNACE_FIRE_CRACKLE, 1.0f, 1.0f);
+            	break;
+            }
+		}
+    }
+    
+	private void tryProcessRecipe()
+	{
+		getInventory().setStackInSlot(0, ItemStack.EMPTY);
+		TANK.setFluid(new FluidStack(currentRecipe.value().output().getFluid(), 1000));
+		SoundUtil.playServerSound(level, worldPosition, SoundEvents.WITHER_AMBIENT, 0.75f, 1.0f);
+	}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+/*
     @Nullable
     private RecipeHolder<CauldronRecipe> currentRecipe;
 	
@@ -43,7 +238,7 @@ public class CauldronBlockEntity extends WitherMachineBlockEntity implements Flu
 	
     private final MachineFluidHandler fluidHandler;
     private static final TankAccess TANK = new TankAccess();
-    private static final int CAPACITY = 3 * FluidType.BUCKET_VOLUME;
+    private static final int CAPACITY = FluidType.BUCKET_VOLUME;
     private Fluid type = Fluids.EMPTY;
     private int experience;
     private int timer;
@@ -52,6 +247,8 @@ public class CauldronBlockEntity extends WitherMachineBlockEntity implements Flu
 	{
 		super(WUTBlockEntityTypes.CAULDRON.get(), pos, state);
         addDataSlot(NetworkDataSlot.INT.create(() -> getTimer(), p -> timer = p));
+        addDataSlot(NetworkDataSlot.ITEM_STACK.create(() -> getInventory().getStackInSlot(0), f -> getInventory().setStackInSlot(0, f)));
+        addDataSlot(NetworkDataSlot.FLUID_STACK.create(() -> TANK.getFluid(this), f -> TANK.setFluid(this, f)));
 		
 		fluidHandler = createMachineFluidHandler();
 	}
@@ -92,70 +289,85 @@ public class CauldronBlockEntity extends WitherMachineBlockEntity implements Flu
 	{
         super.serverTick();
 
-        if (currentRecipe == null)
-        	return;
-        else
-        {
-            System.out.println("SERVER: Recipe is " + currentRecipe);
-            System.out.println("SERVER: Timer is " + timer);
-            System.out.println("SERVER: Experience is " + experience);
-        	
-    		if (timer > 0)
-    		{
-    			timer--;
-    			return;
-    		}
-    		else
-    			fillRecipeOutput(currentRecipe.value().output());
-        }
+        System.out.println("SERVER: type is " + type);
+        
+//        if (currentRecipe != null)
+//        {
+//            getFluidTank().setFluid(new FluidStack(type, 1000));
+//            System.out.println("SERVER: Amount is " + getFluidTank().getFluidAmount());
+//        }
+
+        
+        
+        
+//        if (currentRecipe == null)
+//        	return;
+//        else
+//        {
+//    		if (timer > 0)
+//    		{
+//    			timer = 0;
+////    			timer--;
+//    			return;
+//    		}
+//    		else
+//    		{
+//    			getFluidTank().setFluid(new FluidStack(Fluids.WATER, 1000));
+//    			TANK.setFluid(this, new FluidStack(Fluids.WATER, 1000));
+//
+//    			System.out.println("SERVER: Amount is " + getFluidTank().getFluidAmount());
+//    			System.out.println("SERVER: Amount is " + TANK.getFluid(this).getAmount());
+////    			System.out.println("SERVER: RecipeFluid is " + currentRecipe.value().output());
+//
+////    			if(TANK.getFluid(this).getAmount() == 0)
+////    			{
+////    		        getFluidTank().setFluid(currentRecipe.value().output());
+////    				SoundUtil.playServerSound(level, worldPosition, SoundEvents.WITHER_AMBIENT, 0.75f, 1.0f);
+////    				setChanged();
+////    			}
+//    		}
+//        }
 	}
     
 	@Override
 	public void clientTick()
 	{
 		super.clientTick();
+		
+//        System.out.println("CLIENT: Item is " + getInventory().getStackInSlot(0));
+		
         setLitProperty(timer > 0);
 	}
 	
-//	@Override
-//	public ItemInteractionResult useItemOn(ItemStack pStack, BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHitResult)
-//	{
-//		if(!level.isClientSide)
-//		{
-//			ItemStack heldStack = pPlayer.getItemInHand(pHand);
-//			if (heldStack.getItem() instanceof BucketItem || heldStack.getItem() == Items.BUCKET)
-//			{
-//				if(experience >= 0)
-//				{
-//		            if(level instanceof ServerLevel serverlevel)
-//		            {
-//		            	ExperienceOrb.award(serverlevel, worldPosition.getCenter(), experience);
-//		            	experience = 0;
-//		            }
-//		            return ItemInteractionResult.CONSUME;
-//				}
-//			}
-//		}
-//        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-//	}
-//	
-//    @Override
-//    public ItemInteractionResult onBlockEntityUsed(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
-//    {
-//        ItemStack stack = player.getItemInHand(hand);
-//        if (!stack.isEmpty() && handleFluidItemInteraction(player, hand, stack, this, TANK)) {
-//            player.getInventory().setChanged();
-//            return ItemInteractionResult.sidedSuccess(level.isClientSide());
-//        }
-//        return super.onBlockEntityUsed(state, level, pos, player, hand, hit);
-//    }
-
+    @Override
+    public ItemInteractionResult onBlockEntityUsed(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+    {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!stack.isEmpty() && handleFluidItemInteraction(player, hand, stack, this, TANK))
+        {
+			if(experience >= 0)
+			{
+	            if(level instanceof ServerLevel serverlevel)
+	            {
+	            	ExperienceOrb.award(serverlevel, worldPosition.getCenter(), experience);
+	            	experience = 0;
+    				getInventory().extractItem(0, 64, false);
+    				setChanged();
+	            }
+			}
+            player.getInventory().setChanged();
+            return ItemInteractionResult.sidedSuccess(level.isClientSide());
+        }
+        return super.onBlockEntityUsed(state, level, pos, player, hand, hit);
+    }
+	
     private void findMatchingRecipe()
     {
     	ItemStack stackIn = INPUT.getItemStack(getInventory());
     	if(stackIn.isEmpty())
     	{
     		currentRecipe = null;
+    		type = null;
     		experience = 0;
     		timer = 0;
     	}
@@ -175,8 +387,8 @@ public class CauldronBlockEntity extends WitherMachineBlockEntity implements Flu
                             {
                         		experience = rec.value().experience();
                         		timer = rec.value().timer();
+                        		type = rec.value().output().getFluid();
                             }
-                            SoundUtil.playServerSound(level, worldPosition, SoundEvents.BLASTFURNACE_FIRE_CRACKLE, 1.0f, 1.0f);
                             currentRecipe = rec;
                             break;
                         }
@@ -184,22 +396,18 @@ public class CauldronBlockEntity extends WitherMachineBlockEntity implements Flu
     			}
     		}
     	}
+        System.out.println("SERVER: Recipe is " + currentRecipe);
+        System.out.println("SERVER: Timer is " + timer);
+        System.out.println("SERVER: Experience is " + experience);
+        System.out.println("SERVER: Fluid is " + type);
     }
 
-    public void fillRecipeOutput(FluidStack fluidStack)
+    @Override
+    public boolean hasFluidCapability()
     {
-		int test = TANK.fill(fluidHandler, fluidStack, FluidAction.SIMULATE);
-		if (test == fluidStack.getAmount())
-		{
-			getInventory().getStackInSlot(0).shrink(1);
-			TANK.fill(fluidHandler, fluidStack, FluidAction.EXECUTE);
-			SoundUtil.playServerSound(level, worldPosition, SoundEvents.WITHER_AMBIENT, 0.75f, 1.0f);
-			currentRecipe = null;
-			experience = 0;
-			timer = 0;
-		}
+    	return true;
     }
-
+    
     @Override
     public @Nullable MachineTankLayout getTankLayout()
     {
@@ -284,4 +492,5 @@ public class CauldronBlockEntity extends WitherMachineBlockEntity implements Flu
     {
         return timer;
     }
+    */
 }

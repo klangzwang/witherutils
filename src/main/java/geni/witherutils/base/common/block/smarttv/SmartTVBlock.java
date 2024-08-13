@@ -27,7 +27,6 @@ public class SmartTVBlock extends WitherAbstractBlock implements EntityBlock
 	{
 		super(props);
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(MOUNTED, false).setValue(LIT, false));
-        this.setHasTooltip();
 	}
 	
 	@Override

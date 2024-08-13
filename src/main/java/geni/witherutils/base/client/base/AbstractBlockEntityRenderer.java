@@ -11,8 +11,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 
 import geni.witherutils.api.WitherUtilsRegistry;
-import geni.witherutils.base.client.model.special.SpecialModels;
-import geni.witherutils.base.common.io.fluid.MachineFluidHandler;
 import geni.witherutils.core.common.blockentity.WitherBlockEntity;
 import geni.witherutils.core.common.math.Vector3;
 import geni.witherutils.core.common.util.FacingUtil;
@@ -27,7 +25,6 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
@@ -42,6 +39,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.client.ClientHooks;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public abstract class AbstractBlockEntityRenderer<T extends WitherBlockEntity> implements BlockEntityRenderer<T> {
 	
@@ -342,16 +340,15 @@ public abstract class AbstractBlockEntityRenderer<T extends WitherBlockEntity> i
      * FLUIDTANK
      * 
      */
-	@SuppressWarnings("deprecation")
-	public void renderFluidTank(MachineFluidHandler fluidHandler, BlockEntity te, PoseStack matrixStack, MultiBufferSource renderer, int combinedLight, float alpha, float minX, float minY, float maxX, float minZ, float maxZ, float maxY)
+	public void renderFluidTank(IFluidHandler fluidHandler, BlockEntity te, PoseStack matrixStack, MultiBufferSource renderer, int combinedLight, float alpha, float minX, float minY, float maxX, float minZ, float maxZ, float maxY)
 	{
-		if(!fluidHandler.getTank(0).getFluid().isEmpty())
+		if(!fluidHandler.getFluidInTank(0).isEmpty())
 		{
-			float fluidLevel = fluidHandler.getTank(0).getFluidAmount();
+			float fluidLevel = fluidHandler.getFluidInTank(0).getAmount();
 			if(fluidLevel > 0)
 			{
-				float height = (0.96875F / fluidHandler.getTank(0).getCapacity()) * fluidHandler.getTank(0).getFluidAmount();
-				render(te, matrixStack, renderer, combinedLight, fluidHandler.getTank(0).getFluid(), alpha, minX, minY, minZ, maxX, maxY, maxZ, height);
+				float height = (0.96875F / fluidHandler.getTankCapacity(0)) * fluidHandler.getFluidInTank(0).getAmount();
+				render(te, matrixStack, renderer, combinedLight, fluidHandler.getFluidInTank(0), alpha, minX, minY, minZ, maxX, maxY, maxZ, height);
 			}
 		}
 	}
@@ -409,31 +406,6 @@ public abstract class AbstractBlockEntityRenderer<T extends WitherBlockEntity> i
 		addVertexWithUV(buffer, matrixStack, maxX, minY, maxZ, uMin, vMin, red, green, blue, alpha, combinedLight);
 		addVertexWithUV(buffer, matrixStack, minX, minY, maxZ, uMin, vMax, red, green, blue, alpha, combinedLight);
 		addVertexWithUV(buffer, matrixStack, minX, minY, minZ, uMax, vMax, red, green, blue, alpha, combinedLight);
-	}
-	
-	/*
-	 * 
-	 * SOUL FIRE
-	 * 
-	 */
-    @SuppressWarnings("unused")
-	public void renderSoulFire(float partialTicks, PoseStack matrix, MultiBufferSource buffer, Minecraft mc, ClientLevel level, LocalPlayer player, int light, int overlay, float modulation, float scaleX, float scaleY, float scaleZ, float x, float y, float z)
-    {
-        matrix.pushPose();
-
-		float time = level.getLevelData().getGameTime() + partialTicks;
-		
-		float translateFire = (float) Math.sin(time * modulation / 8.0F) / 10.0F;
-		float scaleFire = (float) Math.sin(time * modulation / 8.0F) / 10.0F;
-		
-        matrix.translate(0.5, 0.5, 0.5);
-        matrix.scale(scaleX, scaleY + scaleFire, scaleZ);
-        matrix.translate(x, y, z);
-        matrix.translate(-0.5, -0.5, -0.5);
-
-        VertexConsumer vertexBuilder = buffer.getBuffer(RenderType.cutout());
-        Minecraft.getInstance().getItemRenderer().renderModelLists(SpecialModels.SOUL_FIRE.getModel(), ItemStack.EMPTY, light, OverlayTexture.NO_OVERLAY, matrix, vertexBuilder);
-        matrix.popPose();
 	}
 
 	/*

@@ -59,6 +59,12 @@ public class WaterGeneratorBlockEntity extends WitherMachineEnergyGenBlockEntity
 		super(EnergyIOMode.OUTPUT, CAPACITY, USAGE, WUTBlockEntityTypes.WATER_GENERATOR.get(), worldPosition, blockState);
 	}
     
+	@Override
+	public boolean canOpenMenu()
+	{
+		return true;
+	}
+	
     @Override
     protected WitherEnergyStorage createEnergyStorage(EnergyIOMode energyIOMode, Supplier<Integer> capacity, Supplier<Integer> usageRate)
     {

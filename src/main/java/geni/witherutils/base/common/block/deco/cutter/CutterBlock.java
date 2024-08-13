@@ -29,7 +29,6 @@ public class CutterBlock extends WitherAbstractBlock implements ICutableBlock {
 	public CutterBlock(BlockBehaviour.Properties props, Block inputBlock, boolean isGlass, boolean isGlowing, Enum<CutterBlockType> type, int itemDamage)
 	{
 		super(props);
-        this.setHasTooltip();
 		this.inputBlock = inputBlock;
 	    this.isGlass = isGlass;
 	    this.isGlowing = isGlowing;

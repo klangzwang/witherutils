@@ -1,4 +1,4 @@
-// 1.21	2024-08-12T23:08:08.7726636	Item Models: witherutils
+// 1.21	2024-08-13T16:15:31.076647	Item Models: witherutils
 176c94abc001b48d0b2b1cd1eddcf89016b6c05a assets/witherutils/models/item/adcase.json
 63ca6e2c8553e6a17d047cba5faf709dc85a4939 assets/witherutils/models/item/anchor.json
 0f3cc027098b326700973122b8e12351fc6671f3 assets/witherutils/models/item/angel.json
@@ -55,6 +55,7 @@ e5f30b01b2ee5b8a83669d219f6e27e800cf4041 assets/witherutils/models/item/fan3.jso
 e88d0fb243109f35eceae4d4eb75fe79cb90c8d9 assets/witherutils/models/item/feather.json
 a945187219381c93def4be3a037691b35cde0656 assets/witherutils/models/item/fertilizer_bucket.json
 19538ea021b662e24f6888a2ae29404984110a02 assets/witherutils/models/item/flippers_upgrade.json
+840e8afde17bd895cd55a083f23b2dd04982d5d2 assets/witherutils/models/item/floorsensor.json
 19538ea021b662e24f6888a2ae29404984110a02 assets/witherutils/models/item/gilded_upgrade.json
 323e3971319c0f376a7613e85c4414f35854efc2 assets/witherutils/models/item/glassa.json
 b4faf6a0b33e6ebce95050acb45d820a4aeb5dfb assets/witherutils/models/item/glassb.json
@@ -83,6 +84,7 @@ c39ac23963d5ff04929dd29e90e0dbb9cb530213 assets/witherutils/models/item/iron_gea
 b4ff053cd96154061a3555ef122611a338e279dc assets/witherutils/models/item/lava_generator.json
 d6b4282d2a62714f9877c7d12d402ae7401b1349 assets/witherutils/models/item/light.json
 d80a204e3e85eecc74021bc4620eac45621bff5d assets/witherutils/models/item/lilly.json
+5f7224b26d43d751dd6a47d5b0b9aff90b024419 assets/witherutils/models/item/lines.json
 19538ea021b662e24f6888a2ae29404984110a02 assets/witherutils/models/item/magnet_upgrade.json
 dc9bfe3f3d26d63824fecab61131aaa4bf602f23 assets/witherutils/models/item/metal0.json
 d31e86d84e5ed9dd68d1197c37c38d77381003fb assets/witherutils/models/item/metala.json
@@ -123,6 +125,7 @@ aedcf4f2ddaff8d1a76c4917ec54908330821c5b assets/witherutils/models/item/soulbank
 bc810e08165d11a755aaaadec0064ded19216437 assets/witherutils/models/item/soulbank_basic.json
 f80193e6404f3e2049844de8c663a45b005c4f18 assets/witherutils/models/item/soulbank_case.json
 2074fcef582907e205b7f6a4a76bcdf1ffd8b366 assets/witherutils/models/item/soulbank_ultra.json
+bc091f0315f5dc40d375ae14a9d55b123eb3c8fb assets/witherutils/models/item/soulfire.json
 84c974b0825d0943dae9cc0d819620c0e3f7d50e assets/witherutils/models/item/soulful_bucket.json
 37ad0942557d8e9aa5d00639a6cf1ef35dfc936d assets/witherutils/models/item/soulished_block.json
 074c1c669e21faa928f4fb2b2e22066c5a7768c6 assets/witherutils/models/item/soulished_ingot.json
@@ -147,6 +150,7 @@ da6da141e424520915a4076dd093785d82cb85fb assets/witherutils/models/item/sword_po
 8d98362703c4ee3e41c2e89144b66eba1f6b705a assets/witherutils/models/item/upgrade_squid.json
 2763f393357dca232f61aa131e042ff746da6843 assets/witherutils/models/item/upgrade_vision.json
 19538ea021b662e24f6888a2ae29404984110a02 assets/witherutils/models/item/volume_upgrade.json
+5c59ed4deb72b2fd555ebd2e6d833a47e79c4dba assets/witherutils/models/item/wallsensor.json
 94b4f2184cee89e29b51d655c55b05c4931af1a5 assets/witherutils/models/item/water_generator.json
 cffef7c8afc9b8c7ddad1b8aa5e509e9e76a0085 assets/witherutils/models/item/wind_generator.json
 47ee2e440e812a7ba6643265b7dbed3d52185173 assets/witherutils/models/item/withersteel_block.json

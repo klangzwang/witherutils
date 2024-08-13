@@ -62,9 +62,9 @@ public class WitherUtilsItemModels extends ItemModelProvider {
 //        withExistingParent(WUTBlocks.STAB.getId().getPath(), modLoc("block/stab_on"));
         withExistingParent(WUTBlocks.ANGEL.getId().getPath(), modLoc("block/angel"));
         withExistingParent(WUTBlocks.SMARTTV.getId().getPath(), modLoc("block/smarttv/smarttv_unmounted"));
-//        withExistingParent(WUTBlocks.FLOORSENSOR.getId().getPath(), modLoc("block/sensor/floor/floorsensor"));
-//        withExistingParent(WUTBlocks.WALLSENSOR.getId().getPath(), modLoc("block/sensor/wall/wallsensor"));
-//        withExistingParent(WUTBlocks.LINES.getId().getPath(), modLoc("block/lines"));
+        withExistingParent(WUTBlocks.FLOORSENSOR.getId().getPath(), modLoc("block/sensor/floor/floorsensor"));
+        withExistingParent(WUTBlocks.WALLSENSOR.getId().getPath(), modLoc("block/sensor/wall/wallsensor"));
+        withExistingParent(WUTBlocks.LINES.getId().getPath(), modLoc("block/lines"));
         withExistingParent(WUTBlocks.XPDRAIN.getId().getPath(), modLoc("block/xpdrain/xpdrain_on"));
         withExistingParent(WUTBlocks.BRICKSDARK.getId().getPath(), modLoc("block/bricks_dark"));
         withExistingParent(WUTBlocks.BRICKSLAVA.getId().getPath(), modLoc("block/bricks_lava_on"));
@@ -212,6 +212,8 @@ public class WitherUtilsItemModels extends ItemModelProvider {
             withExistingParent(WUTItems.IRON_GEAR.getId().getPath(), modLoc("item/witherentity"));
 
         singleTexture(WUTItems.FEATHER.getId().getPath(), mcLoc("item/generated"), "layer0", modLoc("item/blackfeather"));
+        
+        withExistingParent(WUTBlocks.SOULFIRE.getId().getPath(), modLoc("item/empty"));
         
         // Card Item
         ItemModelBuilder card = withExistingParent(WUTItems.CARD.getId().getPath(), mcLoc("item/generated"))

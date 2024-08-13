@@ -2,17 +2,17 @@ package geni.witherutils.base.common.block.generator.solar;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import geni.witherutils.api.io.energy.EnergyIOMode;
-import geni.witherutils.base.common.base.WitherMachineEnergyGenBlockEntity;
+import geni.witherutils.base.common.base.WitherMachineBlockEntity;
 import geni.witherutils.base.common.config.common.SolarConfig;
 import geni.witherutils.base.common.init.WUTBlockEntityTypes;
+import geni.witherutils.base.common.io.energy.IWitherEnergyStorage;
 import geni.witherutils.base.common.io.energy.WitherEnergyStorage;
-import geni.witherutils.core.common.network.NetworkDataSlot;
+import geni.witherutils.core.common.util.BlockEntityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
@@ -30,7 +30,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 
-public class SolarPanelBlockEntity extends WitherMachineEnergyGenBlockEntity {
+public class SolarPanelBlockEntity extends WitherMachineBlockEntity {
 
     public static class Basic extends SolarPanelBlockEntity
     {
@@ -54,42 +54,38 @@ public class SolarPanelBlockEntity extends WitherMachineEnergyGenBlockEntity {
         }
     }
     
+    private final WitherEnergyStorage energy = new WitherEnergyStorage(EnergyIOMode.OUTPUT, () -> 1, () -> 2000)
+    {
+    	@Override
+    	public int getEnergyStored()
+    	{
+    		return network.getEnergyAvailablePerTick();
+    	}
+    	@Override
+    	public int getMaxEnergyStored()
+    	{
+    		return network.getEnergyMaxPerTick();
+    	}
+    };
+    
     public ISolarPanelNetwork network = NoSolarPanelNetwork.INSTANCE;
-    private int generationRate;
-	@SuppressWarnings("unused")
-	private int idleCounter = 0;
 	private int count = 1;
 	
-    public SolarPanelBlockEntity(BlockEntityType<?> pType, BlockPos worldPosition, BlockState blockState)
+	public SolarPanelBlockEntity(BlockEntityType<?> pType, BlockPos worldPosition, BlockState blockState)
+	{
+		super(pType, worldPosition, blockState);
+	}
+	
+    @Override
+    public IWitherEnergyStorage getEnergyHandler(@Nullable Direction dir)
     {
-        super(EnergyIOMode.OUTPUT, () -> 0, () -> 0, pType, worldPosition, blockState);
-		addDataSlot(NetworkDataSlot.INT.create(this::getGenerationRate, p -> generationRate = p));
+        return dir != Direction.DOWN ? null : energy;
     }
     
     @Override
-    protected WitherEnergyStorage createEnergyStorage(EnergyIOMode energyIOMode, Supplier<Integer> capacity, Supplier<Integer> usageRate)
+    public boolean hasEnergyCapability()
     {
-        return new WitherEnergyStorage(EnergyIOMode.OUTPUT, () -> 1, () -> 2000)
-        {
-        	@Override
-        	public int getEnergyStored()
-        	{
-        		return network.getEnergyAvailablePerTick();
-        	}
-        	@Override
-        	public int getMaxEnergyStored()
-        	{
-        		return network.getEnergyMaxPerTick();
-        	}
-        	@Override
-        	public @Nullable IEnergyStorage getForSide(@Nullable Direction side)
-        	{
-        		if(side != Direction.DOWN)
-        			return getEnergyHandler(side);
-        		else
-        			return null;
-        	}
-        };
+        return true;
     }
     
     @Override
@@ -110,38 +106,17 @@ public class SolarPanelBlockEntity extends WitherMachineEnergyGenBlockEntity {
 	    	{
 	    		network.extractEnergy(receptor.receiveEnergy(canTransmit, false));
 	    	}
-	    	else
-	    	{
-	    		idleCounter = level.random.nextInt(32);
-	    	}
-	    }
-	    else
-	    {
-	    	idleCounter = level.random.nextInt(256);
 	    }
 	}
     
-	@Override
 	public boolean isGenerating()
 	{
-		return generationRate > 0;
+		return calculateLightRatio(level) > 0;
 	}
 
-	@Override
 	public int getGenerationRate()
 	{
 		return getEnergyPerTick();
-	}
-
-	@Override
-	public boolean hasEfficiencyRate()
-	{
-		return false;
-	}
-	@Override
-	public float getEfficiencyRate()
-	{
-        return 0;
 	}
 	
 	/*
@@ -213,12 +188,12 @@ public class SolarPanelBlockEntity extends WitherMachineEnergyGenBlockEntity {
     @Override
     public void onLoad()
     {
-//        BlockEntityUtil.sendUpdatePacket(this);
+        BlockEntityUtil.sendUpdatePacket(this);
     }
     public void setCount(int count)
     {
         this.count = count;
-//        BlockEntityUtil.sendUpdatePacket(this);
+        BlockEntityUtil.sendUpdatePacket(this);
     }
     public int getCount()
     {

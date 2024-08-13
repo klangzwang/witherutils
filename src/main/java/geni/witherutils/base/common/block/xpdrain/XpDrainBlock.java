@@ -32,7 +32,6 @@ public class XpDrainBlock extends WitherAbstractBlock implements WitherEntityBlo
 	{
 		super(props);
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.valueOf(false)));
-		this.setHasTooltip();
 	}
 
 	@Override

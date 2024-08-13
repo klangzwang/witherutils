@@ -3,11 +3,13 @@ package geni.witherutils.base.data.generator;
 import java.util.Map;
 import java.util.function.Function;
 
+import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.api.lib.Names;
 import geni.witherutils.base.common.block.deco.cutter.CutterBlock;
 import geni.witherutils.base.common.block.deco.cutter.CutterBlock.CutterBlockType;
 import geni.witherutils.base.common.block.deco.fan.FanBlock;
 import geni.witherutils.base.common.block.nature.RottenEarth;
+import geni.witherutils.base.common.block.sensor.floor.FloorSensorBlock;
 import geni.witherutils.base.common.block.smarttv.SmartTVBlock;
 import geni.witherutils.base.common.init.WUTBlocks;
 import net.minecraft.core.Direction;
@@ -49,7 +51,7 @@ public class WitherUtilsBlockStates extends BlockStateProvider {
     	registerBlock(WUTBlocks.SOULISHED_BLOCK.get());
 
         simpleBlock(WUTBlocks.ANGEL.get(), existingBlock(WUTBlocks.ANGEL));
-//        simpleBlock(WUTBlocks.LINES.get(), existingBlock(WUTBlocks.LINES));
+        simpleBlock(WUTBlocks.LINES.get(), existingBlock(WUTBlocks.LINES));
         simpleBlock(WUTBlocks.BRICKSDARK.get(), existingBlock(WUTBlocks.BRICKSDARK));
         
         plantBlockWithSubDirectory(WUTBlocks.LILLY);
@@ -61,7 +63,7 @@ public class WitherUtilsBlockStates extends BlockStateProvider {
         registerGenerators();
 //        registerBattery();
         registerSmartTV();
-//        registerSensors();
+        registerSensors();
         registerXp();
         registerDeco();
 //        registerSpawner();
@@ -74,8 +76,9 @@ public class WitherUtilsBlockStates extends BlockStateProvider {
         registerRotten();
         registerFakeDriver();
         registerFans();
+        registerSoulFire();
     }
-    
+
     private void registerBlock(Block block)
     {
 		String name = name(block);
@@ -94,6 +97,32 @@ public class WitherUtilsBlockStates extends BlockStateProvider {
             		.texture("all", modLoc("block/ctm/" + name +
             		(cutterBlock.getType() == CutterBlockType.CONNECTED ? "/particle" : "/" + name))));
         }
+    }
+    
+    private void registerSensors()
+    {
+        getVariantBuilder(WUTBlocks.FLOORSENSOR.get()).forAllStates(state -> {
+            
+            Direction dir = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+            boolean lit = state.getValue(BlockStateProperties.LIT);
+            boolean covered = state.getValue(FloorSensorBlock.COVERED);
+            
+            return ConfiguredModel.builder()
+                    .modelFile(lit || covered ? models().getExistingFile(modLoc("block/sensor/floor/floorsensor")) : models().getExistingFile(modLoc("block/sensor/floor/floorsensor")))
+                    .rotationY(dir.getAxis().isVertical() ? 0 : (((int) dir.toYRot()) + 180) % 360)
+                    .build();
+        });
+        
+        getVariantBuilder(WUTBlocks.WALLSENSOR.get()).forAllStates(state -> {
+            
+            Direction dir = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+            boolean lit = state.getValue(BlockStateProperties.LIT);
+            
+            return ConfiguredModel.builder()
+                    .modelFile(lit ? models().getExistingFile(modLoc("block/sensor/wall/wallsensor_on")) : models().getExistingFile(modLoc("block/sensor/wall/wallsensor")))
+                    .rotationY(dir.getAxis().isVertical() ? 0 : (((int) dir.toYRot()) + 180) % 360)
+                    .build();
+        });
     }
     
     private void registerFluids()
@@ -295,6 +324,17 @@ public class WitherUtilsBlockStates extends BlockStateProvider {
                     .rotationY(dir.getAxis().isVertical() ? 0 : (((int) dir.toYRot()) + 180) % 360)
                     .build();
         });
+    }
+
+    private void registerSoulFire()
+    {
+    	getVariantBuilder(WUTBlocks.SOULFIRE.get()).forAllStates(state -> {
+    		
+    		Integer age = state.getValue(BlockStateProperties.AGE_15);
+            return ConfiguredModel.builder()
+            		.modelFile(models().getExistingFile(WitherUtilsRegistry.loc("block/soulfire/" + WUTBlocks.SOULFIRE.getId().getPath() + "_" + age.toString())))
+                    .build();
+    	});
     }
     
     public void directionalLitAllWithUpModel(DeferredBlock<Block> block)

@@ -26,7 +26,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public abstract class WitherMachineEnergyBlockEntity extends WitherMachineBlockEntity {
 
-    private final WitherEnergyStorage energyStorage;
+    protected final WitherEnergyStorage energyStorage;
     protected IWitherEnergyStorage clientEnergyStorage = ImmutableMachineEnergyStorage.EMPTY;
     
     public WitherMachineEnergyBlockEntity(EnergyIOMode energyIOMode, Supplier<Integer> capacity, Supplier<Integer> usageRate, BlockEntityType<?> type, BlockPos worldPosition, BlockState blockState)
@@ -73,7 +73,7 @@ public abstract class WitherMachineEnergyBlockEntity extends WitherMachineBlockE
         }
         return energyStorage;
     }
-	
+    
     protected boolean moveEnergy(Direction facing, int energyAmount)
     {
         return moveEnergy(facing, worldPosition.relative(facing), energyAmount);

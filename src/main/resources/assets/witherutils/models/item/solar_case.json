@@ -1,5 +1,5 @@
 {
-	"parent": "witherutils:block/solar/solar_bordered",
+	"parent": "witherutils:block/generator/solar/solar_bordered",
 	"display": {
 		"thirdperson_righthand": {
 			"rotation": [75, 45, 0],

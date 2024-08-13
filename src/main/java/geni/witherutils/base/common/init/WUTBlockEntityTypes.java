@@ -14,11 +14,16 @@ import geni.witherutils.base.common.block.collector.CollectorBlockEntity;
 import geni.witherutils.base.common.block.creative.CreativeEnergyBlockEntity;
 import geni.witherutils.base.common.block.deco.door.metal.MetalDoorBlockEntity;
 import geni.witherutils.base.common.block.fakedriver.FakeDriverBlockEntity;
+import geni.witherutils.base.common.block.farmer.FarmerBlockEntity;
+import geni.witherutils.base.common.block.fisher.FisherBlockEntity;
 import geni.witherutils.base.common.block.generator.lava.LavaGeneratorBlockEntity;
 import geni.witherutils.base.common.block.generator.solar.SolarPanelBlockEntity;
 import geni.witherutils.base.common.block.generator.water.WaterGeneratorBlockEntity;
 import geni.witherutils.base.common.block.generator.wind.WindGeneratorBlockEntity;
+import geni.witherutils.base.common.block.sensor.floor.FloorSensorBlockEntity;
+import geni.witherutils.base.common.block.sensor.wall.WallSensorBlockEntity;
 import geni.witherutils.base.common.block.smarttv.SmartTVBlockEntity;
+import geni.witherutils.base.common.block.spawner.SpawnerBlockEntity;
 import geni.witherutils.base.common.block.totem.TotemBlockEntity;
 import geni.witherutils.base.common.block.xpdrain.XpDrainBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -43,12 +48,19 @@ public class WUTBlockEntityTypes {
     
 	public static final Supplier<BlockEntityType<SmartTVBlockEntity>> SMARTTV = register("smarttv", SmartTVBlockEntity::new, WUTBlocks.SMARTTV);
 	
-    public static final Supplier<BlockEntityType<LavaGeneratorBlockEntity>> LAVA_GENERATOR = register("lava_generator", LavaGeneratorBlockEntity::new, WUTBlocks.LAVA_GENERATOR);
+	public static final Supplier<BlockEntityType<FloorSensorBlockEntity>> FLOORSENSOR = register("floorsensor", FloorSensorBlockEntity::new, WUTBlocks.FLOORSENSOR);
+	public static final Supplier<BlockEntityType<WallSensorBlockEntity>> WALLSENSOR = register("wallsensor", WallSensorBlockEntity::new, WUTBlocks.WALLSENSOR);
+
+	public static final Supplier<BlockEntityType<LavaGeneratorBlockEntity>> LAVA_GENERATOR = register("lava_generator", LavaGeneratorBlockEntity::new, WUTBlocks.LAVA_GENERATOR);
     public static final Supplier<BlockEntityType<WindGeneratorBlockEntity>> WIND_GENERATOR = register("wind_generator", WindGeneratorBlockEntity::new, WUTBlocks.WIND_GENERATOR);
     public static final Supplier<BlockEntityType<WaterGeneratorBlockEntity>> WATER_GENERATOR = register("water_generator", WaterGeneratorBlockEntity::new, WUTBlocks.WATER_GENERATOR);
 	public static final Supplier<BlockEntityType<SolarPanelBlockEntity.Basic>> SOLARBASIC = register("solarbasic", SolarPanelBlockEntity.Basic::new, WUTBlocks.SOLARBASIC);
 	public static final Supplier<BlockEntityType<SolarPanelBlockEntity.Advanced>> SOLARADV = register("solaradv", SolarPanelBlockEntity.Advanced::new, WUTBlocks.SOLARADV);
 	public static final Supplier<BlockEntityType<SolarPanelBlockEntity.Ultra>> SOLARULTRA = register("solarultra", SolarPanelBlockEntity.Ultra::new, WUTBlocks.SOLARULTRA);
+
+	public static final Supplier<BlockEntityType<FarmerBlockEntity>> FARMER = register("farmer", FarmerBlockEntity::new, WUTBlocks.FARMER);
+	public static final Supplier<BlockEntityType<FisherBlockEntity>> FISHER = register("fisher", FisherBlockEntity::new, WUTBlocks.FISHER);
+	public static final Supplier<BlockEntityType<SpawnerBlockEntity>> SPAWNER = register("spawner", SpawnerBlockEntity::new, WUTBlocks.SPAWNER);
 
     @SafeVarargs
     public static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(String name, BlockEntityType.BlockEntitySupplier<T> supplier, Supplier<? extends Block>... blocks)

@@ -90,7 +90,7 @@ public class WitherUtils {
 
         modContainer.registerConfig(ModConfig.Type.COMMON, BaseConfig.COMMON_SPEC, "witherutils/base-common.toml");
         modContainer.registerConfig(ModConfig.Type.CLIENT, BaseConfig.CLIENT_SPEC, "witherutils/base-client.toml");
-    	
+        
         WUTCreativeTab.init(modEventBus);
 
         WUTSounds.SOUND_TYPES.register(modEventBus);
@@ -114,7 +114,7 @@ public class WitherUtils {
         
         modEventBus.addListener(WUTCapabilities::register);
         modEventBus.addListener(EventPriority.LOWEST, this::onGatherData);
-        
+
 		if (FMLEnvironment.dist.isClient())
 		{
 	        modEventBus.register(new ClientHudEvents());
@@ -122,6 +122,12 @@ public class WitherUtils {
 			ClientSetup.onTextureStitch(modEventBus, ClientSetup::onTextureStitch);
 //			modEventBus.addListener(ModelLayers::onAddRenderLayers);
 //			modEventBus.addListener(ModelLayers::onAddLayers);
+			
+//	        NeoForge.EVENT_BUS.addListener((RenderLevelStageEvent event) -> {
+//	            if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+//	                ClientSetup.onRenderLast(event.getPoseStack(), event.getPartialTick().getGameTimeDeltaTicks());
+//	            }
+//	        });
 		}
         
         IEventBus forgeBus = NeoForge.EVENT_BUS;

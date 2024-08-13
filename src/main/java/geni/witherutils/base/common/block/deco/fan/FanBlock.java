@@ -23,7 +23,6 @@ public class FanBlock extends WitherAbstractBlock {
 	{
 		super(props);
 		this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
-		this.setHasTooltip();
 	}
 
 	@Override

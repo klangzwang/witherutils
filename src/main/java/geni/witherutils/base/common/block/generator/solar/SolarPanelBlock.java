@@ -2,8 +2,6 @@ package geni.witherutils.base.common.block.generator.solar;
 
 import javax.annotation.Nullable;
 
-import org.joml.Vector3f;
-
 import geni.witherutils.base.common.base.WitherAbstractBlock;
 import geni.witherutils.core.common.block.WitherEntityBlock;
 import net.minecraft.core.BlockPos;
@@ -28,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -49,7 +48,6 @@ public class SolarPanelBlock extends WitherAbstractBlock implements WitherEntity
 		super(properties);
 		this.registerDefaultState(this.getStateDefinition().any().setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false).setValue(WEST, false).setValue(CORNER_NORTH_WEST, false).setValue(CORNER_NORTH_EAST, false).setValue(CORNER_SOUTH_EAST, false).setValue(CORNER_SOUTH_WEST, false));
 		this.type = type;
-		this.setHasTooltip();
 	}
 
 	@Override
@@ -166,17 +164,17 @@ public class SolarPanelBlock extends WitherAbstractBlock implements WitherEntity
         	return;
     	if(!solarpanel.isGenerating())
     		return;		
-		
+
 		double d0 = pos.getX() + 0.5D + (Math.random() - 0.5D) * 0.5D;
-		double d1 = pos.getY() + 0.2D;
+		double d1 = pos.getY() + 0.1D;
 		double d2 = pos.getZ() + 0.5D + (Math.random() - 0.5D) * 0.5D;
 
 		if(getType() == SolarType.ADVANCED)
-			level.addParticle(new DustParticleOptions(new Vector3f(), 0.6F), d0, d1, d2, 0x47 / 255d, 0x9f / 255d, 0xa3 / 255d);
-		if(getType() == SolarType.ULTRA)
-			level.addParticle(new DustParticleOptions(new Vector3f(), 0.6F), d0, d1, d2, 0x47 / 255d, 0x9f / 255d, 0xa3 / 255d);
-
-		level.addParticle(new DustParticleOptions(new Vector3f(), 0.6F), d0, d1, d2, 0x47 / 255d, 0x9f / 255d, 0xa3 / 255d);
+			level.addParticle(new DustParticleOptions(new Vec3(0.25, 1.0, 0.25).toVector3f(), 0.6F), d0, d1, d2, 0x47 / 255d, 0x9f / 255d, 0xa3 / 255d);
+		else if(getType() == SolarType.ULTRA)
+			level.addParticle(new DustParticleOptions(new Vec3(1.0, 0.25, 0.25).toVector3f(), 0.6F), d0, d1, d2, 0x47 / 255d, 0x9f / 255d, 0xa3 / 255d);
+		else
+			level.addParticle(new DustParticleOptions(new Vec3(0.25, 0.5, 1.0).toVector3f(), 0.6F), d0, d1, d2, 0x47 / 255d, 0x9f / 255d, 0xa3 / 255d);
 	}
 	
 	@Override

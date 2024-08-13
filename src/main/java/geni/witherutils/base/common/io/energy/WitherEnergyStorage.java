@@ -21,7 +21,8 @@ public class WitherEnergyStorage implements IWitherEnergyStorage, INBTSerializab
     private final Supplier<Integer> capacity;
     private final Supplier<Integer> usageRate;
 
-    public WitherEnergyStorage(EnergyIOMode ioMode, Supplier<Integer> capacity, Supplier<Integer> usageRate) {
+    public WitherEnergyStorage(EnergyIOMode ioMode, Supplier<Integer> capacity, Supplier<Integer> usageRate)
+    {
         this.ioMode = ioMode;
         this.capacity = capacity;
         this.usageRate = usageRate;

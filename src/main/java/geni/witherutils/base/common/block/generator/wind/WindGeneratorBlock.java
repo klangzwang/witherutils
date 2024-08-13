@@ -18,8 +18,6 @@ public class WindGeneratorBlock extends WitherAbstractBlock implements WitherEnt
 	{
 		super(props);
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(LIT, Boolean.valueOf(false)));
-		this.setHasScreen();
-		this.setHasTooltip();
 	}
 	
     @Override
