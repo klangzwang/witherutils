@@ -28,7 +28,6 @@ import geni.witherutils.base.common.block.deco.railing.RailingBlock;
 import geni.witherutils.base.common.block.deco.sliced.SlicedConcreteBlock;
 import geni.witherutils.base.common.block.fakedriver.FakeDriverBlock;
 import geni.witherutils.base.common.block.fakedriver.FakeDriverBlockEntity;
-import geni.witherutils.base.common.block.farmer.FarmerBlock;
 import geni.witherutils.base.common.block.fisher.FisherBlock;
 import geni.witherutils.base.common.block.fluid.BlueLimboBlock;
 import geni.witherutils.base.common.block.fluid.ColdSlushBlock;
@@ -240,7 +239,7 @@ public class WUTBlocks {
 	public static final DeferredBlock<Block> FLOORSENSOR = register("floorsensor", () -> new FloorSensorBlock(machineProps()));
 	public static final DeferredBlock<Block> WALLSENSOR = register("wallsensor", () -> new WallSensorBlock(machineProps()));
 	
-	public static final DeferredBlock<Block> FARMER = register("farmer", () -> new FarmerBlock(machineProps()));
+//	public static final DeferredBlock<Block> FARMER = register("farmer", () -> new FarmerBlock(machineProps()));
 	public static final DeferredBlock<Block> SPAWNER = register("spawner", () -> new SpawnerBlock(machineProps()));
 	public static final DeferredBlock<Block> FISHER = register("fisher", () -> new FisherBlock(machineProps()));
 	

@@ -68,9 +68,9 @@ public class WitherUtilsItemModels extends ItemModelProvider {
         withExistingParent(WUTBlocks.XPDRAIN.getId().getPath(), modLoc("block/xpdrain/xpdrain_on"));
         withExistingParent(WUTBlocks.BRICKSDARK.getId().getPath(), modLoc("block/bricks_dark"));
         withExistingParent(WUTBlocks.BRICKSLAVA.getId().getPath(), modLoc("block/bricks_lava_on"));
-//        withExistingParent(WUTBlocks.SPAWNER.getId().getPath(), modLoc("block/spawner/spawner"));
+        withExistingParent(WUTBlocks.SPAWNER.getId().getPath(), modLoc("block/spawner/spawner"));
 //        withExistingParent(WUTBlocks.FARMER.getId().getPath(), modLoc("block/farmer/farmer"));
-//        withExistingParent(WUTBlocks.FISHER.getId().getPath(), modLoc("block/fisher/fisher_master"));
+        withExistingParent(WUTBlocks.FISHER.getId().getPath(), modLoc("block/fisher/fisher_master"));
         withExistingParent(WUTBlocks.CAULDRON.getId().getPath(), modLoc("block/cauldron/cauldron_on"));
 
         withExistingParent(WUTBlocks.TOTEM.getId().getPath(), modLoc("block/totem/totem"));

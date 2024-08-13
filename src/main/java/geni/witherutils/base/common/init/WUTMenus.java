@@ -3,8 +3,6 @@ package geni.witherutils.base.common.init;
 import geni.witherutils.api.WitherUtilsRegistry;
 import geni.witherutils.base.common.block.collector.CollectorBlockEntity;
 import geni.witherutils.base.common.block.collector.CollectorContainer;
-import geni.witherutils.base.common.block.farmer.FarmerBlockEntity;
-import geni.witherutils.base.common.block.farmer.FarmerContainer;
 import geni.witherutils.base.common.block.fisher.FisherBlockEntity;
 import geni.witherutils.base.common.block.fisher.FisherContainer;
 import geni.witherutils.base.common.block.generator.lava.LavaGeneratorBlockEntity;
@@ -41,8 +39,8 @@ public class WUTMenus {
 	public static final DeferredHolder<MenuType<?>, MenuType<FloorSensorContainer>> FLOORSENSOR = MENU_TYPES.register("floorsensor", () -> IMenuTypeExtension.create((windowId, inv, data) -> 
 						new FloorSensorContainer((FloorSensorBlockEntity) inv.player.level().getBlockEntity(data.readBlockPos()), inv, windowId)));
 	
-    public static final DeferredHolder<MenuType<?>, MenuType<FarmerContainer>> FARMER = MENU_TYPES.register("farmer", () -> IMenuTypeExtension.create((windowId, inv, data) -> 
-    					new FarmerContainer((FarmerBlockEntity) inv.player.level().getBlockEntity(data.readBlockPos()), inv, windowId)));
+//    public static final DeferredHolder<MenuType<?>, MenuType<FarmerContainer>> FARMER = MENU_TYPES.register("farmer", () -> IMenuTypeExtension.create((windowId, inv, data) -> 
+//    					new FarmerContainer((FarmerBlockEntity) inv.player.level().getBlockEntity(data.readBlockPos()), inv, windowId)));
     public static final DeferredHolder<MenuType<?>, MenuType<FisherContainer>> FISHER = MENU_TYPES.register("fisher", () -> IMenuTypeExtension.create((windowId, inv, data) -> 
     					new FisherContainer((FisherBlockEntity) inv.player.level().getBlockEntity(data.readBlockPos()), inv, windowId)));
     public static final DeferredHolder<MenuType<?>, MenuType<SpawnerContainer>> SPAWNER = MENU_TYPES.register("spawner", () -> IMenuTypeExtension.create((windowId, inv, data) -> 

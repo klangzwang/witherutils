@@ -178,7 +178,8 @@ public class WUTCreativeTab {
                     output.accept(new ItemStack(WUTBlocks.WALLSENSOR.get()));
                     output.accept(new ItemStack(WUTBlocks.COLLECTOR.get()));
 //                    output.accept(new ItemStack(WUTBlocks.FARMER.get()));
-//                    output.accept(new ItemStack(WUTBlocks.SPAWNER.get()));
+                    output.accept(new ItemStack(WUTBlocks.SPAWNER.get()));
+                    output.accept(new ItemStack(WUTBlocks.FISHER.get()));
                     output.accept(new ItemStack(WUTBlocks.TOTEM.get()));
 
                     output.accept(new ItemStack(WUTBlocks.SOLARCASE.get()));
@@ -189,7 +190,7 @@ public class WUTCreativeTab {
                     output.accept(new ItemStack(WUTBlocks.WIND_GENERATOR.get()));
                     output.accept(new ItemStack(WUTBlocks.WATER_GENERATOR.get()));
 
-//                    output.accept(new ItemStack(WUTBlocks.FISHER.get()));
+
 //                    output.accept(new ItemStack(WUTBlocks.FLOODGATE.get()));
                     
 //                    output.accept(new ItemStack(WUTBlocks.RACK_CASE.get()));

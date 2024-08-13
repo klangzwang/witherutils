@@ -8,6 +8,8 @@ import geni.witherutils.api.lib.Names;
 import geni.witherutils.base.common.block.deco.cutter.CutterBlock;
 import geni.witherutils.base.common.block.deco.cutter.CutterBlock.CutterBlockType;
 import geni.witherutils.base.common.block.deco.fan.FanBlock;
+import geni.witherutils.base.common.block.fisher.FisherBlock;
+import geni.witherutils.base.common.block.fisher.FisherBlockType;
 import geni.witherutils.base.common.block.nature.RottenEarth;
 import geni.witherutils.base.common.block.sensor.floor.FloorSensorBlock;
 import geni.witherutils.base.common.block.smarttv.SmartTVBlock;
@@ -66,9 +68,9 @@ public class WitherUtilsBlockStates extends BlockStateProvider {
         registerSensors();
         registerXp();
         registerDeco();
-//        registerSpawner();
+        registerSpawner();
 //        registerFarmer();
-//        registerFisher();
+        registerFisher();
         registerCauldron();
         registerTotem();
 //        registerFloodgate();
@@ -97,6 +99,36 @@ public class WitherUtilsBlockStates extends BlockStateProvider {
             		.texture("all", modLoc("block/ctm/" + name +
             		(cutterBlock.getType() == CutterBlockType.CONNECTED ? "/particle" : "/" + name))));
         }
+    }
+    
+    private void registerFisher()
+    {
+    	ModelFile master = models().getExistingFile(modLoc("block/fisher/fisher_master"));
+    	ModelFile single = models().getExistingFile(modLoc("block/fisher/fisher_single"));
+    	ModelFile empty = models().getExistingFile(modLoc("block/fisher/fisher_null"));
+    	
+        getVariantBuilder(WUTBlocks.FISHER.get()).forAllStates(state -> {
+            
+        	FisherBlockType type = state.getValue(FisherBlock.BLOCK_TYPE);
+            
+            return ConfiguredModel.builder()
+                    .modelFile(type == FisherBlockType.MASTER ? master : type == FisherBlockType.SINGLE ? single : empty)
+                    .build();
+        });
+    }
+    
+    private void registerSpawner()
+    {
+        getVariantBuilder(WUTBlocks.SPAWNER.get()).forAllStates(state -> {
+            
+            Direction dir = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+            boolean lit = state.getValue(BlockStateProperties.LIT);
+            
+            return ConfiguredModel.builder()
+            		.modelFile(lit ? models().getExistingFile(modLoc("block/spawner/spawner_on")) : models().getExistingFile(modLoc("block/spawner/spawner")))
+                    .rotationY(dir.getAxis().isVertical() ? 0 : (((int) dir.toYRot()) + 180) % 360)
+                    .build();
+        });
     }
     
     private void registerSensors()

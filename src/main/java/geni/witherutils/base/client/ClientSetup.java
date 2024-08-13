@@ -26,6 +26,8 @@ import geni.witherutils.base.common.block.creative.CreativeEnergyRenderer;
 import geni.witherutils.base.common.block.deco.cutter.CutterBlock;
 import geni.witherutils.base.common.block.deco.door.metal.MetalDoorRenderer;
 import geni.witherutils.base.common.block.fakedriver.FakeDriverRenderer;
+import geni.witherutils.base.common.block.fisher.FisherRenderer;
+import geni.witherutils.base.common.block.fisher.FisherScreen;
 import geni.witherutils.base.common.block.generator.lava.LavaGeneratorRenderer;
 import geni.witherutils.base.common.block.generator.lava.LavaGeneratorScreen;
 import geni.witherutils.base.common.block.generator.solar.SolarPanelRenderer;
@@ -38,6 +40,8 @@ import geni.witherutils.base.common.block.sensor.floor.FloorSensorScreen;
 import geni.witherutils.base.common.block.sensor.wall.WallSensorRenderer;
 import geni.witherutils.base.common.block.smarttv.SmartTVRenderer;
 import geni.witherutils.base.common.block.smarttv.SmartTVScreen;
+import geni.witherutils.base.common.block.spawner.SpawnerRenderer;
+import geni.witherutils.base.common.block.spawner.SpawnerScreen;
 import geni.witherutils.base.common.block.totem.TotemRenderer;
 import geni.witherutils.base.common.block.totem.TotemScreen;
 import geni.witherutils.base.common.data.WorldData;
@@ -146,6 +150,8 @@ public class ClientSetup {
         event.register(WUTMenus.WIND_GENERATOR.get(), WindGeneratorScreen::new);
         event.register(WUTMenus.TOTEM.get(), TotemScreen::new);
         event.register(WUTMenus.FLOORSENSOR.get(), FloorSensorScreen::new);
+        event.register(WUTMenus.SPAWNER.get(), SpawnerScreen::new);
+        event.register(WUTMenus.FISHER.get(), FisherScreen::new);
     }
     
     @SubscribeEvent
@@ -218,6 +224,8 @@ public class ClientSetup {
 	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.TOTEM.get(), TotemRenderer::new);
 	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.FLOORSENSOR.get(), FloorSensorRenderer::new);
 	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.WALLSENSOR.get(), WallSensorRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.SPAWNER.get(), SpawnerRenderer::new);
+	    event.registerBlockEntityRenderer(WUTBlockEntityTypes.FISHER.get(), FisherRenderer::new);
 		event.registerEntityRenderer(WUTEntities.WORM.get(), WormRenderer::new);
 		event.registerEntityRenderer(WUTEntities.SOULORB.get(), SoulOrbRenderer::new);
 		event.registerEntityRenderer(WUTEntities.SOULORBPRO.get(), SoulOrbProjectileRenderer::new);

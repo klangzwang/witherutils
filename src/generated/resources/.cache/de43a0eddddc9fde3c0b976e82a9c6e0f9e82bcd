@@ -1,4 +1,4 @@
-// 1.21	2024-08-13T16:15:31.0706421	WitherUtils Blockstates
+// 1.21	2024-08-13T19:48:47.6670523	WitherUtils Blockstates
 1d02b29580cb9c27c968c83a6eb9adfd1c9fa872 assets/witherutils/blockstates/angel.json
 3bef8d9d1803bdada361fe3c45e894baca1fd45a assets/witherutils/blockstates/anvil.json
 bd9ea533da37dc9497530ca0780370a5a310689a assets/witherutils/blockstates/bluelimbo.json
@@ -30,6 +30,7 @@ d74a25a969c64db94442ea85cbff81c3ffdf30e4 assets/witherutils/blockstates/fan1.jso
 4b9e05d5b38e0a3f04b5fa8269594185dfeb83a7 assets/witherutils/blockstates/fan2.json
 122c667ae63d5405542426372b5779646cd8fad3 assets/witherutils/blockstates/fan3.json
 41484dda8c7647008f83d512b61a04ff02d4fc91 assets/witherutils/blockstates/fertilizer.json
+e8bb8a78260d597a954dddf8480520c5570c1655 assets/witherutils/blockstates/fisher.json
 509910c11539c58600f28fce2877cf7e0197e4ce assets/witherutils/blockstates/floorsensor.json
 e31b2d1ed5bbea7ec04fea86541a4ed195b9102e assets/witherutils/blockstates/glassa.json
 2d68f2ead20771abb84f31ea22d73d8aaadfc0c4 assets/witherutils/blockstates/glassb.json
@@ -69,6 +70,7 @@ f30354f641678e3aa534342b1b5a04b382483c3f assets/witherutils/blockstates/rotten_r
 f09adf87820f37313317acd97546376965933538 assets/witherutils/blockstates/soulfire.json
 e5947b2ef998ff64fdb633716fe21e28d74c403e assets/witherutils/blockstates/soulful.json
 87c2c85fc0c403630035f67a0a9dd7c3b63a9fad assets/witherutils/blockstates/soulished_block.json
+22b8627f3237ffade0f13c28a33a25c8eadd3051 assets/witherutils/blockstates/spawner.json
 a4f1ee72d61d0265712c47402d37dca6cb607ddc assets/witherutils/blockstates/stonea.json
 189b8adb9ba4570ddbfa02ae34ae47614dcf43a2 assets/witherutils/blockstates/stoneb.json
 0189ac589beff92bd5d767fe5d8f4a62ee42e1f4 assets/witherutils/blockstates/stonec.json

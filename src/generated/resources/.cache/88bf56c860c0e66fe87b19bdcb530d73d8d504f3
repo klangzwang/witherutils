@@ -1,4 +1,4 @@
-// 1.21	2024-08-13T16:15:31.076647	Item Models: witherutils
+// 1.21	2024-08-13T19:48:47.670962	Item Models: witherutils
 176c94abc001b48d0b2b1cd1eddcf89016b6c05a assets/witherutils/models/item/adcase.json
 63ca6e2c8553e6a17d047cba5faf709dc85a4939 assets/witherutils/models/item/anchor.json
 0f3cc027098b326700973122b8e12351fc6671f3 assets/witherutils/models/item/angel.json
@@ -54,6 +54,7 @@ c3b96b8ad8b5682044bdf186ed2e66aee086ea04 assets/witherutils/models/item/fan2.jso
 e5f30b01b2ee5b8a83669d219f6e27e800cf4041 assets/witherutils/models/item/fan3.json
 e88d0fb243109f35eceae4d4eb75fe79cb90c8d9 assets/witherutils/models/item/feather.json
 a945187219381c93def4be3a037691b35cde0656 assets/witherutils/models/item/fertilizer_bucket.json
+6968add291eef433a97541768962957457042166 assets/witherutils/models/item/fisher.json
 19538ea021b662e24f6888a2ae29404984110a02 assets/witherutils/models/item/flippers_upgrade.json
 840e8afde17bd895cd55a083f23b2dd04982d5d2 assets/witherutils/models/item/floorsensor.json
 19538ea021b662e24f6888a2ae29404984110a02 assets/witherutils/models/item/gilded_upgrade.json
@@ -131,6 +132,7 @@ bc091f0315f5dc40d375ae14a9d55b123eb3c8fb assets/witherutils/models/item/soulfire
 074c1c669e21faa928f4fb2b2e22066c5a7768c6 assets/witherutils/models/item/soulished_ingot.json
 316d659ff52cebfee57c5193d2129096dca38b11 assets/witherutils/models/item/soulished_nugget.json
 e8601a84e445f4d6990b1eee610a822e9422bf0a assets/witherutils/models/item/soulorb.json
+bbdd00ae2927fa07e8fec49d9d7d360b6bcf2b2a assets/witherutils/models/item/spawner.json
 19538ea021b662e24f6888a2ae29404984110a02 assets/witherutils/models/item/speed_upgrade.json
 f733d563713ddf5340d93781681cbf1c38d03bc9 assets/witherutils/models/item/spiral.json
 19538ea021b662e24f6888a2ae29404984110a02 assets/witherutils/models/item/standby_upgrade.json

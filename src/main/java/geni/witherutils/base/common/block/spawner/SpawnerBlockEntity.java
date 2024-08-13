@@ -117,7 +117,6 @@ public class SpawnerBlockEntity extends WitherMachineEnergyBlockEntity implement
 		this.delay = upDelay * 100;
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void serverTick()
 	{
@@ -269,12 +268,12 @@ public class SpawnerBlockEntity extends WitherMachineEnergyBlockEntity implement
 //            .soulbank().build();
 //    }
 
-	@OnlyIn(Dist.CLIENT)
-	public Entity getEntityToRender()
-	{
-		Entity entity = null;
-		if(!getInventory().getStackInSlot(0).isEmpty())
-		{
+//	@OnlyIn(Dist.CLIENT)
+//	public Entity getEntityToRender()
+//	{
+//		Entity entity = null;
+//		if(!getInventory().getStackInSlot(0).isEmpty())
+//		{
 //			IItemHandler myFilter = getInventory().getStackInSlot(0).getCapability(ForgeCapabilities.ITEM_HANDLER).orElse(null);
 //			if(myFilter != null)
 //			{
@@ -285,9 +284,9 @@ public class SpawnerBlockEntity extends WitherMachineEnergyBlockEntity implement
 //					entity = eggItem.getType(null).create(getLevel());
 //				}
 //			}
-		}
-		return entity;
-	}
+//		}
+//		return entity;
+//	}
 	
     public boolean isStandardMonster(EntityType<?> entity, ServerLevel world, BlockPos pos)
     {

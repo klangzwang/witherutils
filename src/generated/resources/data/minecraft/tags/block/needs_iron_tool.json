@@ -20,6 +20,8 @@
     "witherutils:smarttv",
     "witherutils:floorsensor",
     "witherutils:wallsensor",
+    "witherutils:spawner",
+    "witherutils:fisher",
     "witherutils:angel",
     "witherutils:case_small",
     "witherutils:case_big",

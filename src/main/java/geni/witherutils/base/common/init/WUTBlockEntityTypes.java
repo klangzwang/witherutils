@@ -14,7 +14,6 @@ import geni.witherutils.base.common.block.collector.CollectorBlockEntity;
 import geni.witherutils.base.common.block.creative.CreativeEnergyBlockEntity;
 import geni.witherutils.base.common.block.deco.door.metal.MetalDoorBlockEntity;
 import geni.witherutils.base.common.block.fakedriver.FakeDriverBlockEntity;
-import geni.witherutils.base.common.block.farmer.FarmerBlockEntity;
 import geni.witherutils.base.common.block.fisher.FisherBlockEntity;
 import geni.witherutils.base.common.block.generator.lava.LavaGeneratorBlockEntity;
 import geni.witherutils.base.common.block.generator.solar.SolarPanelBlockEntity;
@@ -58,7 +57,7 @@ public class WUTBlockEntityTypes {
 	public static final Supplier<BlockEntityType<SolarPanelBlockEntity.Advanced>> SOLARADV = register("solaradv", SolarPanelBlockEntity.Advanced::new, WUTBlocks.SOLARADV);
 	public static final Supplier<BlockEntityType<SolarPanelBlockEntity.Ultra>> SOLARULTRA = register("solarultra", SolarPanelBlockEntity.Ultra::new, WUTBlocks.SOLARULTRA);
 
-	public static final Supplier<BlockEntityType<FarmerBlockEntity>> FARMER = register("farmer", FarmerBlockEntity::new, WUTBlocks.FARMER);
+//	public static final Supplier<BlockEntityType<FarmerBlockEntity>> FARMER = register("farmer", FarmerBlockEntity::new, WUTBlocks.FARMER);
 	public static final Supplier<BlockEntityType<FisherBlockEntity>> FISHER = register("fisher", FisherBlockEntity::new, WUTBlocks.FISHER);
 	public static final Supplier<BlockEntityType<SpawnerBlockEntity>> SPAWNER = register("spawner", SpawnerBlockEntity::new, WUTBlocks.SPAWNER);
 

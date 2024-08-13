@@ -61,27 +61,27 @@ public class SpawnerRenderer extends AbstractBlockEntityRenderer<SpawnerBlockEnt
         renderEmissiveModel(SpecialModels.EMSPAWNER.getModel(), ItemDisplayContext.NONE, false, matrixStack, buffer, -1, combinedLight, OverlayTexture.NO_OVERLAY);
         matrixStack.popPose();
 		
-		if(tile.getEntityToRender() != null)
-		{
-			Entity entity = tile.getEntityToRender();
-			matrixStack.pushPose();
-			matrixStack.translate(0.5D, 0.1D, 0.5D);
-			RenderSystem.enableBlend();
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			matrixStack.mulPose(Axis.YP.rotationDegrees(partialTicks));
-			matrixStack.scale(0.45F, 0.45F, 0.45F);
-			Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0D, 0D, 0D, 0F, 0F, matrixStack, buffer, combinedLight);
-			matrixStack.popPose();
-
-			matrixStack.pushPose();
-	        for(Direction facing : FacingUtil.FACES_AROUND_Y)
-	        {
-	        	String entityStr = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath();
-	        	renderText(tile, partialTicks, matrixStack, buffer, combinedLight, ChatFormatting.WHITE + entityStr, facing, 0.100f);
-	        }
-	        	
-	        matrixStack.popPose();
-		}
+//		if(tile.getEntityToRender() != null)
+//		{
+//			Entity entity = tile.getEntityToRender();
+//			matrixStack.pushPose();
+//			matrixStack.translate(0.5D, 0.1D, 0.5D);
+//			RenderSystem.enableBlend();
+//			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+//			matrixStack.mulPose(Axis.YP.rotationDegrees(partialTicks));
+//			matrixStack.scale(0.45F, 0.45F, 0.45F);
+//			Minecraft.getInstance().getEntityRenderDispatcher().render(entity, 0D, 0D, 0D, 0F, 0F, matrixStack, buffer, combinedLight);
+//			matrixStack.popPose();
+//
+//			matrixStack.pushPose();
+//	        for(Direction facing : FacingUtil.FACES_AROUND_Y)
+//	        {
+//	        	String entityStr = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath();
+//	        	renderText(tile, partialTicks, matrixStack, buffer, combinedLight, ChatFormatting.WHITE + entityStr, facing, 0.100f);
+//	        }
+//	        	
+//	        matrixStack.popPose();
+//		}
     }
     
     public static void renderEmissiveModel(BakedModel model, ItemDisplayContext transformType, boolean leftHanded, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int color, int lightTexture, int overlayTexture)

@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -36,6 +37,12 @@ public class FisherBlock extends WitherAbstractBlock implements WitherEntityBloc
 	{
 		super(props);
         this.registerDefaultState(this.stateDefinition.any().setValue(BLOCK_TYPE, FisherBlockType.SINGLE));
+	}
+	
+	@Override
+	public FisherBlockItem getBlockItem(Item.Properties properties)
+	{
+		return new FisherBlockItem(this, properties.stacksTo(1));
 	}
 	
 	@Override
