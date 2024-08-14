@@ -50,6 +50,8 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -277,6 +279,18 @@ public class ItemEventHandler {
 	 * HAMMER
 	 * 
 	 */
+//    @SubscribeEvent
+//    public void onHammerClickBlock(RightClickBlock event)
+//    {
+//    	System.out.println("RightClickBlock");
+//    }
+//    
+//    @SubscribeEvent
+//    public void onHammerClickItem(RightClickItem event)
+//    {
+//    	System.out.println("RightClickItem");
+//    }
+    
     @SubscribeEvent
     public void onHammerSmash(BreakEvent event)
     {

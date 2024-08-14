@@ -7,14 +7,22 @@ import com.mojang.brigadier.CommandDispatcher;
 import geni.witherutils.WitherUtils;
 import geni.witherutils.base.common.block.anvil.AnvilBlockEntity;
 import geni.witherutils.base.common.block.deco.fire.SoulFireBlock;
+import geni.witherutils.base.common.block.nature.RottenEarth;
+import geni.witherutils.base.common.block.nature.RottenSapling;
 import geni.witherutils.base.common.config.common.LootConfig;
 import geni.witherutils.base.common.data.PlayerData;
 import geni.witherutils.base.common.entity.bolt.CursedLightningBolt;
+import geni.witherutils.base.common.entity.cursed.creeper.CursedCreeper;
+import geni.witherutils.base.common.entity.cursed.dryhead.CursedDryHead;
+import geni.witherutils.base.common.entity.cursed.skeleton.CursedSkeleton;
+import geni.witherutils.base.common.entity.cursed.spider.CursedSpider;
+import geni.witherutils.base.common.entity.cursed.zombie.CursedZombie;
 import geni.witherutils.base.common.init.WUTBlocks;
 import geni.witherutils.base.common.init.WUTCommands;
 import geni.witherutils.base.common.init.WUTEffects;
 import geni.witherutils.base.common.init.WUTEntities;
 import geni.witherutils.base.common.init.WUTItems;
+import geni.witherutils.base.common.init.WUTParticles;
 import geni.witherutils.base.common.init.WUTSounds;
 import geni.witherutils.core.common.network.CoreNetwork;
 import geni.witherutils.core.common.network.PacketServerToClient;
@@ -27,29 +35,150 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoulSandBlock;
+import net.minecraft.world.level.block.WitherSkullBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck.Result;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent.SpawnPlacementCheck;
+import net.neoforged.neoforge.event.entity.player.BonemealEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
 
 public class CommonEventHandler {
 
+	/*
+	 * 
+	 * ROTTEN
+	 * 
+	 */
+	@SubscribeEvent
+	public static void onUseBonemeal(BonemealEvent event)
+	{
+		Level level = event.getLevel();
+		BlockPos pos = event.getPos();
+		BlockState state = level.getBlockState(pos);
+		
+		if(level.dimension() == Level.OVERWORLD)
+		{
+			if(state.getBlock() instanceof SoulSandBlock && level.getBlockState(pos.above()).getBlock() instanceof WitherSkullBlock)
+			{
+	        	for(int i = 0; i < 40; i++)
+	        	{
+	    			double d1 = (double) pos.getX() + level.random.nextDouble();
+	    			double d2 = (double) pos.getY() + level.random.nextDouble() * (double) 0.5F;
+	    			double d3 = (double) pos.getZ() + level.random.nextDouble();
+	    			level.addParticle(WUTParticles.RISINGSOUL.get(), d1, d2, d3, 0.0D, 0.0D, 0.0D);
+	    			level.addParticle(ParticleTypes.SMOKE, d1, d2, d3, 0.0D, 0.0D, 0.0D);
+	        	}
+	        	RottenEarth.startFastSpread(level, pos);
+			}
+			if(state.getBlock() instanceof RottenSapling)
+			{
+	        	for(int i = 0; i < 40; i++)
+	        	{
+	    			double d1 = (double) pos.getX() + level.random.nextDouble();
+	    			double d2 = (double) pos.getY() + level.random.nextDouble() * (double) 0.5F;
+	    			double d3 = (double) pos.getZ() + level.random.nextDouble();
+	    			level.addParticle(WUTParticles.RISINGSOUL.get(), d1, d2, d3, 0.0D, 0.0D, 0.0D);
+	    			level.addParticle(ParticleTypes.SMOKE, d1, d2, d3, 0.0D, 0.0D, 0.0D);
+	        	}
+			}
+		}
+	}
+
+	/*
+	 * 
+	 * WITHERSTEEL
+	 * 
+	 */
+	@SubscribeEvent
+    public static void onSteelPickup(ItemEntityPickupEvent event)
+    {
+		Player player = event.getPlayer();
+		final boolean iswitherblock = event.getItemEntity().getItem().getItem() == WUTBlocks.WITHERSTEEL_BLOCK.get().asItem();
+		if(iswitherblock && player.isAlive())
+		{
+			player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 148, 3, false, false, false));
+		}
+    }
+	
+    /*
+     * 
+     * CURSED SPAWN
+     * 
+     */
+//	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public static void onSpawnForCursed(MobSpawnEvent.PositionCheck event)
+	{
+		if (event.getSpawnType() == MobSpawnType.SPAWNER)
+			return;
+		
+		LivingEntity entity = event.getEntity();
+		Result result = event.getResult();
+		LevelAccessor level = event.getLevel();
+		
+		if(entity instanceof Mob mob && result != Result.FAIL && entity.getY() < 60 && level.getRandom().nextDouble() < 0.05D)
+		{
+			if(result == Result.SUCCEED || (mob.checkSpawnRules(level, event.getSpawnType()) && mob.checkSpawnObstruction(level)))
+			{
+				if(entity.getType() == EntityType.CREEPER)
+					onFinalizeSpawnForCursed(event, entity, level, new CursedCreeper(WUTEntities.CURSEDCREEPER.get(), entity.level()));
+				else if(entity.getType() == EntityType.SKELETON)
+				{
+					CursedSkeleton cursed = new CursedSkeleton(WUTEntities.CURSEDSKELETON.get(), entity.level());
+					cursed.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.BOW));
+					onFinalizeSpawnForCursed(event, entity, level, cursed);
+				}
+				else if(entity.getType() == EntityType.SPIDER)
+				{
+					CursedSpider cursed = new CursedSpider(WUTEntities.CURSEDSPIDER.get(), entity.level());
+					onFinalizeSpawnForCursed(event, entity, level, cursed);
+				}
+				else if(entity.getType() == EntityType.ZOMBIE)
+					onFinalizeSpawnForCursed(event, entity, level, new CursedZombie(WUTEntities.CURSEDZOMBIE.get(), entity.level()));
+				else if(entity.getType() == EntityType.WITHER_SKELETON);
+					onFinalizeSpawnForCursed(event, entity, level, new CursedDryHead(WUTEntities.CURSEDDRYHEAD.get(), entity.level()));
+			}
+		}
+	}
+	public static void onFinalizeSpawnForCursed(MobSpawnEvent.PositionCheck event, LivingEntity entity, LevelAccessor level, Mob cursed)
+	{
+		Vec3 epos = entity.position();
+		cursed.absMoveTo(epos.x, epos.y, epos.z, entity.getYRot(), entity.getXRot());
+	}
+	
     /*
 	 * 
 	 * ENDERLILLY

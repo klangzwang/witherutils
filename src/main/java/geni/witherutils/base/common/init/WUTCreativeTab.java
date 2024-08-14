@@ -110,10 +110,10 @@ public class WUTCreativeTab {
                     output.accept(new ItemStack(WUTItems.UPGRADEVISION.get()));
 
                     output.accept(new ItemStack(WUTItems.EGG_CURSEDZOMBIE.get()));
-//                    output.accept(new ItemStack(WUTItems.EGG_CURSEDCREEPER.get()));
-//                    output.accept(new ItemStack(WUTItems.EGG_CURSEDSKELETON.get()));
-//                    output.accept(new ItemStack(WUTItems.EGG_CURSEDSPIDER.get()));
-//                    output.accept(new ItemStack(WUTItems.EGG_CURSEDDRYHEAD.get()));
+                    output.accept(new ItemStack(WUTItems.EGG_CURSEDCREEPER.get()));
+                    output.accept(new ItemStack(WUTItems.EGG_CURSEDSKELETON.get()));
+                    output.accept(new ItemStack(WUTItems.EGG_CURSEDSPIDER.get()));
+                    output.accept(new ItemStack(WUTItems.EGG_CURSEDDRYHEAD.get()));
 
                     output.accept(new ItemStack(WUTItems.WORM.get()));
                     output.accept(new ItemStack(WUTBlocks.ROTTEN_SAPLING.get()));

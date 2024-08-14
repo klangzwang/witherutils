@@ -90,10 +90,10 @@ public class WitherUtilsItemModels extends ItemModelProvider {
         withExistingParent(WUTBlocks.ROTTEN_ROOTS_POT.getId().getPath(), modLoc("block/rotten/rotten_roots_pot"));
         
         withExistingParent(WUTItems.EGG_CURSEDZOMBIE.getId().getPath(), mcLoc("item/template_spawn_egg"));
-//        withExistingParent(WUTItems.EGG_CURSEDCREEPER.getId().getPath(), mcLoc("item/template_spawn_egg"));
-//        withExistingParent(WUTItems.EGG_CURSEDSKELETON.getId().getPath(), mcLoc("item/template_spawn_egg"));
-//        withExistingParent(WUTItems.EGG_CURSEDSPIDER.getId().getPath(), mcLoc("item/template_spawn_egg"));
-//        withExistingParent(WUTItems.EGG_CURSEDDRYHEAD.getId().getPath(), mcLoc("item/template_spawn_egg"));
+        withExistingParent(WUTItems.EGG_CURSEDCREEPER.getId().getPath(), mcLoc("item/template_spawn_egg"));
+        withExistingParent(WUTItems.EGG_CURSEDSKELETON.getId().getPath(), mcLoc("item/template_spawn_egg"));
+        withExistingParent(WUTItems.EGG_CURSEDSPIDER.getId().getPath(), mcLoc("item/template_spawn_egg"));
+        withExistingParent(WUTItems.EGG_CURSEDDRYHEAD.getId().getPath(), mcLoc("item/template_spawn_egg"));
         
         withExistingParent(WUTBlocks.FAN0.getId().getPath(), modLoc("block/fan/fan0"));
         withExistingParent(WUTBlocks.FAN1.getId().getPath(), modLoc("block/fan/fan1"));

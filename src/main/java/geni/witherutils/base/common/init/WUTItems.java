@@ -151,10 +151,10 @@ public class WUTItems
      * 
      */
     public static final DeferredItem<Item> EGG_CURSEDZOMBIE = register("egg_cursedzombie", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDZOMBIE, 0x3F8439, 0x9D612A, new Item.Properties()));
-//    public static final DeferredItem<Item> EGG_CURSEDCREEPER = register("egg_cursedcreeper", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDCREEPER, 0x51857A, 0x7F6258, new Item.Properties()));
-//    public static final DeferredItem<Item> EGG_CURSEDSKELETON = register("egg_cursedskeleton", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDSKELETON, 0x7CE2E5, 0x564645, new Item.Properties()));
-//    public static final DeferredItem<Item> EGG_CURSEDSPIDER = register("egg_cursedspider", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDSPIDER, 0x9F8439, 0x364645, new Item.Properties()));
-//    public static final DeferredItem<Item> EGG_CURSEDDRYHEAD = register("egg_curseddryhead", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDDRYHEAD, 0x121212, 0x464646, new Item.Properties()));
+    public static final DeferredItem<Item> EGG_CURSEDCREEPER = register("egg_cursedcreeper", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDCREEPER, 0x51857A, 0x7F6258, new Item.Properties()));
+    public static final DeferredItem<Item> EGG_CURSEDSKELETON = register("egg_cursedskeleton", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDSKELETON, 0x7CE2E5, 0x564645, new Item.Properties()));
+    public static final DeferredItem<Item> EGG_CURSEDSPIDER = register("egg_cursedspider", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDSPIDER, 0x9F8439, 0x364645, new Item.Properties()));
+    public static final DeferredItem<Item> EGG_CURSEDDRYHEAD = register("egg_curseddryhead", () -> new DeferredSpawnEggItem(WUTEntities.CURSEDDRYHEAD, 0x121212, 0x464646, new Item.Properties()));
     
     /*
      * 

@@ -28,17 +28,23 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.common.Tags;
 
 public class AnvilBlockEntity extends WitherMachineBlockEntity {
 
@@ -232,14 +238,56 @@ public class AnvilBlockEntity extends WitherMachineBlockEntity {
 			entityItem = new ItemEntity(level, 0, 0, 0, stack);
 		}
 
+//		ItemStack[] ingredient = Ingredient.of(Tags.Items.INGOTS_IRON).getItems();
+//		for (ItemStack ingot : ingredient)
+//		{
+//			if(ItemStack.isSameItem(ingot, stack) && foundCoal())
+//			{
+//				stack = new ItemStack(WUTItems.WITHERSTEEL_INGOT.get(), 2);
+//				entityItem = new ItemEntity(level, 0, 0, 0, stack);
+//			}
+//		}
+
         double variance = 0.05F * 4;
         entityItem.setPos(worldPosition.getX() + 0.5, worldPosition.getY() + 1.2, worldPosition.getZ() + 0.5);
-        entityItem.setDeltaMovement(Mth.nextDouble(level.random, -variance, variance), 2 / 20F, Mth.nextDouble(level.random, -variance, variance));
+        entityItem.setDeltaMovement(Mth.nextDouble(level.random, -variance, variance), 2 / 40F, Mth.nextDouble(level.random, -variance, variance));
         entityItem.setUnlimitedLifetime();
 		entityItem.setPickUpDelay(20);
         level.addFreshEntity(entityItem);
     }
 	
+    
+    
+//    public boolean foundCoal()
+//    {
+//    	BlockPos abovePos = worldPosition.above();
+//        var region = new AABB(
+//        		abovePos.getX() - 1,
+//        		abovePos.getY() - 1,
+//        		abovePos.getZ() - 1,
+//        		abovePos.getX() + 1,
+//        		abovePos.getY() + 1,
+//        		abovePos.getZ() + 1);
+//        
+//        List<ItemEntity> itemEntities = level.getEntities(null, region).stream().filter(e -> e instanceof ItemEntity && !e.isRemoved()).map(e -> (ItemEntity) e).toList();
+//        for (var itemEntity : itemEntities)
+//        {
+//            var other = itemEntity.getItem();
+//            if (!other.isEmpty())
+//            {
+//            	return other.getItem() == Items.COAL;
+//            }
+//        }
+////        for (var holder : level.getRecipeManager().getAllRecipesFor(WUTRecipes.ANVIL.type().get()));
+////        {
+////        	
+////        }
+//    	return false;
+//    }
+    
+    
+    
+    
     @Override
     public void popRecipeExperience(ServerPlayer serverplayer, float count)
     {

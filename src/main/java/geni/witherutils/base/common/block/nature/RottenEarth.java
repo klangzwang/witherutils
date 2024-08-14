@@ -302,8 +302,8 @@ public class RottenEarth extends WitherAbstractBlock {
 					if(entity instanceof LivingEntity)
 					{
 						LivingEntity living = (LivingEntity) entity;
-						applyAttribute(living, Attributes.ATTACK_DAMAGE, new AttributeModifier(WitherUtilsRegistry.loc("WitherEarth"), 1.5, AttributeModifier.Operation.ADD_VALUE));
-						applyAttribute(living, Attributes.MOVEMENT_SPEED, new AttributeModifier(WitherUtilsRegistry.loc("WitherEarth"), 0.2, AttributeModifier.Operation.ADD_VALUE));
+						applyAttribute(living, Attributes.ATTACK_DAMAGE, new AttributeModifier(WitherUtilsRegistry.loc("witherearth"), 1.5, AttributeModifier.Operation.ADD_VALUE));
+						applyAttribute(living, Attributes.MOVEMENT_SPEED, new AttributeModifier(WitherUtilsRegistry.loc("witherearth"), 0.2, AttributeModifier.Operation.ADD_VALUE));
 			
 						AttributeInstance attributeInstanceByName = living.getAttributes().getInstance(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
 						if(attributeInstanceByName != null)
@@ -368,10 +368,14 @@ public class RottenEarth extends WitherAbstractBlock {
 		@OnlyIn(Dist.CLIENT)
 		public void render(final RenderLivingEvent.Pre event)
 		{
-			if (spawnerClients.contains(event.getEntity()))
+			if(event.getRenderer() != null)
 			{
-				final float v = 0.3f;
-				RenderSystem.setShaderColor(v, v, v, 1.0f);
+				if (spawnerClients.contains(event.getEntity()))
+				{
+					System.out.println(event.getEntity());
+//					final float v = 0.3f;
+//					RenderSystem.setShaderColor(v, v, v, 1.0f);
+				}
 			}
 		}
 
@@ -380,9 +384,13 @@ public class RottenEarth extends WitherAbstractBlock {
 		@OnlyIn(Dist.CLIENT)
 		public void render(final RenderLivingEvent.Post event)
 		{
-			if (spawnerClients.contains(event.getEntity()))
+			if(event.getRenderer() != null)
 			{
-				RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+				if (spawnerClients.contains(event.getEntity()))
+				{
+					System.out.println(event.getEntity());
+//					RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+				}
 			}
 		}
 	}

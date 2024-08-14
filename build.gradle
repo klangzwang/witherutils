@@ -49,9 +49,11 @@ dependencies {
 	implementation("maven.modrinth:athena-ctm:${athenaVersion}")
 	implementation("com.enderio:Regilite:${regiliteVersion}")
 	implementation("curse.maven:jei-238222:5533450")
-	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
-	runtimeOnly("curse.maven:explorers-compass-491794:5474700")
-	runtimeOnly("curse.maven:natures-compass-252848:5474686")
+//	implementation("curse.maven:ato-405593:5553138")
+//	implementation("curse.maven:allthemodium-364466:5609842")
+//	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
+//	runtimeOnly("curse.maven:explorers-compass-491794:5474700")
+//	runtimeOnly("curse.maven:natures-compass-252848:5474686")
 }
 
 base {

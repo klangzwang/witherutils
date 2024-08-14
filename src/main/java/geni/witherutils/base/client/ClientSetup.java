@@ -46,7 +46,13 @@ import geni.witherutils.base.common.block.totem.TotemRenderer;
 import geni.witherutils.base.common.block.totem.TotemScreen;
 import geni.witherutils.base.common.data.WorldData;
 import geni.witherutils.base.common.entity.bolt.CursedLightningBoltRenderer;
+import geni.witherutils.base.common.entity.cursed.creeper.CursedCreeperRenderer;
+import geni.witherutils.base.common.entity.cursed.dryhead.CursedDryHeadRenderer;
+import geni.witherutils.base.common.entity.cursed.skeleton.CursedSkeletonRenderer;
+import geni.witherutils.base.common.entity.cursed.spider.CursedSpiderRenderer;
 import geni.witherutils.base.common.entity.cursed.zombie.CursedZombieRenderer;
+import geni.witherutils.base.common.entity.naked.ChickenNakedRenderer;
+import geni.witherutils.base.common.entity.portal.PortalRenderer;
 import geni.witherutils.base.common.entity.soulorb.SoulOrbProjectileRenderer;
 import geni.witherutils.base.common.entity.soulorb.SoulOrbRenderer;
 import geni.witherutils.base.common.entity.worm.WormRenderer;
@@ -96,23 +102,44 @@ public class ClientSetup {
 		{
             WorldData.clear();
         }
-    	
-        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ANVIL.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CREATIVE_GENERATOR.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ANGEL.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CAULDRON.get(), RenderType.cutout());
-    	
-    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.GREENHOUSE.get(), RenderType.translucent());
-    	
-    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_A.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_K.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_L.get(), RenderType.cutout());
-    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_M.get(), RenderType.cutout());
-    	
+        
     	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.SOULFIRE.get(), RenderType.cutout());
+//    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CREATIVE_TRASH.get(), RenderType.cutout());
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CREATIVE_GENERATOR.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ANVIL.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.LAVA_GENERATOR.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.WATER_GENERATOR.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.WIND_GENERATOR.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(WUTBlocks.SOLARBASIC.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(WUTBlocks.SOLARADV.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(WUTBlocks.SOLARULTRA.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CORE.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.PYLON.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ANGEL.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.LILLY.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.SMARTTV.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.WALLSENSOR.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.TANKDRUM.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CATWALK.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.FARMER.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.SPAWNER.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CAULDRON.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.FISHER.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.FLOODGATE.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.RACK_CASE.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.RACKITEM_CONTROLLER.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.RACKFLUID_CONTROLLER.get(), RenderType.cutout());
+//        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.RACK_TERMINAL.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.XPDRAIN.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.FAKE_DRIVER.get(), RenderType.cutout());
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.GREENHOUSE.get(), RenderType.translucent());
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.LIGHT.get(), RenderType.translucent());
     	
-    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.WALLSENSOR.get(), RenderType.cutout());
-    	
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ROTTEN_SAPLING.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ROTTEN_SPIKE.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ROTTEN_ROOTS.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(WUTBlocks.ROTTEN_ROOTS_POT.get(), RenderType.cutout());
+        
     	ItemBlockRenderTypes.setRenderLayer(WUTFluids.BLUELIMBO.get(), RenderType.translucent());
     	ItemBlockRenderTypes.setRenderLayer(WUTFluids.BLUELIMBO_FLOWING.get(), RenderType.translucent());
     	ItemBlockRenderTypes.setRenderLayer(WUTFluids.COLDSLUSH.get(), RenderType.translucent());
@@ -135,6 +162,10 @@ public class ClientSetup {
     		if(cutterBlock.isGlass())
     			ItemBlockRenderTypes.setRenderLayer(cutterBlock, RenderType.translucent());
         }
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_A.get(), RenderType.cutout());
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_K.get(), RenderType.cutout());
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_L.get(), RenderType.cutout());
+    	ItemBlockRenderTypes.setRenderLayer(WUTBlocks.CTM_METAL_M.get(), RenderType.cutout());
     }
     
     @SubscribeEvent
@@ -229,8 +260,14 @@ public class ClientSetup {
 		event.registerEntityRenderer(WUTEntities.WORM.get(), WormRenderer::new);
 		event.registerEntityRenderer(WUTEntities.SOULORB.get(), SoulOrbRenderer::new);
 		event.registerEntityRenderer(WUTEntities.SOULORBPRO.get(), SoulOrbProjectileRenderer::new);
-		event.registerEntityRenderer(WUTEntities.CURSEDZOMBIE.get(), CursedZombieRenderer::new);
 		event.registerEntityRenderer(WUTEntities.CURSEDBOLT.get(), CursedLightningBoltRenderer::new);
+		event.registerEntityRenderer(WUTEntities.CHICKENNAKED.get(), ChickenNakedRenderer::new);
+		event.registerEntityRenderer(WUTEntities.CURSEDZOMBIE.get(), CursedZombieRenderer::new);
+		event.registerEntityRenderer(WUTEntities.CURSEDCREEPER.get(), CursedCreeperRenderer::new);
+		event.registerEntityRenderer(WUTEntities.CURSEDSKELETON.get(), CursedSkeletonRenderer::new);
+		event.registerEntityRenderer(WUTEntities.CURSEDSPIDER.get(), CursedSpiderRenderer::new);
+		event.registerEntityRenderer(WUTEntities.CURSEDDRYHEAD.get(), CursedDryHeadRenderer::new);
+		event.registerEntityRenderer(WUTEntities.PORTAL.get(), PortalRenderer::new);
     }
 	
     @SubscribeEvent
