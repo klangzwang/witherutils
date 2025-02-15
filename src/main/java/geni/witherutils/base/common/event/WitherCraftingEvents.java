@@ -40,7 +40,7 @@ public class WitherCraftingEvents {
 				
 				Chicken chicken = (Chicken) entity;
 				chicken.blockPosition();
-				chicken.remove(RemovalReason.KILLED);
+				// chicken.remove(RemovalReason.KILLED);
 				ChickenNaked chickennaked = WUTEntities.CHICKENNAKED.get().create(world);
 				chickennaked.moveTo(chicken.getX(), chicken.getY(), chicken.getZ(), chicken.xRotO, chicken.yRotO);
 				chickennaked.setHealth(chicken.getHealth());
@@ -54,6 +54,7 @@ public class WitherCraftingEvents {
 						CompoundTag nbt = entity.getPersistentData();
 						if (!nbt.contains("nakedChickey"))
 						{
+							chicken.remove(RemovalReason.KILLED);
 							entity.setInvulnerable(true);
 							nbt.putBoolean("nakedChickey", true);
 							world.addFreshEntity((Entity) chickennaked);
